@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Coming Soon</title>
+    <title>Cipher</title>
     <style>
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -22,16 +22,40 @@
             margin-top: 20px;
         }
         img {
-            max-width: 200px; /* Adjust the width as needed */
+            max-width: 200px;
             height: auto;
+        }
+        footer {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <!-- Logo Image -->
-    <img src="assets/Butterfly2.png" alt="Cipher Logo">
+    <img src="assets/logo.png" alt="Cipher Logo">
     
-    <!-- Coming Soon Text -->
-    <h1>Site Coming Soon</h1>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Show Me The Way LLC. All rights reserved.</p>
+        <p>
+            <a href="/privacy-policy">Privacy Policy</a> | 
+            <a href="mailto:support@cipher-app.com">Contact Us</a>
+        </p>
+    </footer>
 </body>
 </html>
