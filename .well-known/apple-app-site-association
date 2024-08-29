@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "6S44DG8R34.com.tb12show.tsn",
+        "paths": [ "/trip-share/*", "/trip-invitation/*", "/monarch-share/*",  "/monarch-invitation/*"]
+      }
+    ]
+  }
+}
