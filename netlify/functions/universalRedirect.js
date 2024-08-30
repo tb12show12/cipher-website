@@ -18,7 +18,7 @@ exports.handler = async (event, context) => {
                 setTimeout(function() {
                     console.log("Redirecting now to: '${APP_STORE_URL}'");
                     window.location = '${APP_STORE_URL}';
-                }, 3000);
+                }, 300);
             </script>
             <noscript><meta http-equiv="refresh" content="0;url=${APP_STORE_URL}"></noscript>
             </body></html>
