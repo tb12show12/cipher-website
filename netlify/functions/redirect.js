@@ -24,8 +24,20 @@ exports.handler = async (event, context) => {
         const responseHTML = `
             <html><body>
             <script type="text/javascript">
-                setTimeout(function() { window.location = '${APP_STORE_URL}'; }, 25);
+                // Record the time when we start trying to open the app
+                var start = new Date().getTime();
+
+                // Try to open the app using the deep link
                 window.location = '${deepLinkURL}';
+
+                // Set a timeout to redirect to the App Store if the app isn't opened
+                setTimeout(function() {
+                    // Check the time difference to determine if the app was opened
+                    if (new Date().getTime() - start < 1500) {
+                        // If the time difference is small, the app was likely not opened, so redirect to the App Store
+                        window.location = '${APP_STORE_URL}';
+                    }
+                }, 1000);
             </script>
             <noscript><meta http-equiv="refresh" content="0;url=${APP_STORE_URL}"></noscript>
             </body></html>
