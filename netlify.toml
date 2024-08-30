@@ -7,20 +7,20 @@ functions = "netlify/functions"
 
 # Redirect all paths starting with /trip-share/ to the redirect function
 from = "/trip-share/*"
-to = "/.netlify/functions/redirect"
+to = "/.netlify/functions/universalRedirect"
 status = 200
 
 [[redirects]]
 from = "/trip-invitation/*"
-to = "/.netlify/functions/redirect"
+to = "/.netlify/functions/universalRedirect"
 status = 200
 
 [[redirects]]
 from = "/monarch-share/*"
-to = "/.netlify/functions/redirect"
+to = "/.netlify/functions/universalRedirect"
 status = 200
 
 [[redirects]]
 from = "/monarch-invitation/*"
-to = "/.netlify/functions/redirect"
+to = "/.netlify/functions/universalRedirect"
 status = 200
