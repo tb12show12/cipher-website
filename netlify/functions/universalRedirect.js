@@ -10,8 +10,8 @@ exports.handler = async (event, context) => {
         const responseHTML = `
             <html><body>
             <script type="text/javascript">
-                setTimeout(function() { window.location = '${APP_STORE_URL}'; }, 1000);
-                window.location = '${url}';
+            window.location = '${url}';    
+            setTimeout(function() { window.location = '${APP_STORE_URL}'; }, 2000);
             </script>
             <noscript><meta http-equiv="refresh" content="0;url=${APP_STORE_URL}"></noscript>
             </body></html>
