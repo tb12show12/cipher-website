@@ -1,0 +1,26 @@
+
+[build]
+# The directory where Netlify will look for serverless functions.
+functions = "netlify/functions"
+
+[[redirects]]
+
+# Redirect all paths starting with /trip-share/ to the redirect function
+from = "/trip-share/*"
+to = "/.netlify/functions/redirect"
+status = 200
+
+[[redirects]]
+from = "/trip-invitation/*"
+to = "/.netlify/functions/redirect"
+status = 200
+
+[[redirects]]
+from = "/monarch-share/*"
+to = "/.netlify/functions/redirect"
+status = 200
+
+[[redirects]]
+from = "/monarch-invitation/*"
+to = "/.netlify/functions/redirect"
+status = 200
