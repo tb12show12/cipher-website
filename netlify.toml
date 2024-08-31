@@ -32,8 +32,3 @@ status = 200
 from = "/monarch-invitation/*"
 to = "/.netlify/functions/universalRedirect"
 status = 200
-
-[[redirects]]
-from = "/X/*"
-to = "/.netlify/functions/createOGPage?route=:splat"
-status = 200
