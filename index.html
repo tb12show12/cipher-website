@@ -13,12 +13,17 @@
     <meta property="og:type" content="website" />
 
     <style>
-        body {
+       body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+       body {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -34,21 +39,18 @@
             max-width: 300px;
             height: auto;
         }
+        .app-store-badge {
+            margin-top: 20px;
+            max-width: 150px; /* Adjust this size as needed */
+        }
         footer {
             width: 100%;
-            padding: 10px 0;
+            padding: 10px;
             text-align: center;
             background-color: #f2f2f2;
             color: #ad7800;
             position: absolute;
             bottom:0;
-            left: 0;
-            right:0,
-        }
-        footer a {
-            color: #eee;
-            text-decoration: none;
-            margin: 0 10px;
         }
         footer a:hover {
             text-decoration: underline;
@@ -58,10 +60,17 @@
 <body>
     <!-- Logo Image -->
     <img src="assets/Butterfly2.png" alt="Cipher Logo">
+
+    <!-- App Store Badge -->
+    <!-- 
+        <a href="https://apps.apple.com/us/app/cipher-travel-memories-shared/id6503364756">
+            <img src="https://apple-resources.s3.amazonaws.com/media-badges/download-on-the-app-store/black/en-us.svg" alt="Download on the App Store" class="app-store-badge">
+        </a>
+    -->
     
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 Show Me The Way LLC. All rights reserved.</p>
+        <p>&copy; 2024 Show Me The Way LLC<br>All rights reserved</p>
     </footer>
 </body>
 </html>
