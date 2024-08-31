@@ -15,20 +15,18 @@ force = true
 
 [[redirects]]
 from = "/trip-invitation/*"
-to = "/.netlify/functions/universalRedirect"
+to = "/.netlify/functions/createOGPage"
 status = 200
+force = true
 
 [[redirects]]
 from = "/monarch-share/*"
-to = "/.netlify/functions/universalRedirect"
+to = "/.netlify/functions/createOGPage"
 status = 200
+force = true
 
 [[redirects]]
 from = "/monarch-invitation/*"
-to = "/.netlify/functions/universalRedirect"
+to = "/.netlify/functions/createOGPage"
 status = 200
-
-[[redirects]]
-from = "/monarch-invitation/*"
-to = "/.netlify/functions/universalRedirect"
-status = 200
+force = true
