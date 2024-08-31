@@ -74,7 +74,7 @@ exports.handler = async (event) => {
                 <meta property="og:type" content="website" />
             </head>
             <body>
-                <p>This page is meant for social media crawlers to extract meta tags.</p>
+                <p>Redirecting you to the app store...</p>
                 <script type="text/javascript">
                     setTimeout(function() {
                         console.log("Redirecting now to: '${APP_STORE_URL}'");
