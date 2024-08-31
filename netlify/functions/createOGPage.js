@@ -1,7 +1,7 @@
 exports.handler = async (event) => {
     const { route, data1, data2, title, description, thumbnailUrl } = event.queryStringParameters;
 
-    const fullUrl = data2 ? `https://cipher-app.com/${route}/${data1}/${data2}` : `https://cipher-app.com/${route}/${data1}`;
+    const fullUrl = data2 ? `https://cipher-app.com/X/${route}/${data1}/${data2}` : `https://cipher-app.com/${route}/${data1}`;
 
     // Generate the HTML with OG tags
     const metaTags = `
