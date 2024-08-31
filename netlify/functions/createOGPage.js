@@ -46,12 +46,12 @@ exports.handler = async (event) => {
             tripId = pathParts[3];
         }
         
+        // Function to fetch trip data from Firebase
+        const tripData = await getTripDataFromFirebase(tripId);
+
         const title = (pathParts[1] === 'trip-share') ? 'Check out this trip on Cipher!' : `You're invited to join this trip on Cipher!`;
         const description = tripData?.shortDescription || "Join Cipher to capture and share your travel experiences with friends and family";
         const imageUrl = tripData?.thumbnailURL || "https://cipher-app.com/assets/Butterfly2.png";
-    
-        // Function to fetch trip data from Firebase
-        const tripData = await getTripDataFromFirebase(tripId);
     
         if (!tripData) {
             return {
