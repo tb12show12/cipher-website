@@ -3,12 +3,15 @@
 # The directory where Netlify will look for serverless functions.
 functions = "netlify/functions"
 
-[[redirects]]
+[build.environment]
+  FIREBASE_SERVICE_ACCOUNT = "FIREBASE_SERVICE_ACCOUNT"
 
+[[redirects]]
 # Redirect all paths starting with /trip-share/ to the redirect function
 from = "/trip-share/*"
-to = "/.netlify/functions/universalRedirect"
+to = "/.netlify/functions/createOGPage"
 status = 200
+force = true
 
 [[redirects]]
 from = "/trip-invitation/*"
