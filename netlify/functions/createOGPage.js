@@ -53,12 +53,12 @@ exports.handler = async (event) => {
         const description = tripData?.shortDescription || "Join Cipher to capture and share your travel experiences with friends and family";
         const imageUrl = tripData?.thumbnailURL || "https://cipher-app.com/assets/Butterfly2.png";
     
-        if (!tripData) {
+        /*if (!tripData) {
             return {
                 statusCode: 404,
                 body: 'Trip not found',
             };
-        }
+        }*/
     
         // Generate the HTML with OG tags
         const responseHTML = `
