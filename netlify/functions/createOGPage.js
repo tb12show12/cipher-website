@@ -31,6 +31,8 @@ exports.handler = async (event) => {
         const APP_STORE_URL = 'https://apps.apple.com/us/app/cipher-travel-memories-shared/id6503364756';
         const url = `https://cipher-app.com${event.path}`;  // The original Universal Link
         const userAgent = event.headers['user-agent'];
+
+        console.log(JSON.stringify(userAgent, null, 2));
     
         const path = event.path;
         const pathParts = path.split('/'); // Split the path into parts
