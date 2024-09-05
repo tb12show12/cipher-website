@@ -17,6 +17,7 @@ const getTripDataFromFirebase = async (tripId) => {
             return null;
         }
 
+        console.log(`Sucess: trip found with ID: ${tripId}`);
         return tripDoc.data();
 
     } catch (error) {
@@ -32,7 +33,7 @@ exports.handler = async (event) => {
         const url = `https://cipher-app.com${event.path}`;  // The original Universal Link
         const userAgent = event.headers['user-agent'];
 
-        console.log(JSON.stringify(userAgent, null, 2));
+        console.log('User-Agent:', userAgent); // Added log
     
         const path = event.path;
         const pathParts = path.split('/'); // Split the path into parts
