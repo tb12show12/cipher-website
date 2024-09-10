@@ -14,13 +14,13 @@
     <meta name="apple-itunes-app" content="app-id=6503364756, app-argument=https://cipher-app.com/trip-share/XYZ">
 
     <style>
-       body, html {
+        body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             font-family: Arial, sans-serif;
         }
-       body {
+        body {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -51,10 +51,17 @@
             background-color: #f2f2f2;
             color: #ad7800;
             position: absolute;
-            bottom:0;
+            bottom: 0;
+        }
+        footer a {
+            color: #ad7800;
+            text-decoration: none;
         }
         footer a:hover {
             text-decoration: underline;
+        }
+        .footer-menu {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -67,10 +74,13 @@
         <img src="https://apple-resources.s3.amazonaws.com/media-badges/download-on-the-app-store/black/en-us.svg" alt="Download on the App Store" class="app-store-badge">
     </a>
     
-    
     <!-- Footer -->
     <footer>
         <p>&copy; 2024 Show Me The Way LLC<br>All Rights Reserved</p>
+        <div class="footer-menu">
+            <a href="/privacy-policy.html">Privacy Policy</a> | 
+            <a href="/data-deletion.html">Data Deletion</a>
+        </div>
     </footer>
 </body>
 </html>
