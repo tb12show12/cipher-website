@@ -23,4 +23,3 @@ dist/
 
 # Ignore any build or deploy artifacts
 build/
-public/

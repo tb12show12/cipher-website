@@ -1,0 +1,205 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgb(242,242,242);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0 100 C 20 80, 50 60, 100 0 L 100 100 Z' fill='rgba(220,220,220,0.5)'/%3E%3Cpath d='M0 100 C 30 70, 60 50, 100 20 L 100 100 Z' fill='rgba(230,230,230,0.5)'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+}
+.container {
+    position: relative;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%; /* Centers the butterfly by moving it in from the left */
+    right: 25%; /* Centers the butterfly by moving it in from the right */
+    bottom: 0;
+    background-image: url('/assets/Butterfly2.png');  /* Try absolute path */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.1;
+    z-index: 0;
+}
+#tripForm {
+    position: relative;
+    z-index: 1;
+}
+h1 {
+    position: relative;
+    z-index: 1;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+.form-group.half {
+    flex: 0 0 calc(50% - 10px); /* Exactly half width minus half the gap */
+    width: calc(50% - 10px);
+}
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 4px;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+#familyType {
+    padding: 8px 12px;
+}
+#familyType option {
+    display: flex;
+    align-items: center;
+}
+.image-preview {
+    max-width: 500px;
+    margin-top: 10px;
+    border-radius: 4px;
+    display: none;
+}
+button {
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:disabled {
+    background: #ccc;
+}
+.error {
+    color: #ff3b30;
+    margin-top: 4px;
+    font-size: 14px;
+}
+.char-counter {
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+    margin-top: 4px;
+}
+.char-counter.near-limit {
+    color: #f59e0b;
+}
+.char-counter.at-limit {
+    color: #dc2626;
+}
+.img-container {
+    width: 75%;
+    min-height: 200px;
+    border: 2px dashed #ccc;
+    margin: 20px auto;
+    position: relative;
+    background: #f8f8f8;
+}
+
+#imageToEdit {
+    display: block;
+    max-width: 100%;
+}
+
+.cropper-container {
+    position: relative !important;
+    display: block !important;
+    max-width: 100% !important;
+}
+
+.status-message {
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 4px;
+    display: none;
+}
+
+.status-message.info {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.status-message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.status-message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+button .loading-spinner {
+    display: none;
+}
+
+button.loading .loading-spinner {
+    display: inline-block;
+}
+
+.auth-form {
+    max-width: 400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2; /* Ensure form is above the background */
+}
+
+.auth-form input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+}
+
+/* Make sure the container's pseudo-element doesn't block interaction */
+.container::before {
+    pointer-events: none; /* This allows clicking through the overlay */
+}

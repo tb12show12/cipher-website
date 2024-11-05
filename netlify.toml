@@ -2,6 +2,10 @@
 [build]
 # The directory where Netlify will look for serverless functions.
 functions = "netlify/functions"
+publish = "public"    # Add this if not already specified
+
+[dev]
+publish = "public"  # This is important for local development
 
 [build.environment]
   FIREBASE_SERVICE_ACCOUNT = "FIREBASE_SERVICE_ACCOUNT"
@@ -28,5 +32,19 @@ force = true
 [[redirects]]
 from = "/monarch-invitation/*"
 to = "/.netlify/functions/createOGPage"
+status = 200
+force = true
+
+# New redirect for admin page
+[[redirects]]
+from = "/admin"
+to = "/admin/index.html"
+status = 200
+force = true
+
+# New redirect for admin API endpoints
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
 status = 200
 force = true

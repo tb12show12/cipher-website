@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Admin</title>
+    <link rel="stylesheet" href="/admin/styles.css">
+</head>
+<body>
+    <div class="container" id="authContainer">
+        <h1 style="display: flex; align-items: center; gap: 10px;">
+            <img src="/assets/Butterfly2.png" alt="Cipher" style="height: 1em;">
+            Cipher Admin
+        </h1>
+        <form id="authForm" class="auth-form">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <div id="authStatus" class="status-message"></div>
+            <button type="submit">Enter</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/.netlify/functions/verifyAuth', {
+                    method: 'POST',
+                    body: JSON.stringify({ password })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    // Store auth state and redirect
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    window.location.href = '/admin/newtrip.html';
+                } else {
+                    const authStatus = document.getElementById('authStatus');
+                    authStatus.textContent = 'Invalid password';
+                    authStatus.className = 'status-message error';
+                    authStatus.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
