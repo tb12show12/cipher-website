@@ -17,70 +17,86 @@
 </head>
 <body>
    <div class="container">
-        <h1 style="display: flex; align-items: center; gap: 10px;">
-            <img src="/assets/Butterfly2.png" alt="Cipher" style="height: 2em;"> 
-            New Anonymous Trip
-        </h1>
+        <div id="userHeader" class="user-welcome">
+            <div class="profile-pic-container">
+                <img id="userProfilePic" src="/assets/Butterfly2.png" alt="Profile Picture" class="profile-pic">
+            </div>
+            <h1 id="welcomeHeader">Welcome to Cipher</h1>
+        </div>
+        <p class="welcome-text">
+            Use this tool to easily add new trips to your Cipher profile. These trips will show up immediately in your Cipher profile and you can continue editing them from there.
+        </p>
        <form id="tripForm">
-           <div class="form-group">
-               <label for="title">Title</label>
-               <input type="text" id="title" maxlength="40" required>
-           </div>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" maxlength="40" required>
+            </div>
 
-           <div class="form-row">
-               <div class="form-group half">
-                   <label for="monthSelect">Month</label>
-                   <select id="monthSelect"></select>
-               </div>
-               <div class="form-group half">
-                   <label for="yearSelect">Year</label>
-                   <select id="yearSelect"></select>
-               </div>
-           </div>
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="monthSelect">Month</label>
+                    <select id="monthSelect"></select>
+                </div>
+                <div class="form-group half">
+                    <label for="yearSelect">Year</label>
+                    <select id="yearSelect"></select>
+                </div>
+            </div>
 
-           <div class="form-row">
-               <div class="form-group half">
-                   <label for="numDays"># of Days</label>
-                   <input type="number" id="numDays" min="1" required>
-               </div>
-               <div class="form-group half">
-                   <label for="numPeople"># of People</label>
-                   <input type="number" id="numPeople" min="1" required>
-               </div>
-           </div>
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="numDays"># of Days</label>
+                    <input type="number" id="numDays" min="1" required>
+                </div>
+                <div class="form-group half">
+                    <label for="numPeople"># of People</label>
+                    <input type="number" id="numPeople" min="1" required>
+                </div>
+            </div>
 
-           <div class="form-group">
-               <label for="familyType">Trip Type</label>
-               <select id="familyType" required>
-                   <option value="0">👥 Adults Only</option>
-                   <option value="1">👨‍👦 Family Trip</option>
-                   <option value="2">👶 Baby Friendly</option>
-                   <option value="3">🎉 Bachelor/Bachelorette</option>
-                   <option value="4">🏌️ Golf Trip</option>
-               </select>
-           </div>
+            <div class="form-group">
+                <label for="familyType">Trip Type</label>
+                <select id="familyType" required>
+                    <option value="0">👥 Adults Only</option>
+                    <option value="1">👨‍👦 Family Trip</option>
+                    <option value="2">👶 Baby Friendly</option>
+                    <option value="3">🎉 Bachelor/Bachelorette</option>
+                    <option value="4">🏌️ Golf Trip</option>
+                </select>
+            </div>
 
-           <div class="form-group">
-               <label for="shortDescription">Trip Summary</label>
-               <textarea id="shortDescription" rows="2" maxlength="190" required></textarea>
-               <div id="charCounter" class="char-counter">0/190 characters</div>
-           </div>
+            <div class="form-group">
+                <label for="shortDescription">Trip Summary</label>
+                <textarea id="shortDescription" rows="2" maxlength="190" required></textarea>
+                <div id="charCounter" class="char-counter">0/190 characters</div>
+            </div>
 
-           <div class="form-group">
-               <label for="longDescription">Trip Notes</label>
-               <textarea id="longDescription"></textarea>
-           </div>
+            <div class="form-group">
+                <label for="longDescription">Trip Notes</label>
+                <textarea id="longDescription"></textarea>
+            </div>
 
-           <div class="form-group">
-               <label for="coverImage">Cover Image</label>
-               <input type="file" id="coverImage" accept="image/*">
-               <div class="img-container">
-                   <img id="imageToEdit">
-               </div>
-               <div class="cropper-instructions" style="display: none;">
-                   <p>Drag the image or resize the box to adjust your crop area</p>
-               </div>
-           </div>          
+            <div class="form-group">
+                <label for="coverImage">Cover Image</label>
+                <input type="file" id="coverImage" accept="image/*">
+                <div class="img-container">
+                    <img id="imageToEdit">
+                </div>
+                <div class="cropper-instructions" style="display: none;">
+                    <p>Drag the image or resize the box to adjust your crop area</p>
+                </div>
+            </div>
+           
+            <div class="form-group">
+                <label for="placesAutocomplete">Search Places</label>
+                <input type="text" id="placesAutocomplete" placeholder="Enter location">
+                <ul id="placesList" class="places-list"></ul> <!-- Results shown here -->
+            </div>
+            
+            <div class="form-group">
+                <label>Saved Places</label>
+                <ul id="savedPlacesList" class="saved-places-list"></ul> <!-- User selected places are added here -->
+            </div>
 
            <div id="statusMessage" class="status-message"></div>
            <button type="submit" id="submitButton">
@@ -91,10 +107,22 @@
    </div>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
-   <script type="module" src="/admin/formHandler.js"></script>
-   <script type="module">
-       import { initializeForm } from '/admin/formHandler.js';
-       initializeForm();
-   </script>
+   <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    <script src="/admin/firebaseConfig.js"></script>
+    <script>
+        // Initialize Firebase first, then load and initialize the form
+        initializeFirebase().then(() => {
+            console.log('Firebase initialized, loading form module...');
+            // Update the path to match your actual file location
+            import('/admin/formHandler.js').then(module => {
+                console.log('Form handler loaded, initializing...');
+                module.initializeForm();
+            });
+        });
+    </script>
+    <script src="places.js"></script>
 </body>
 </html>

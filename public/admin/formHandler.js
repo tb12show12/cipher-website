@@ -28,6 +28,47 @@ function setLoading(isLoading) {
     buttonText.textContent = isLoading ? 'Creating Trip...' : 'Submit Trip';
 }
 
+async function loadUserData() {
+    try {
+        console.log('loadUserData is running...');
+        const user = firebase.auth().currentUser;
+        
+        if (!user) {
+            console.error('loadUserData: No user signed in');
+            return;
+        }
+
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            
+            const profilePic = document.getElementById('userProfilePic');
+            console.log('Profile pic element:', profilePic);
+
+            if (profilePic && userData.pPic) {
+                console.log('Setting profile pic src to:', userData.pPic);
+                profilePic.src = userData.pPic;
+            }
+
+            const welcomeHeader = document.getElementById('welcomeHeader');
+            console.log('Welcome header element:', welcomeHeader);
+
+            if (welcomeHeader && userData.displayName) {
+                console.log('Setting welcome text to:', `Welcome, ${userData.displayName}`);
+                welcomeHeader.textContent = `Welcome, ${userData.displayName}`;
+            } else {
+                console.log('Either welcomeHeader is null or displayName is missing');
+            }
+
+            console.log(`loadUserData: signed in as ${userData.displayName}.`)
+        }
+    } catch (error) {
+        console.error('Error loading user data:', error);
+    }
+}
+
+
 // Initialize form elements
 async function initializeForm() {
     console.log('initializeForm is running...');
@@ -39,6 +80,8 @@ async function initializeForm() {
     
     // Fetch environment variables first
     try {
+        await loadUserData();
+        
         const response = await fetch('/.netlify/functions/getEnv');
         if (!response.ok) {
             throw new Error('Failed to load environment variables');
@@ -218,6 +261,17 @@ async function handleFormSubmit(e) {
 
     try {
         showStatus('Preparing form data...', 'info');
+
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            throw new Error('No user signed in');
+        }
+
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+            throw new Error('User data not found');
+        }
+        const userData = userDoc.data();
         
         // Get form data
         const monthSelect = document.getElementById('monthSelect');
@@ -233,19 +287,20 @@ async function handleFormSubmit(e) {
             year: selectedYear.toString(),
             days: document.getElementById('numDays').value.toString(),
             numPeople: parseInt(document.getElementById('numPeople').value),
+            familyType: parseInt(document.getElementById('familyType').value),
             shortDescription: document.getElementById('shortDescription').value,
             longDescriptionHTML: tinymce.get('longDescription').getContent(),
             longDescription: htmlToPlainText(tinymce.get('longDescription').getContent()),
             dateCreated: new Date(), // This should automatically use local timezone
             dateTaken: new Date(Date.UTC(selectedYear, months.indexOf(selectedMonth), 1)),
+            //placesToBeAdded: window.placesAdded || [],
 
             // static elements
-            attendees: [window.ANON_USER_ID],
+            attendees: [userData.userId],
             bookmarks: 0,
             commentsHistory: [],
-            creatorId: window.ANON_USER_ID,
-            creatorName: "Anonymous Butterfly",
-            familyType: 0,
+            creatorId: userData.userId,
+            creatorName: userData.displayName,
             likes: 0,
             photos: [],
             places: [],
@@ -284,7 +339,7 @@ async function handleFormSubmit(e) {
 
         showStatus('Creating trip...', 'info');
         
-        // Send to our Netlify function
+        /* Send to our Netlify function
         const response = await fetch('/.netlify/functions/createTrip', {
             method: 'POST',
             body: JSON.stringify({
@@ -296,9 +351,14 @@ async function handleFormSubmit(e) {
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || 'Failed to create trip');
-        }
+        }*/
+
         
-        // Success feedback
+
+        const newTripId = await writeTripToFirebase(formData, base64Image);
+        const fullPlacesData = await fetchPlaceDetails(window.placesAdded.map(t => t.place_id));
+        await writePlacesToFirebase(newTripId, fullPlacesData);
+        
         showStatus('Trip created successfully!', 'success');
         
         // Reset form after short delay to show success message
@@ -313,6 +373,12 @@ async function handleFormSubmit(e) {
             document.getElementById('imageToEdit').src = '';
             document.querySelector('.cropper-instructions').style.display = 'none';
             clearStatus();
+
+            // Clear the placesAdded array and the UI list
+            placesAdded = []; // Reset the global places array
+            const savedPlacesList = document.getElementById('savedPlacesList');
+            savedPlacesList.innerHTML = ''; // Clear the list in the UI
+
         }, 2000);
         
     } catch (error) {
@@ -344,11 +410,127 @@ async function handleFormSubmit(e) {
     }
 }
 
-// Single DOMContentLoaded listener at the bottom
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing form...');
-    initializeForm();
-});
+async function writeTripToFirebase(tripData, imageFile){
+
+    const tripDoc = await firebase.firestore().collection('trips').add({
+        ...tripData,
+    });
+    
+    const tripId = tripDoc.id;
+
+    await firebase.firestore().collection('users').doc(tripData.creatorId).update({
+        trips: firebase.firestore.FieldValue.arrayUnion(tripDoc.id)
+    });
+
+    const DEFAULT_COVER_PIC = "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a";
+    let imageUrl = DEFAULT_COVER_PIC;
+
+    if (imageFile) {
+        const storageRef = firebase.storage().ref();
+        const imageFileName = `tripCoverPic-${tripId}.jpg`;
+        const imagePath = `trips/${tripId}/${imageFileName}`;
+        
+        // Convert base64 to blob
+        const imageBlob = await fetch(imageFile).then(r => r.blob());
+        
+        // Upload to Firebase Storage
+        const uploadTask = await storageRef.child(imagePath).put(imageBlob, {
+            contentType: 'image/jpeg'
+        });
+        
+        try {
+            imageUrl = await uploadTask.ref.getDownloadURL();
+        } catch (error){
+            imageUrl = DEFAULT_COVER_PIC;
+        }
+    }
+
+    await tripDoc.update({
+        tripId: tripDoc.id,
+        tripCoverPic: imageUrl
+    });
+
+    return tripDoc.id;
+}
+
+async function fetchPlaceDetails(list){
+    const response = await fetch('/.netlify/functions/googleFetchPlaceDetails', {
+        method: 'POST',
+        body: JSON.stringify({
+            list,
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create trip');
+    }
+
+    const data = await response.json();
+
+    console.log(`Finished googleFetchPlaceDetails function, returning:`);
+    console.log(JSON.stringify(data, null, 2));
+
+    return data;
+
+}
+
+
+// NEED TO BUILD IN AIRBNB's
+async function writePlacesToFirebase(newTripId, placesData) {
+    // Array to hold all promises for concurrent execution
+    const promises = placesData.map(async (placeData, index) => {
+        try {
+            // first check if place already exists
+            const existingPlaceQuery = await firebase.firestore().collection('places')
+                .where('gpid', '==', placeData.gpid)
+                .where('title', '==', placeData.title)
+                .get();
+
+            let placeDocId;
+
+            if (existingPlaceQuery.empty) {
+                // If no existing place found, create a new document and have it reference the trip that just got created
+                const placeDoc = await firebase.firestore().collection('places').add({
+                    ...placeData,
+                    trips: [newTripId]
+                });
+
+                // Append new placeId
+                await placeDoc.update({
+                    placeId: placeDoc.id,
+                });
+
+                placeDocId = placeDoc.id;
+            } else {
+                // If an existing place found, use its ID and update the trips array
+                placeDocId = existingPlaceQuery.docs[0].data().placeId;
+
+                // Have the existing place reference the trip that just got created
+                await firebase.firestore().collection('places').doc(placeDocId).update({
+                    trips: firebase.firestore.FieldValue.arrayUnion(newTripId)
+                });
+            }
+
+            // Add new place to the trip's places list
+            await firebase.firestore().collection('trips').doc(newTripId).update({
+                places: firebase.firestore.FieldValue.arrayUnion(placeDocId)
+            });
+
+            // Log success for this item
+            console.log(`Successfully processed item ${index + 1} with ${existingPlaceQuery.empty ? 'new' : 'existing'} place ID: ${placeDocId}`);
+        } catch (error) {
+            // Log error for this item
+            console.error(`Error processing item ${index + 1}: ${error.message}`);
+        }
+    });
+
+    // Wait for all Firestore operations to complete
+    await Promise.all(promises);
+}
+
+
+
 
 export {
     initializeForm

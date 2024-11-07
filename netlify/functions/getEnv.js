@@ -8,6 +8,8 @@ exports.handler = async function() {
             FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
             FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
             ANON_USER_ID: process.env.ANON_USER_ID,
+            ANON_PASSWORD: process.env.ANON_PASSWORD,
+            GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
         };
 
         // Check if any required variables are missing
