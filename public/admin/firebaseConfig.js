@@ -23,10 +23,11 @@ async function initializeFirebase() {
 
     try {
         
-        console.log('Fetching environment variables...');
+        //console.log('Fetching environment variables...');
         const response = await fetch('/.netlify/functions/getEnv');
         const data = await response.json();
-        console.log('Environment variables received:', data);
+        //console.log('Environment variables received:', data);
+        console.log('Environment configuration loaded');
         
         const config = {
             apiKey: data.env.FIREBASE_API_KEY,
@@ -95,28 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Add this function to show the choice dialog
-function showTripChoiceDialog() {
-    const dialog = document.createElement('div');
-    dialog.className = 'trip-choice-dialog';
-    dialog.innerHTML = `
-        <div class="dialog-content">
-            <h2>What would you like to do?</h2>
-            <button id="createTrip" class="choice-button">Create New Trip</button>
-            <button id="editTrip" class="choice-button">Edit Existing Trip</button>
-        </div>
-    `;
-    document.body.appendChild(dialog);
-
-    dialog.querySelector('#createTrip').addEventListener('click', () => {
-        window.location.href = '/admin/newtrip.html';
-    });
-
-    dialog.querySelector('#editTrip').addEventListener('click', () => {
-        window.location.href = '/admin/edittrip.html';
-    });
-}
-
 // Update the handleEmailSignIn function
 async function handleEmailSignIn() {
     const emailInput = document.getElementById('email');
@@ -166,10 +145,8 @@ async function handleAppleSignIn() {
 async function handleAdminAuth() {
     const password = document.getElementById('adminPassword').value;
     
-    console.log('Fetching admin env...');
     const response = await fetch('/.netlify/functions/getEnv');
     const data = await response.json();
-    console.log('Environment variables received:', data);
 
     if (password === data.env.ANON_PASSWORD){
         try {

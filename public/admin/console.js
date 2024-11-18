@@ -1,6 +1,6 @@
 // Global state
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
-import { PLACE_TYPES, MONTHS } from './config.js';
+import { PLACE_TYPES, MONTHS } from '/admin/config.js';
 
 let currentTripId = null;
 let cropper = null;
