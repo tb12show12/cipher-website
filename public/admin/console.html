@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Console</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="styles/consoleStyles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    
+    <script src="/admin/firebaseConfig.js"></script>
+    <script type="module" src="/admin/config.js"></script>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="user-welcome">
+                <img id="userProfilePic" src="/assets/Butterfly2.png" alt="Profile Picture" class="profile-pic">
+                <h2>My Trips</h2>
+            </div>
+            
+            <button id="createNewTrip" class="create-trip-button">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Create New Trip
+            </button>
+
+            <div class="trips-list" id="tripsList">
+                <!-- Trips will be populated here -->
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="main-header">
+                <h1 id="mainTitle">Create New Trip</h1>
+                <!-- Moved submit button to Option A header -->
+            </div>
+            <div class="content-container">
+                <!-- Left Column -->
+                <div class="form-column">
+                    <!-- New Option A Header -->
+                    <div id="optionAHeader" class="section-header" style="display: none;">
+                        <h2 class="column-header">Option A: Input Manually</h2>
+                        <button type="submit" id="submitButton">
+                            <span class="loading-spinner" style="display: none;"></span>
+                            <span class="button-text">Save New Trip</span>
+                        </button>
+                    </div>
+
+                    <!-- Basic Info Section -->
+                    <div id="basicInfoSection">
+                        <div class="section-header">
+                            <h2 class="column-header">Basic Info</h2>
+                            <button id="saveBasicInfoBtn" class="save-button">
+                                <span class="button-text">Save Basic Info</span>
+                                <span class="success-message" style="display: none;">
+                                    <i class="fa-solid fa-check"></i> Successfully Saved!
+                                </span>
+                            </button>
+                        </div>
+                        <form id="tripForm">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" id="title" maxlength="40" required>
+                                <div id="titleCharCounter" class="char-counter">0/40 characters</div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="monthSelect">Month</label>
+                                    <select id="monthSelect"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="yearSelect">Year</label>
+                                    <select id="yearSelect"></select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="numDays"># of Days</label>
+                                    <input type="number" id="numDays" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numPeople"># of People</label>
+                                    <input type="number" id="numPeople" min="1" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="familyType">Trip Type</label>
+                                <select id="familyType" required></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="shortDescription">Trip Summary</label>
+                                <textarea id="shortDescription" rows="2" maxlength="190" required></textarea>
+                                <div id="charCounter" class="char-counter">0/190 characters</div>
+                            </div>
+                        </form>
+
+                        <!-- Cover Image Section -->
+                        <div class="section-header">
+                            <h2 class="column-header">Cover Image</h2>
+                            <div class="cover-image-buttons">
+                                <button id="revertCoverBtn" type="button" class="secondary-button" style="display: none;">
+                                    Revert to Original
+                                </button>
+                                <button id="resetCoverBtn" type="button" class="secondary-button">
+                                    Reset to Default
+                                </button>
+                                <button id="saveCoverBtn" class="save-button" disabled>
+                                    <span class="button-text">Save Cover Image</span>
+                                    <span class="success-message" style="display: none;">
+                                        <i class="fa-solid fa-check"></i> Successfully Saved!
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="section-container">
+                            <input type="file" id="coverImage" accept="image/*">
+                            <div class="img-container">
+                                <img id="imageToEdit">
+                            </div>
+                            <div class="cropper-instructions" style="display: none;">
+                                <p>Drag the image or resize the box to adjust your crop area</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="form-column">
+                    <!-- New Reddit Option Section -->
+                    <div id="optionBSection" class="reddit-option" style="display: none;">
+                        <div class="section-header">
+                            <h2 class="column-header">Option B: Add Trip Via Reddit Link</h2>
+                            <button id="saveRedditTripBtn" class="save-button">
+                                <span class="loading-spinner"></span>
+                                <span class="button-text">Save New Reddit Trip</span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label for="redditUrl">Reddit Post URL</label>
+                            <input type="text" id="redditUrl" placeholder="Enter Reddit post URL">
+                        </div>
+                    </div>
+
+                    <!-- Existing Trip Info Section -->
+                    <div id="additionalTripInfo" class="additional-trip-info">
+                        <div class="disabled-message">Save trip first to edit these sections</div>
+                        <div class="section-header">
+                            <h2 class="column-header">Detailed Trip Info</h2>
+                        </div>
+                        <div class="tabs">
+                            <button class="tab active" data-tab="notes">Trip Notes</button>
+                            <button class="tab" data-tab="places">Places</button>
+                            <button class="tab" data-tab="photos">Photos</button>
+                        </div>
+
+                        <!-- Trip Notes Tab -->
+                        <div id="notesTab" class="tab-content active">
+                            <div class="notes-header">
+                                <h2>Trip Notes</h2>
+                                <button id="saveNotesBtn" class="save-button">
+                                    <span class="button-text">Save Notes</span>
+                                    <span class="success-message" style="display: none;">
+                                        <i class="fa-solid fa-check"></i> Successfully Saved!
+                                    </span>
+                                </button>
+                            </div>
+                            <textarea id="longDescription"></textarea>
+                        </div>
+
+                        <!-- Places Tab -->
+                        <div id="placesTab" class="tab-content">
+                            <div class="places-header">
+                                <h2>Places</h2>
+                                <button id="savePlacesBtn" class="save-button" disabled>
+                                    <span class="button-text">Save Updated Places List</span>
+                                    <span class="success-message" style="display: none;">
+                                        <i class="fa-solid fa-check"></i> Successfully Saved!
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label for="placesAutocomplete">Add Places via Search</label>
+                                <input type="text" id="placesAutocomplete" placeholder="Enter location">
+                                <ul id="searchResults" class="places-list"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Photos Tab -->
+                        <div id="photosTab" class="tab-content">
+                            <div class="photos-header">
+                                <h2>Trip Photos</h2>
+                                <button id="savePhotosBtn" class="save-button" disabled>
+                                    <span class="button-text">Save Changes to Photos</span>
+                                    <span class="success-message" style="display: none;">
+                                        <i class="fa-solid fa-check"></i> Successfully Saved!
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" id="tripImages" accept="image/*" multiple style="display: none;">
+                                <div class="image-grid"></div>
+                            </div>
+                        </div>
+
+                        <!-- Comments Tab -->
+                        <div id="commentsTab" class="tab-content">
+                            <div class="comments-list">
+                                <!-- Comments will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Comments Tab -->
+                        <div id="redditTab" class="tab-content">
+                            <div class="reddit-header">
+                                <h2>Extract Reddit Content</h2>
+                            </div>
+                            <div class="form-group">
+                                <label for="redditUrl">Reddit Post URL</label>
+                                <input type="text" id="redditUrl" placeholder="Enter Reddit post URL">
+                                <button id="extractRedditBtn" class="save-button">
+                                    <span class="button-text">Extract Content</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+    <script type="module" src="console.js"></script>
+
+    <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
+        <button class="lightbox-close">&times;</button>
+        <img class="lightbox-image" src="" alt="Full size image">
+    </div>
+</body>
+</html> 

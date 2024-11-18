@@ -95,7 +95,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Separate function for handling the sign-in
+// Add this function to show the choice dialog
+function showTripChoiceDialog() {
+    const dialog = document.createElement('div');
+    dialog.className = 'trip-choice-dialog';
+    dialog.innerHTML = `
+        <div class="dialog-content">
+            <h2>What would you like to do?</h2>
+            <button id="createTrip" class="choice-button">Create New Trip</button>
+            <button id="editTrip" class="choice-button">Edit Existing Trip</button>
+        </div>
+    `;
+    document.body.appendChild(dialog);
+
+    dialog.querySelector('#createTrip').addEventListener('click', () => {
+        window.location.href = '/admin/newtrip.html';
+    });
+
+    dialog.querySelector('#editTrip').addEventListener('click', () => {
+        window.location.href = '/admin/edittrip.html';
+    });
+}
+
+// Update the handleEmailSignIn function
 async function handleEmailSignIn() {
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
@@ -108,8 +130,7 @@ async function handleEmailSignIn() {
     try {
         showStatus('Signing in...', 'info');
         await firebase.auth().signInWithEmailAndPassword(emailInput.value, passwordInput.value);
-        showStatus('Sign in successful!', 'success');
-        window.location.href = '/admin/newtrip.html';
+        window.location.href = '/admin/console.html';  // Changed this line
     } catch (error) {
         console.error('Email sign-in error:', error);
         let errorMessage = 'Sign in failed';
@@ -130,7 +151,7 @@ async function handleAppleSignIn() {
         const result = await firebase.auth().signInWithPopup(provider);
         console.log('Apple sign-in successful:', result.user.email);
         showStatus('Sign in successful!', 'success');
-        window.location.href = '/admin/newtrip.html';
+        window.location.href = '/admin/console.html';  // Changed this line
     } catch (error) {
         console.error('Apple sign-in error:', error);
         let errorMessage = 'Sign in failed';
@@ -155,7 +176,7 @@ async function handleAdminAuth() {
             showStatus('Signing in...', 'info');
             await firebase.auth().signInWithEmailAndPassword('anon@cipher-app.com', password);
             showStatus('Sign in successful!', 'success');
-            window.location.href = '/admin/newtrip.html';
+            window.location.href = '/admin/console.html';  // Changed this line
         } catch (error) {
             console.error('Email sign-in error:', error);
             let errorMessage = 'Sign in failed';
@@ -166,29 +187,5 @@ async function handleAdminAuth() {
         }
     } else{
         showStatus('Authentication failed: invalid admin password', 'error');
-    }
-}
-
-// Your existing admin auth handler
-async function handleAdminAuthOLD() {
-    const password = document.getElementById('adminPassword').value;
-    
-    try {
-        const response = await fetch('/.netlify/functions/verifyAuth', {
-            method: 'POST',
-            body: JSON.stringify({ password })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            sessionStorage.setItem('isAuthenticated', 'true');
-            window.location.href = '/admin/newtrip.html';
-        } else {
-            showStatus('Invalid admin password', 'error');
-        }
-    } catch (error) {
-        console.error('Admin auth error:', error);
-        showStatus('Authentication failed', 'error');
     }
 }

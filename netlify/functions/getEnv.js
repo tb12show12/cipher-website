@@ -10,6 +10,8 @@ exports.handler = async function() {
             ANON_USER_ID: process.env.ANON_USER_ID,
             ANON_PASSWORD: process.env.ANON_PASSWORD,
             GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
+            OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+            ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
         };
 
         // Check if any required variables are missing

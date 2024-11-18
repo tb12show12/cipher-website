@@ -272,6 +272,15 @@ async function handleFormSubmit(e) {
             throw new Error('User data not found');
         }
         const userData = userDoc.data();
+
+        // Validate places data exists
+        if (typeof window.placesAdded === 'undefined') {
+            console.warn('Places array not initialized');
+            window.placesAdded = [];
+        }
+
+        console.log('Current places data:', window.placesAdded);
+
         
         // Get form data
         const monthSelect = document.getElementById('monthSelect');
@@ -293,7 +302,6 @@ async function handleFormSubmit(e) {
             longDescription: htmlToPlainText(tinymce.get('longDescription').getContent()),
             dateCreated: new Date(), // This should automatically use local timezone
             dateTaken: new Date(Date.UTC(selectedYear, months.indexOf(selectedMonth), 1)),
-            //placesToBeAdded: window.placesAdded || [],
 
             // static elements
             attendees: [userData.userId],
@@ -338,73 +346,37 @@ async function handleFormSubmit(e) {
         }
 
         showStatus('Creating trip...', 'info');
-        
-        /* Send to our Netlify function
-        const response = await fetch('/.netlify/functions/createTrip', {
-            method: 'POST',
-            body: JSON.stringify({
-                formData,
-                imageBase64: base64Image
-            })
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to create trip');
-        }*/
-
-        
-
         const newTripId = await writeTripToFirebase(formData, base64Image);
-        const fullPlacesData = await fetchPlaceDetails(window.placesAdded.map(t => t.place_id));
-        await writePlacesToFirebase(newTripId, fullPlacesData);
+
+
+        // Process places if they exist
+        if (window.placesAdded && window.placesAdded.length > 0) {
+            showStatus('Processing places...', 'info');
+            try {
+                const placeIds = window.placesAdded.map(place => place.place_id);
+                console.log('Fetching details for places:', placeIds);
+                
+                const fullPlacesData = await fetchPlaceDetails(placeIds);
+                if (!fullPlacesData || !Array.isArray(fullPlacesData)) {
+                    throw new Error('Invalid places data received');
+                }
+                
+                await writePlacesToFirebase(newTripId, fullPlacesData);
+            } catch (error) {
+                console.error('Error processing places:', error);
+                showStatus('Trip created, but there was an error processing places', 'warning');
+                return; // Exit early but don't throw error
+            }
+        }
         
         showStatus('Trip created successfully!', 'success');
         
-        // Reset form after short delay to show success message
-        setTimeout(() => {
-            // Reset form
-            document.getElementById('tripForm').reset();
-            tinymce.get('longDescription').setContent('');
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
-            }
-            document.getElementById('imageToEdit').src = '';
-            document.querySelector('.cropper-instructions').style.display = 'none';
-            clearStatus();
-
-            // Clear the placesAdded array and the UI list
-            placesAdded = []; // Reset the global places array
-            const savedPlacesList = document.getElementById('savedPlacesList');
-            savedPlacesList.innerHTML = ''; // Clear the list in the UI
-
-        }, 2000);
+        // Reset form with timeout
+        setTimeout(() => resetForm(), 2000);
         
     } catch (error) {
         console.error('Error:', error);
-        let errorMessage = 'An unexpected error occurred.';
-        
-        // Handle specific errors
-        if (error.code) {
-            switch (error.code) {
-                case 'storage/unauthorized':
-                    errorMessage = 'Error: Unauthorized to upload images.';
-                    break;
-                case 'storage/canceled':
-                    errorMessage = 'Error: Image upload was canceled.';
-                    break;
-                case 'storage/unknown':
-                    errorMessage = 'Error: Unknown error during image upload.';
-                    break;
-                default:
-                    errorMessage = `Error: ${error.message}`;
-            }
-        } else {
-            errorMessage = error.message;
-        }
-        
-        showStatus(errorMessage, 'error');
+        handleError(error);
     } finally {
         setLoading(false);
     }
@@ -454,32 +426,104 @@ async function writeTripToFirebase(tripData, imageFile){
 }
 
 async function fetchPlaceDetails(list){
-    const response = await fetch('/.netlify/functions/googleFetchPlaceDetails', {
-        method: 'POST',
-        body: JSON.stringify({
-            list,
-        })
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create trip');
+    if (!list || !Array.isArray(list) || list.length === 0) {
+        console.warn('No places to fetch details for');
+        return [];
     }
 
-    const data = await response.json();
+    try {
+        console.log('Fetching place details for:', list);
+        
+        const response = await fetch('/.netlify/functions/googleFetchPlaceDetails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ list })
+        });
 
-    console.log(`Finished googleFetchPlaceDetails function, returning:`);
-    console.log(JSON.stringify(data, null, 2));
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-    return data;
+        const data = await response.json();
+        console.log('Received place details:', data);
+
+        if (!Array.isArray(data)) {
+            throw new Error('Invalid response format from places API');
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching place details:', error);
+        throw new Error(`Failed to fetch place details: ${error.message}`);
+    }
 
 }
 
+// Form reset function
+function resetForm() {
+    // Reset basic form elements
+    document.getElementById('tripForm').reset();
+    tinymce.get('longDescription').setContent('');
+    
+    // Reset image cropper
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+    document.getElementById('imageToEdit').src = '';
+    document.querySelector('.cropper-instructions').style.display = 'none';
+    
+    // Reset places
+    window.placesAdded = [];
+    const savedPlacesList = document.getElementById('savedPlacesList');
+    if (savedPlacesList) {
+        savedPlacesList.innerHTML = '';
+    }
+    
+    clearStatus();
+}
+
+// Error handler function
+function handleError(error) {
+    let errorMessage = 'An unexpected error occurred.';
+    
+    if (error.code) {
+        switch (error.code) {
+            case 'storage/unauthorized':
+                errorMessage = 'Error: Unauthorized to upload images.';
+                break;
+            case 'storage/canceled':
+                errorMessage = 'Error: Image upload was canceled.';
+                break;
+            case 'storage/unknown':
+                errorMessage = 'Error: Unknown error during image upload.';
+                break;
+            default:
+                errorMessage = `Error: ${error.message}`;
+        }
+    } else {
+        errorMessage = error.message;
+    }
+    
+    showStatus(errorMessage, 'error');
+}
 
 // NEED TO BUILD IN AIRBNB's
 async function writePlacesToFirebase(newTripId, placesData) {
+    if (!Array.isArray(placesData) || placesData.length === 0) {
+        console.warn('No places data to write to Firebase');
+        return;
+    }
+
     // Array to hold all promises for concurrent execution
     const promises = placesData.map(async (placeData, index) => {
+        if (!placeData || !placeData.gpid || !placeData.title) {
+            console.error(`Invalid place data for index ${index}:`, placeData);
+            return;
+        }
+
         try {
             // first check if place already exists
             const existingPlaceQuery = await firebase.firestore().collection('places')
@@ -522,11 +566,17 @@ async function writePlacesToFirebase(newTripId, placesData) {
         } catch (error) {
             // Log error for this item
             console.error(`Error processing item ${index + 1}: ${error.message}`);
+            throw error; // Rethrow to be caught by Promise.all
         }
     });
 
-    // Wait for all Firestore operations to complete
-    await Promise.all(promises);
+    try {
+        await Promise.all(promises);
+        console.log('All places successfully processed');
+    } catch (error) {
+        console.error('Error processing places:', error);
+        throw new Error('Failed to process one or more places');
+    }
 }
 
 

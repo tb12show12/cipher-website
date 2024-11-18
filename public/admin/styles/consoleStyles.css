@@ -1,0 +1,1517 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(242,242,242);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0 100 C 20 80, 50 60, 100 0 L 100 100 Z' fill='rgba(220,220,220,0.5)'/%3E%3Cpath d='M0 100 C 30 70, 60 50, 100 20 L 100 100 Z' fill='rgba(230,230,230,0.5)'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+}
+
+/* Page Layout */
+.page-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background: white;
+    border-right: 1px solid #eee;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    margin-left: 300px;
+    padding: 20px;
+    background: rgb(242,242,242);
+}
+
+.content-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 30px;
+    width: 1600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Form Elements */
+.form-column {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    min-width: 0;
+}
+
+.form-group {
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007AFF;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.form-row .form-group {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.create-trip-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    margin: 20px 0;
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.create-trip-button:hover {
+    background: #0066d6;
+}
+
+.trips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.trip-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.trip-item:hover {
+    background-color: #f5f5f5;
+}
+
+.trip-item.active {
+    background-color: #e6f2ff;
+    border-left: 3px solid #007AFF;
+}
+
+.trip-item-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.trip-item-date {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 8px 0;
+    color: #666;
+    cursor: pointer;
+    font-size: 16px;
+    border-bottom: 2px solid transparent;
+    font-weight: normal;
+}
+
+.tab.active {
+    color: #007AFF;
+    border-bottom-color: #007AFF;
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Places List */
+.places-list,
+.saved-places-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.places-list li,
+.saved-places-list li {
+    padding: 12px;
+    background-color: #f8f8f8;
+    margin-bottom: 8px;
+    cursor: pointer;
+    position: relative;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.places-list li:hover,
+.saved-places-list li:hover {
+    background-color: #f0f0f0;
+}
+
+.saved-places-list li button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ff3b30;
+    padding: 5px;
+}
+
+/* Image Upload */
+.add-photos-button {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.add-photos-button svg {
+    width: 32px;
+    height: 32px;
+    fill: currentColor;
+}
+
+.add-photos-button:hover {
+    border-color: #ad7800;
+    background: rgba(173, 120, 0, 0.15);
+    color: #ad7800;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px;
+}
+
+.photo-container {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.image-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.image-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.no-photos {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+    padding: 40px;
+}
+
+/* Lightbox styles */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox-image {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+/* Submit Button */
+#submitButton,
+#saveRedditTripBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    height: 44px;
+}
+
+#submitButton:hover,
+#saveRedditTripBtn:hover {
+    background: #0066d6;
+}
+
+#submitButton:disabled,
+#saveRedditTripBtn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Ensure loading spinners are consistent */
+#submitButton .loading-spinner,
+#saveRedditTripBtn .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Character Counter */
+.char-counter {
+    font-size: 14px;
+    color: #666;
+    text-align: right;
+    margin-top: 8px;
+}
+
+/* Profile Section */
+.user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ad7800;
+}
+
+/* Column Header */
+.column-header {
+    font-size: 20px;
+    color: #333;
+    margin: 0 0 20px 0;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .content-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .form-column {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+    
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.main-header {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height:72px;
+}
+
+.main-header h1 {
+    margin: 0;
+    text-align: left;
+}
+
+.refresh-trip-btn {
+    color: #007bff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.refresh-trip-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.refresh-trip-btn i {
+    font-size: 1em;
+}
+
+.trip-subtitle {
+    font-size: 20px;
+    color: #666;
+    margin: 0;
+    font-weight: normal;
+}
+
+/* TinyMCE editor container */
+.tox-tinymce {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* File input consistency */
+input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Trip Summary textarea */
+#tripSummary, #shortDescription {
+    resize: none;
+    min-height: 120px;
+    height: 120px;
+    line-height: 1.5;
+    padding: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Image container with placeholder */
+.img-container {
+    margin: 20px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 350px;
+    width: calc(350px * 16/9);
+    background-color: #f5f5f5;
+    border: 2px dashed #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-container:empty::before {
+    content: 'No image selected';
+    color: #999;
+    font-size: 16px;
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Form spacing */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+/* Trip Type spacing */
+#tripType {
+    margin-top: 30px;
+}
+
+.loading-spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    color: #666;
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007AFF;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none;
+}
+
+.no-trips, .error {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.error {
+    color: #dc3545;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.photo-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    color: #dc3545;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.photo-container:hover .photo-delete-btn {
+    opacity: 1;
+}
+
+.photo-delete-btn:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.places-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    padding: 12px;
+}
+
+.place-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 8px;
+    min-height: 60px;
+    position: relative;
+    border: 1px solid #ddd;  /* Add default border */
+    border-radius: 8px;      /* Match the border radius */
+    background: white;       /* Add white background */
+}
+
+/* Keep the top section (icon, title, type) aligned */
+.place-info {
+    flex: 1;
+    padding-right: 16px;
+}
+
+.commentary-input {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.4;
+    resize: vertical;
+    background: #fff;
+    color: #333;
+}
+
+.place-item.marked-for-deletion {
+    background-color: rgba(255, 59, 48, 0.05);  /* Much lighter red */
+    border: 1px solid rgba(255, 59, 48, 0.1);   /* Lighter red border */
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Remove any other .marked-for-deletion styles that might be causing the overlay */
+.marked-for-deletion::before,
+.marked-for-deletion::after {
+    display: none;
+}
+
+/* Keep the existing styles for the internal elements */
+.place-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.deletion-tag {
+    color: #ff3b30;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.place-icon {
+    display: flex;
+    align-items: center;
+    color: #666;
+    padding-top: 8px;
+    margin-left: 0;
+}
+
+.place-info {
+    flex: 1;
+    padding-right: 16px;
+}
+
+.place-info h3 {
+    margin: 0 0 4px 0;
+}
+
+.place-type {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    color: #666;
+    width: fit-content;
+}
+
+.delete-btn {
+    color: #dc3545;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    align-self: flex-start;
+}
+
+.delete-btn:hover {
+    background-color: #fff5f5;
+}
+
+/* Places Search Input */
+.places-search input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.column-header {
+    font-size: 20px;
+    margin: 0;
+    color: #333;
+}
+
+.cover-image-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.secondary-button {
+    padding: 8px 16px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #212529;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-button:hover {
+    background-color: #e9ecef;
+}
+
+.secondary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.save-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.save-button:hover {
+    background: #0066d6;
+}
+
+.save-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.save-button .success-message {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    color: white;
+}
+
+.save-button .success-message i {
+    font-size: 14px;
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.notes-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.photos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.places-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.places-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.photo-container {
+    position: relative;
+}
+
+.photo-status {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 2;
+}
+
+.status-new {
+    background-color: #34C759;
+    color: white;
+}
+
+.status-delete {
+    background-color: #FF3B30;
+    color: white;
+}
+
+.photo-action-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.photo-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.photo-delete-btn {
+    color: #FF3B30;
+}
+
+.photo-undo-btn {
+    color: #007AFF;
+}
+
+.additional-trip-info.disabled {
+    position: relative;
+}
+
+.additional-trip-info.disabled > *:not(.disabled-message) {
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.disabled-message {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+    z-index: 1000;
+    width: 80%;
+    max-width: 300px;
+}
+
+.additional-trip-info.disabled .disabled-message {
+    display: block;
+}
+
+
+.deletion-tag,
+.addition-tag {
+    display: none;
+    position: relative;  /* Change from absolute to relative */
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-left: auto;  /* Push it to the right */
+}
+
+.deletion-tag {
+    color: #FF3B30;
+    background-color: #ffebeb;
+}
+
+.addition-tag {
+    color: #34C759;
+    background-color: #d1f7d9;
+}
+
+.place-item.marked-for-deletion .deletion-tag,
+.place-item.to-be-added .addition-tag {
+    display: block;
+}
+
+/* Common styles for both button types */
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 8px;
+    align-self: stretch;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.action-btn i {
+    margin: auto;
+}
+
+/* Specific colors for each type */
+.action-btn.delete-btn {
+    color: #dc3545;
+}
+
+.action-btn.delete-btn:hover {
+    background-color: #fff5f5;
+}
+
+.action-btn.revert-btn {
+    color: #007AFF;
+}
+
+.action-btn.revert-btn:hover {
+    background-color: #e6f2ff;
+}
+
+.action-btn.delete-btn,
+.action-btn.revert-btn {
+    align-self: center;  /* Center vertically in the container */
+}
+
+/* All content elements need to be above the background */
+.place-icon,
+.place-info,
+.action-btn {
+    position: relative;
+    z-index: 2;
+}
+
+.place-item.to-be-added::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(230, 249, 230, 0.5); 
+    opacity: 0.7;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.place-item.to-be-added {
+    border-color: #90EE90;  /* Light green border */
+}
+
+
+.place-item.to-be-added .addition-tag {
+    display: block;
+}
+
+.drag-handle {
+    position: relative;
+    color: #999;
+    cursor: move;
+    user-select: none;
+    padding: 0 4px;
+}
+
+.place-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 8px;
+    min-height: 60px;
+    position: relative;
+}
+
+/* Top container for all the main elements */
+.place-main-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    width: 100%;
+}
+
+.place-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing !important;
+}
+
+.place-item.dragging * {
+    cursor: grabbing !important;
+}
+
+.place-item.drag-above {
+    border-top: 2px solid #007AFF;
+    margin-top: 3px;  /* Compensate for border */
+    z-index: 3;  /* Ensure the border appears above everything */
+
+}
+
+.place-item.drag-below {
+    border-bottom: 2px solid #007AFF;
+    margin-bottom: 3px;  /* Compensate for border */
+    z-index: 3;  /* Ensure the border appears above everything */
+}
+
+#savePlacesBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.comment-item {
+    display: flex;
+    align-items: center;  /* Center items vertically */
+    gap: 12px;
+    background: var(--surface-color, #ffffff);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.comment-item i {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+    color: #666;
+}
+
+.comment-details {
+    min-width: 180px;
+    flex-shrink: 0;
+}
+
+.comment-place-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.comment-place-type {
+    font-size: 14px;
+    color: #666;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;      /* Allow only vertical resizing */
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* Comments tab styles */
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+}
+
+.comment-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface-color, #ffffff);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.comment-item i {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    color: var(--text-secondary, #666);
+}
+
+.comment-details {
+    min-width: 200px;
+}
+
+.comment-place-name {
+    font-weight: 500;
+    color: var(--text-primary, #333);
+    margin-bottom: 4px;
+}
+
+.comment-place-type {
+    font-size: 13px;
+    color: var(--text-secondary, #666);
+}
+
+.comment-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.comment-input:focus {
+    outline: none;
+    border-color: var(--primary-color, #007AFF);
+}
+
+#redditTab .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#redditTab input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#redditTab .save-button {
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+/* Option Headers Styling */
+#optionAHeader, 
+#optionBSection .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#optionAHeader .column-header,
+#optionBSection .column-header {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #2c3e50;
+}
+
+/* Reddit Option Section Styling */
+.reddit-option {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.reddit-option .form-group {
+    margin-top: 20px;
+}
+
+.reddit-option input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.reddit-option input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+/* Add these styles */
+.reddit-places-section {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.reddit-places-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.reddit-places-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.search-results-container {
+    margin-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.place-search-results {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: 16px;
+}
+
+.search-results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.ignore-place-button {
+    padding: 4px 8px;
+    background: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ignore-place-button:hover {
+    background: #e9ecef;
+    border-color: #ccc;
+}
+
+.reddit-place-button {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.reddit-place-button:hover {
+    border-color: #007AFF;
+    background: #f0f7ff;
+}
+
+.place-result-button {
+    width: 100%;
+    padding: 8px 12px;
+    text-align: left;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.place-result-button:hover {
+    background: #f5f5f5;
+}
+
+.reddit-place-button.skipped {
+    background-color: #ffebee; /* Light red background */
+    border-color: #ffcdd2;
+    color: #c62828;
+    position: relative;
+}
+
+.reddit-place-button.skipped:hover {
+    background-color: #ffcdd2;
+    border-color: #ef9a9a;
+}
+
+.reddit-place-button.skipped::after {
+    content: '⚠️ Skipped';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 10px;
+    background: #c62828;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.place-commentary {
+    width: 100%;
+    margin: 0px 8px;
+    z-index: 1;
+}
+
+.commentary-input {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+    background: #fff;
+}
+
+.commentary-input:focus {
+    border-color: #007AFF;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,122,255,0.1);
+}
+
+/* Update the places list container */
+#placesList {
+    height: auto;
+    min-height: 100px;
+    overflow-y: visible;
+}
+
+.place-item {
+    height: auto;
+    min-height: 60px;
+}
+
+
+.commentary-input {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.4;
+    resize: vertical;
+    background: #fff;
+    color: #333;
+}
+
+.commentary-input:focus {
+    border-color: #007AFF;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,122,255,0.1);
+}
+
+.place-info {
+    flex: 1;
+    padding-right: 16px;
+    height: auto;
+}
+
+.place-info h3 {
+    margin: 0 0 4px 0;
+}
+
+.existing-comments {
+    margin-top: 10px;
+    padding: 0;  /* Remove horizontal padding */
+    width: 100%; /* Ensure full width */
+}
+
+.comment-card {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    width: 100%;      /* Ensure full width */
+    box-sizing: border-box;  /* Include padding in width calculation */
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    padding: 0px 4px;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #444;
+}
+
+.comment-date {
+    color: #666;
+}
+
+.comment-body {
+    color: #333;
+    line-height: 1.4;
+    padding: 0px 4px;
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: flex-end;  /* Right align content */
+}
+
+.add-comment-btn, .save-comment-btn, .cancel-comment-btn {
+    text-decoration: none;
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;  /* Space between icon and text */
+}
+
+.add-comment-btn {
+    color: #007bff;
+}
+
+.save-comment-btn {
+    color: #007bff;
+}
+
+.cancel-comment-btn {
+    color: #dc3545;
+}
+
+.save-comment-btn:hover, .cancel-comment-btn:hover, .add-comment-btn:hover {
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin: -2px -6px;  /* Offset the padding to prevent layout shift */
+}
+
+.add-comment-btn:hover, .save-comment-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);  /* Semi-transparent blue */
+}
+
+.cancel-comment-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);  /* Semi-transparent red */
+}
+
+.new-comment-section {
+    width: 100%;  /* Ensure full width for the input section */
+}
+
+.new-comment-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.9em;
+}
+
+.comment-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-bottom: 10px;
+}

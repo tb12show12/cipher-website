@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cipher Admin</title>
-    <link rel="stylesheet" href="/admin/styles.css">
+    <link rel="stylesheet" href="styles/indexStyles.css">
     <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
     <link rel="apple-touch-icon" href="/assets/Butterfly2.png">
     <meta name="theme-color" content="#ffffff">
@@ -73,35 +73,6 @@
         <div id="authStatus" class="status-message"></div>
     </div>
 
-    <!--
-    <script>
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const password = document.getElementById('password').value;
-            
-            try {
-                const response = await fetch('/.netlify/functions/verifyAuth', {
-                    method: 'POST',
-                    body: JSON.stringify({ password })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    // Store auth state and redirect
-                    sessionStorage.setItem('isAuthenticated', 'true');
-                    window.location.href = '/admin/newtrip.html';
-                } else {
-                    const authStatus = document.getElementById('authStatus');
-                    authStatus.textContent = 'Invalid password';
-                    authStatus.className = 'status-message error';
-                    authStatus.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Auth error:', error);
-            }
-        });
-    </script>
-    -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>

@@ -10,10 +10,26 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Trip Admin</title>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-   <link rel="stylesheet" href="/admin/styles.css">
+   <link rel="stylesheet" href="styles/newStyles.css">
    <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
    <link rel="apple-touch-icon" href="/assets/Butterfly2.png">
    <meta name="theme-color" content="#ffffff">
+   <meta name="autocomplete" content="off">
+   <meta name="autocorrect" content="off">
+   <meta name="autocapitalize" content="off">
+   <meta name="spellcheck" content="false">
+   <script type="module">
+        import { TRIP_TYPES, VALIDATION } from './config.js';
+        
+        // Use TRIP_TYPES to populate select dropdown
+        const tripTypeSelect = document.getElementById('tripType');
+        TRIP_TYPES.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type.value;
+            option.textContent = type.label;
+            tripTypeSelect.appendChild(option);
+        });
+    </script>
 </head>
 <body>
    <div class="container">
@@ -62,6 +78,7 @@
                     <option value="2">👶 Baby Friendly</option>
                     <option value="3">🎉 Bachelor/Bachelorette</option>
                     <option value="4">🏌️ Golf Trip</option>
+                    <option value="5">💍 Honeymoon</option>
                 </select>
             </div>
 
