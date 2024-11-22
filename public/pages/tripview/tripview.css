@@ -1,0 +1,1202 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                 "Helvetica Neue", Arial, sans-serif;
+    color: #333;
+    line-height: 1.5;
+    background-color: #f3f2ef;
+}
+
+main {
+    background-color: #f3f2ef;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.trip-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0;
+    display: flex;
+    gap: 24px;
+}
+
+.trip-header {
+    position: relative;
+    min-height: 300px;
+    height: auto;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.trip-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.7),  /* Darker at top */
+        rgba(0, 0, 0, 0.7)   /* Even darker at bottom */
+    );
+}
+
+.trip-header-content {
+    position: relative;
+    padding: 24px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.trip-header-content h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: white;
+    line-height: 1.2;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+.trip-creator {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 4px;
+}
+
+.trip-date {
+    text-align: center;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.trip-short-description {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.trip-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.trip-meta-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trip-meta-right {
+    margin-left: auto;
+}
+
+.meta-separator {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.trip-content {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    font-size: 16px;
+}
+
+.trip-description {
+    line-height: 1.5;
+}
+
+.trip-description h1 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.trip-description h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.trip-description h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.trip-description p {
+    margin-bottom: 1em;
+}
+
+.trip-description ul,
+.trip-description ol {
+    margin-bottom: 1em;
+    padding-left: 2em;
+}
+
+.trip-description img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 1em 0;
+}
+
+@media (max-width: 600px) {
+    .trip-header-content h1 {
+        font-size: 28px;
+    }
+
+    .trip-meta {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+.trip-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Add a wrapper for title block */
+.title-block {
+    margin-bottom: 16px;  /* Space between title block and short description */
+}
+
+/* Navigation tabs */
+.trip-nav {
+    display: flex;  /* Only take up as much space as needed */
+    background: white;   /* Light gray background */
+    padding: 4px;         /* Small padding around all tabs */
+    border-radius: 8px;   /* Rounded corners */
+    margin: 10px 0px;        /* Spacing around the container */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* Individual tab items */
+.trip-nav-item {
+    flex: 1;  /* Make each item take equal space */
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    background: none;
+    border: none;
+    border-radius: 6px;   /* Slightly rounded corners */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Active tab */
+.trip-nav-item.active {
+    color: #AD7800;  /* Changed to your gold accent color */
+    font-weight: 600;
+    background: rgba(173, 120, 0, 0.1);  /* Light gold background */
+}
+
+/* Hover state */
+.trip-nav-item:not(.active):hover {
+    color: #333;
+    background: rgba(255,255,255,0.5);  /* Semi-transparent white */
+}
+
+/* Content sections */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Places section */
+.places-filters {
+    display: flex;
+    justify-content: center;  /* Center the buttons */
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background: white;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: #000;
+    color: white;
+    border-color: #000;
+}
+
+/* Grid layouts */
+.places-grid, .photos-grid, .attendees-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.photos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;  /* Small gap between photos */
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.photo-item {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;  /* Makes it square */
+    overflow: hidden;
+}
+
+.photo-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* Ensures image covers square area */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.photo-item img:hover {
+    transform: scale(1.02);  /* Subtle zoom on hover */
+}
+
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lightbox.active {
+    display: flex;
+    opacity: 1;
+}
+
+.lightbox-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-content img {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    z-index: 1001;
+    padding: 10px;
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 20px;
+    z-index: 1001;
+}
+
+.lightbox-nav.prev {
+    left: 20px;
+}
+
+.lightbox-nav.next {
+    right: 20px;
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover {
+    color: #ccc;
+}
+
+.attendees-grid {
+    display: grid;
+    gap: 16px;
+    margin: 0 auto;
+}
+
+.attendee-card {
+    display: flex;
+    align-items: center;
+    padding-bottom: 16px;
+    padding-left: 8px;
+    padding-right: 12px;
+    padding-top: 8px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    position: relative;
+    transition: box-shadow 0.2s ease;
+}
+
+.attendee-button:hover .attendee-card {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+.attendee-photo {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.attendee-info {
+    margin-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    position: relative;  /* For positioning trips count */
+    flex: 1;            /* Take up remaining space */
+}
+
+.attendee-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.attendee-location {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.2;
+    margin-top: -1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.attendee-role {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.trips-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.trips-count i {
+    color: #666;
+    font-size: 12px;
+}
+
+.trip-creator-badge {
+    color: #AD7800;
+    font-weight: 600;
+}
+
+.travel-advisor-badge {
+    color: #2E7D32;  /* A green that complements the gold */
+    font-weight: 600;
+}
+
+.travel-advisor-badge i {
+    font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .attendees-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 300px) {
+    .attendees-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.attendee-button {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.2s ease;
+}
+
+.attendee-button:hover {
+    transform: translateY(-2px);
+}
+
+.attendee-button:active {
+    transform: translateY(0);
+}
+
+.places-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.place-button {
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.2s ease;
+}
+
+.place-button:hover {
+    transform: translateY(-2px);
+}
+
+.place-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.place-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.place-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3),
+        rgba(0, 0, 0, 0.7)
+    );
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.place-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.place-badge.wow {
+    background: #4CAF50;
+    color: white;
+}
+
+.place-badge.skip {
+    background: #FFA000;
+    color: white;
+}
+
+.place-content {
+    color: white;
+}
+
+.place-header {
+    margin-bottom: 16px;
+}
+
+.place-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.place-type {
+    font-size: 16px;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.place-type i {
+    font-size: 16px;
+}
+
+.place-address {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.place-rating {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.place-rating .stars {
+    color: #FFC107;
+}
+
+.place-comments {
+    padding: 16px;
+    background: rgb(242,242,242);
+}
+
+.comment {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.comment:last-child {
+    margin-bottom: 0;
+}
+
+.comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    align-self: center;
+}
+
+.comment-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.comment-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #AD7800;
+    margin-bottom: 8px;
+}
+
+.comment-text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+#map-container {
+    width: 100%;
+    height: 500px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* Marker styles */
+.marker {
+    cursor: pointer;
+}
+
+.marker-circle {
+    background: white;
+    border: 2px solid #AD7800; 
+    border-width: 2px;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker i {
+    font-size: 18px;
+    color: #AD7800;
+}
+
+.marker-hover .marker-circle {
+    transform: scale(1.2);
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+/* Category-specific colors */
+.marker.toStay {
+    background-color: #4CAF50;  /* Green */
+}
+
+.marker.toEat {
+    background-color: #FFA000;  /* Orange */
+}
+
+.marker.toDo {
+    background-color: #2196F3;  /* Blue */
+}
+
+/* Popup styles */
+.maplibregl-popup {
+    max-width: 300px !important;
+    min-width: 300px !important;  /* Force exact width */
+}
+
+.maplibregl-popup-content {
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: none !important;
+    box-shadow: 0 2px 7px 1px rgba(0,0,0,0.3) !important;
+    min-height: 100px !important;
+}
+
+.map-popup {
+    min-height: 100px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: white;
+}
+
+.map-popup-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top:0;
+    padding: 12px;
+    background: rgba(0,0,0,0.55);
+}
+
+/* Adjust text sizes to fit new dimensions */
+.map-popup h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: white;
+}
+
+.map-popup-type {
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.map-popup-type i {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.map-popup-address,
+.map-popup-rating {
+    font-size: 12px;
+    margin-bottom: 2px;
+    line-height: 1;
+}
+
+/* Make sure the canvas fills the container */
+.maplibregl-canvas-container,
+.maplibregl-canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Ensure the canvas scales properly */
+.maplibregl-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* New creator profile column */
+.creator-profile {
+    width: 400px;
+    flex-shrink: 0;  
+}
+
+/* When trip-main is hidden - multiple selector options */
+.trip-container:has(.trip-main[style*="display: none"]) .creator-profile {
+    width: 600px !important; /* Using !important temporarily to debug */
+    flex-shrink: 1;  
+}
+
+/* When trip-main is hidden - adjust width and center */
+.trip-container:has(.trip-main[style*="display: none"]) {
+    justify-content: center; /* Center the profile */
+}
+
+/* Profile card */
+.creator-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.creator-header {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.creator-profile-pic {
+    position: absolute;
+    bottom: -50px;
+    left: 24px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid #AD7800;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.creator-profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.creator-info {
+    padding: 10px 12px 0px 24px;  /* Extra top padding for profile pic overflow */
+}
+
+.creator-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.me-tag {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+}
+
+.creator-location {
+    color: #666;
+    font-size: 14px;
+}
+
+.creator-joined {
+    color: #666;
+    font-size: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;  /* Add bottom border */
+}
+
+.creator-stats {
+    display: flex;
+    width: 75%;
+    margin-left: auto;  /* This pushes it to the right */
+    justify-content: space-between;
+    margin-bottom: 4px;  /* Space before trips list */
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Right column (existing content) */
+.trip-main {
+    flex: 1;
+    min-width: 400px;  /* Allow proper shrinking */
+    display: none;
+}
+
+.creator-trips {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    padding: 20px;
+    padding-top: 8px;
+}
+
+.trips-header {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.trips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trip-item {
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+.trip-item:hover {
+    transform: translateY(-2px);
+}
+
+.trip-item-header {
+    position: relative;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+.trip-item-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.7),
+        rgba(0, 0, 0, 0.7)
+    );
+}
+
+.trip-item-content {
+    position: absolute;  /* Change to absolute positioning */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;  /* Align everything to bottom */
+}
+
+.trip-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 12px;  /* Add space between main content and meta bar */
+}
+
+.trip-item-title-block h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+    line-height: 1.2;
+    text-align: left;  /* Explicitly set left alignment */
+}
+
+.trip-item-creator {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;  /* Explicitly set left alignment */
+}
+
+.trip-item-description {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;  /* Explicitly set left alignment */
+}
+
+.trip-item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.trip-item-meta-left {
+    font-weight: 500;
+}
+
+.trip-item-meta-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-separator {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.trip-type {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.trip-type i {
+    font-size: 12px;
+}
+
+/* Filter Bar */
+.trips-filter-bar {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.filter-toggle-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.filter-toggle-btn:hover {
+    background: #f5f5f5;
+}
+
+/* Active Filter Chips */
+.active-filters {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-chip {
+    background: #f0f0f0;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.remove-chip {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 16px;
+}
+
+.clear-filters-chip {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+}
+
+/* Filter Menu */
+.filter-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 16px;
+    margin-top: 8px;
+    z-index: 1000;
+    display: none;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+}
+
+/* Duration Slider */
+.duration-slider {
+    padding: 0 8px;
+}
+
+.slider {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+}
+
+.current-duration {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 8px;
+}
+
+/* Filter Actions */
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.filter-apply-btn, .filter-clear-btn {
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filter-apply-btn {
+    background: #AD7800;
+    color: white;
+    border: none;
+}
+
+.filter-clear-btn {
+    background: none;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+/* Show/Hide Menu */
+.filter-menu.show {
+    display: block;
+}
+
+.creator-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.creator-details {
+    flex: 1;
+}
+
+.creator-actions {
+    padding-left: 16px;
+}
+
+.slider-inputs {
+    position: relative;
+    height: 40px;
+}
+
+.slider {
+    position: absolute;
+    width: 100%;
+    pointer-events: none;
+}
+
+.slider::-webkit-slider-thumb {
+    pointer-events: auto;
+}
+
+.slider::-moz-range-thumb {
+    pointer-events: auto;
+}

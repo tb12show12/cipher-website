@@ -15,67 +15,25 @@
     <link rel="apple-touch-icon" href="/assets/Butterfly2.png">
     <meta name="theme-color" content="#ffffff">
     <!-- <meta name="apple-itunes-app" content="app-id=6503364756, app-argument=https://cipher-app.com/trip-share/XYZ"> -->
-
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            color: #333;
-            position: relative;
-        }
-        h1 {
-            font-size: 3em;
-            text-align: center;
-            margin-top: 20px;
-        }
-        img {
-            max-width: 300px;
-            height: auto;
-        }
-        .app-store-badge {
-            margin-top: 20px;
-            max-width: 150px; /* Adjust this size as needed */
-        }
-        footer {
-            width: 100%;
-            padding: 10px;
-            text-align: center;
-            background-color: #f2f2f2;
-            color: #ad7800;
-            position: absolute;
-            bottom: 0;
-        }
-        footer a {
-            color: #ad7800;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
-        }
-        .footer-menu {
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <!-- Logo Image -->
-    <img src="assets/Butterfly2.png" alt="Cipher Logo">
+    <img src="assets/Butterfly2.png" alt="Cipher Logo" class="logo">
 
     <!-- App Store Badge -->
     <a href="https://apps.apple.com/us/app/cipher-travel-memories-shared/id6503364756">
         <img src="https://apple-resources.s3.amazonaws.com/media-badges/download-on-the-app-store/black/en-us.svg" alt="Download on the App Store" class="app-store-badge">
     </a>
+
+    <!-- Login Button -->
+    <div class="login-section">
+        <a href="/admin" class="login-button">
+            <i class="fas fa-sign-in-alt"></i>
+            Existing Users: Login Here
+        </a>
+    </div>
     
     <!-- Footer -->
     <footer>

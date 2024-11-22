@@ -8,12 +8,19 @@
     <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
     <link rel="apple-touch-icon" href="/assets/Butterfly2.png">
     <meta name="theme-color" content="#ffffff">
+
+    <!-- Firebase SDKs - load only once -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="/admin/firebaseConfig.js"></script>
 </head>
 <body>
     <div id="authContainer" class="container">
         <h1 id="cipher-cipher-admin" style="display: flex; align-items: center; gap: 10px;">
             <img src="/assets/Butterfly2.png" style="height: 1em;" alt="Cipher"> 
-            Cipher Trip Creator
+            Cipher User Login
         </h1>
     
         <div class="auth-section">
@@ -32,16 +39,10 @@
                     </svg>
                     Sign in with Apple
                 </button>
-                
-                <!-- Disabled Google button
-                <button onclick="handleGoogleAuth()" class="auth-button google" disabled>
-                    <img src="/assets/g-logo.png" alt="Google" class="auth-icon">
-                    Sign in with Google
-                </button>
-                -->
             </div>            
         </div>
-    
+        
+        <!-- Admin section, removed for now 
         <div class="admin-section">
             <h2>Admin Access</h2>
             <div class="form-group">
@@ -51,6 +52,7 @@
                 Admin Login
             </button>
         </div>
+        -->
     
         <div id="emailAuthForm" class="auth-modal" style="display: none;">
             <div class="modal-content">
@@ -72,20 +74,5 @@
     
         <div id="authStatus" class="status-message"></div>
     </div>
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
-    <script src="/admin/firebaseConfig.js"></script>
-    <script>
-        console.log('Script section running');
-        if (document.readyState === 'loading') {
-            console.log('Document still loading, adding listener');
-            document.addEventListener('DOMContentLoaded', initializeFirebase);
-        } else {
-            console.log('Document already loaded, initializing Firebase');
-            initializeFirebase();
-        }
-    </script>
 </body>
 </html>

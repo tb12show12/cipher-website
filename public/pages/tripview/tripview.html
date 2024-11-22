@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Trip View - Butterfly</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/components/nav/nav.css">
+    <link rel="stylesheet" href="/pages/tripview/tripview.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css' rel='stylesheet' />
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="/admin/firebaseConfig.js"></script>
+    <script src='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.17.0/dist/algoliasearch.umd.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <div id="nav-container"></div>
+
+    <!-- Main Content -->
+    <main>
+        <div class="trip-container">
+            <!-- New left column -->
+            <div class="creator-profile">
+                <!-- Content will be inserted by JavaScript -->
+            </div>
+            
+            <!-- Existing content wrapped in right column -->
+            <div class="trip-main">
+                <!-- Trip Header -->
+                <div class="trip-header">
+                    <div class="trip-header-content">
+                        <div class="trip-date">
+                            <span id="tripMonth"></span> <span id="tripYear"></span>
+                        </div>
+                        <!-- Rest of content -->
+                        <div class="trip-main-content">
+                            <div class="title-block">
+                                <h1 id="tripTitle"></h1>
+                                <div class="trip-creator">
+                                    by <span id="tripCreator"></span>
+                                </div>
+                            </div>
+                            <div class="trip-short-description" id="tripShortDescription"></div>
+                            <div class="trip-meta">
+                                <div class="trip-meta-left">
+                                    <span id="tripDuration"></span>
+                                    <span class="meta-separator">•</span>
+                                    <span id="tripPeople"></span>
+                                </div>
+                                <div class="trip-meta-right">
+                                    <span id="tripType"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation tabs -->
+                <div class="trip-nav">
+                    <button class="trip-nav-item active" data-tab="places">Places</button>
+                    <button class="trip-nav-item" data-tab="notes">Notes</button>
+                    <button class="trip-nav-item" data-tab="attendees">Attendees</button>
+                    <button class="trip-nav-item" data-tab="photos">Photos</button>
+                    <button class="trip-nav-item" data-tab="map">Map</button>
+                </div>
+
+                <!-- Content sections -->
+                <div class="trip-content">
+                    <!-- Overview tab -->
+                    <div class="tab-content" id="notes">
+                        <div class="notes-content"></div>
+                    </div>
+
+                    <!-- Places tab -->
+                    <div class="tab-content" id="places">
+                        <div class="places-filters">
+                            <button class="filter-btn active">All</button>
+                            <button class="filter-btn">To Stay</button>
+                            <button class="filter-btn">To Eat/Drink</button>
+                            <button class="filter-btn">To Do</button>
+                        </div>
+                        <div class="places-grid"></div>
+                    </div>
+
+                    <!-- Photos tab -->
+                    <div class="tab-content" id="photos">
+                        <div class="photos-grid"></div>
+                    </div>
+
+                    <!-- Map tab -->
+                    <div class="tab-content" id="map">
+                        <div id="map-container"></div>
+                    </div>
+
+                    <!-- Attendees tab -->
+                    <div class="tab-content" id="attendees">
+                        <div class="attendees-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/components/nav/nav.js"></script>
+    <script src="/admin/clientConfig.js"></script>
+    <script type="module" src="/pages/tripview/tripview.js"></script>
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close">&times;</button>
+        <button class="lightbox-nav prev">&lt;</button>
+        <button class="lightbox-nav next">&gt;</button>
+        <div class="lightbox-content">
+            <img src="" alt="Full size photo">
+        </div>
+    </div>
+</body>
+</html>

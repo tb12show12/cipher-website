@@ -1,7 +1,7 @@
 // Trip types configuration embedded directly in the function
 const TRIP_TYPES = [
     { value: 0, label: '👥 Adults Only' },
-    { value: 1, label: '👨‍👦 Family Trip' },
+    { value: 1, label: '👨‍👩‍👧‍👦 Family Trip' },
     { value: 2, label: '👶 Baby Friendly' },
     { value: 3, label: '🎉 Bachelor/Bachelorette' },
     { value: 4, label: '🏌️ Golf Trip' },

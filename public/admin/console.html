@@ -7,23 +7,30 @@
     <link rel="stylesheet" href="/admin/styles/consoleStyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/components/nav/nav.css">
     
-    <!-- Firebase SDKs -->
+    <!-- Add Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="/admin/firebaseConfig.js"></script>
+    
+    <!-- Then other scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.22.1/dist/algoliasearch.umd.js"></script>
     <script type="module" src="/admin/config.js"></script>
 </head>
 <body>
+    <!-- Navigation -->
+    <div id="nav-container"></div>
+    
     <div class="page-container">
         <!-- Left Sidebar -->
         <div class="sidebar">
             <div class="user-welcome">
-                <img id="userProfilePic" src="/assets/Butterfly2.png" alt="Profile Picture" class="profile-pic">
-                <h2>My Trips</h2>
+                <div class="header-row">
+                    <h2 id="sidebarTitle">My Trips</h2>
+                </div>
             </div>
             
             <button id="createNewTrip" class="create-trip-button">
@@ -41,7 +48,6 @@
         <!-- Main Content Area -->
         <div class="main-content">
             <div class="main-header">
-                <h1 id="mainTitle">Create New Trip</h1>
                 <!-- Moved submit button to Option A header -->
             </div>
             <div class="content-container">
@@ -146,7 +152,7 @@
                             <h2 class="column-header">Option B: Add Trip Via Reddit Link</h2>
                             <button id="saveRedditTripBtn" class="save-button">
                                 <span class="loading-spinner"></span>
-                                <span class="button-text">Save New Reddit Trip</span>
+                                <span class="button-text">Save New Trip</span>
                             </button>
                         </div>
                         <div class="form-group">
@@ -162,6 +168,7 @@
                             <h2 class="column-header">Detailed Trip Info</h2>
                         </div>
                         <div class="tabs">
+                            <button class="tab" data-tab="attendees">Attendees</button>
                             <button class="tab active" data-tab="notes">Trip Notes</button>
                             <button class="tab" data-tab="places">Places</button>
                             <button class="tab" data-tab="photos">Photos</button>
@@ -196,6 +203,26 @@
                                 <label for="placesAutocomplete">Add Places via Search</label>
                                 <input type="text" id="placesAutocomplete" placeholder="Enter location">
                                 <ul id="searchResults" class="places-list"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Attendees Tab -->
+                        <div id="attendeesTab" class="tab-content">
+                            <div class="attendees-header">
+                                <h2>Trip Attendees</h2>
+                                <button id="saveAttendeesBtn" class="save-button" disabled>
+                                    <span class="button-text">Save Updated Attendees List</span>
+                                    <span class="success-message" style="display: none;">
+                                        <i class="fa-solid fa-check"></i> Successfully Saved!
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="attendeesSearch" placeholder="Search existing Cipher users to add...">
+                                <ul id="attendeesSearchResults" class="attendees-list"></ul>
+                            </div>
+                            <div class="current-attendees">
+                                <div class="attendees-grid"></div>
                             </div>
                         </div>
 
@@ -244,6 +271,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
+    <script src="/components/nav/nav.js"></script>
     <script type="module" src="/admin/console.js"></script>
 
     <div id="lightbox" class="lightbox" onclick="this.style.display='none'">

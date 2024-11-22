@@ -1,5 +1,60 @@
 console.log('firebaseConfig.js loaded');
 
+window.firebaseAuthReady = new Promise((resolve) => {
+    async function initializeFirebase() {
+        if (window.isFirebaseInitialized) {
+            console.log('Firebase already initialized');
+            return firebase;
+        }
+
+        try {
+            const response = await fetch('/.netlify/functions/getEnv');
+            const data = await response.json();
+            
+            const config = {
+                apiKey: data.env.FIREBASE_API_KEY,
+                authDomain: data.env.FIREBASE_AUTH_DOMAIN,
+                projectId: data.env.FIREBASE_PROJECT_ID,
+                storageBucket: data.env.FIREBASE_STORAGE_BUCKET,
+                messagingSenderId: data.env.FIREBASE_MESSAGING_SENDER_ID,
+                appId: data.env.FIREBASE_APP_ID
+            };
+
+            firebase.initializeApp(config);
+            window.isFirebaseInitialized = true;
+            console.log('Firebase initialized successfully');
+
+            // Add auth state observer
+            firebase.auth().onAuthStateChanged((user) => {
+                const currentPath = window.location.pathname;
+                const isLoginPage = currentPath === '/admin/' || currentPath === '/admin/index.html';
+                
+                console.log('Auth State Changed:', {
+                    user: user?.email,
+                    currentPath,
+                    isLoginPage
+                });
+
+                // Resolve the promise when we first get the auth state
+                resolve(user);
+
+                if (!user && !isLoginPage && 
+                    (currentPath.includes('/admin/console.html') || 
+                     currentPath.includes('/pages/tripview'))) {
+                    window.location.href = '/admin/index.html';
+                }
+            });
+
+            return firebase;
+        } catch (error) {
+            console.error('Error initializing Firebase:', error);
+            throw error;
+        }
+    }
+
+    initializeFirebase();
+});
+
 // Utility functions first
 function showStatus(message, type = 'info') {
     const statusDiv = document.getElementById('authStatus');
@@ -12,6 +67,37 @@ function showStatus(message, type = 'info') {
     }
 }
 
+// Update the sign in function
+async function handleEmailSignIn() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    if (!emailInput || !passwordInput) {
+        showStatus('Error: Form inputs not found', 'error');
+        return;
+    }
+    
+    try {
+        console.log('Starting email sign in...');
+        showStatus('Signing in...', 'info');
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(emailInput.value, passwordInput.value);
+        console.log('Sign in successful:', userCredential.user.email);
+        showStatus('Sign in successful!', 'success');
+        
+        // Force redirect after successful login
+        window.location.replace('/admin/console.html');
+    } catch (error) {
+        console.error('Email sign-in error:', error);
+        let errorMessage = 'Sign in failed';
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            errorMessage = 'Invalid email or password';
+        }
+        showStatus(errorMessage, 'error');
+    }
+}
+
+
+/*
 async function initializeFirebase() {
     console.log('initializeFirebase function called');
 
@@ -66,7 +152,7 @@ async function initializeFirebase() {
         throw error;
 
     }
-}
+} */
 
 // Just show/hide the email form
 function handleEmailAuth() {

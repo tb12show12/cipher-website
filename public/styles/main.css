@@ -1,0 +1,80 @@
+/* Reset and Base Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f2f2f2;
+    color: #333;
+    position: relative;
+}
+
+/* Logo Styles */
+.logo {
+    max-width: 300px;
+    height: auto;
+}
+
+/* App Store Badge */
+.app-store-badge {
+    margin-top: 20px;
+    max-width: 150px;
+}
+
+/* Login Button */
+.login-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.login-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #007AFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #0066d6;
+}
+
+.login-button i {
+    font-size: 0.9em;
+}
+
+/* Footer Styles */
+footer {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    background-color: #f2f2f2;
+    color: #ad7800;
+    position: absolute;
+    bottom: 0;
+}
+
+footer a {
+    color: #ad7800;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+.footer-menu {
+    margin-top: 10px;
+}

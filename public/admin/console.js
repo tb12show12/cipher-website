@@ -2,6 +2,10 @@
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
 import { PLACE_TYPES, MONTHS } from '/admin/config.js';
 
+// Initialize Algolia client
+const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
+const userIndex = searchClient.initIndex('userIndex');
+
 let currentTripId = null;
 let cropper = null;
 let userTrips = [];
@@ -17,6 +21,9 @@ let currentPlaceDisplayList = [];
 
 let isNewRedditTrip = false;
 
+let attendeesToAdd = [];
+let attendeesToRemove = new Set();
+let currentAttendeesList = [];
 
 // Add these as global variables at the top
 let originalCoverUrl = null;
@@ -26,12 +33,11 @@ const DEFAULT_COVER_URL = "https://firebasestorage.googleapis.com/v0/b/cipher-4f
 // Initialize Firebase and load user data
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // Firebase is already initialized, just check auth state
-        await initializeFirebase();
-        const user = firebase.auth().currentUser;
+        // Wait for Firebase auth to be ready
+        const user = await window.firebaseAuthReady;
+        
         if (user) {
-            console.log('User is authenticated');
-
+            console.log('User is authenticated:', user.email);
             const userDoc = await firebase.firestore()
                 .collection('users')
                 .doc(user.uid)
@@ -40,6 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentUserDisplayName = userDoc.data()?.displayName || 'Anonymous';
             currentUserId = userDoc.data()?.userId;
 
+            const sidebarTitle = document.getElementById('sidebarTitle');
+            sidebarTitle.textContent = `Welcome, ${currentUserDisplayName}`;
+
             await loadUserTrips();
             initializeForm();
             initializePlacesAutocomplete();
@@ -47,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             setupEventListeners();
             setupCoverImageHandlers();
         } else {
-            console.log('No user authenticated');
+            console.log('No user authenticated, redirecting to login');
             window.location.href = '/admin/';
         }
     } catch (error) {
@@ -65,6 +74,25 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// helper function
+function isValidRedditUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        // Check if it's a reddit.com domain
+        if (!urlObj.hostname.endsWith('reddit.com')) {
+            return false;
+        }
+        // Check if it's a post URL (contains /comments/ or /r/{subreddit}/comments/)
+        if (!urlObj.pathname.includes('/comments/')) {
+            return false;
+        }
+        return true;
+    } catch (e) {
+        // Invalid URL format
+        return false;
+    }
 }
 
 // Load user's trips from Firestore
@@ -166,6 +194,11 @@ async function loadTripData(tripId) {
         placesToDelete.clear();
         currentPlaceDisplayList = [];  // Clear the display list
 
+        // Clear attendees states
+        currentAttendeesList = []; // Reset current list
+        attendeesToAdd = []; // Reset additions
+        attendeesToRemove.clear(); // Reset removals
+
         // Only clear Reddit places section if this isn't a newly created Reddit trip
         if (!isNewRedditTrip) {
             const redditPlacesSection = document.querySelector('.reddit-places-section');
@@ -218,11 +251,40 @@ async function loadTripData(tripId) {
                         }
                     });
                 }
+
+                const attendeesData = {};
+
+                if (fullTripData.attendees && fullTripData.attendees.length > 0) {
+                    // Fetch all attendee user documents in parallel
+                    const attendeePromises = fullTripData.attendees.map(attendeeId => 
+                        firebase.firestore()
+                            .collection('users')
+                            .doc(attendeeId)
+                            .get()
+                    );
+        
+                    const attendeeDocs = await Promise.all(attendeePromises);
+        
+                    // Add each attendee to the current list
+                    attendeeDocs.forEach(doc => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            attendeesData[doc.id] = {
+                                userId: doc.id,
+                                displayName: userData.displayName,
+                                pPic: userData.pPic || '/assets/Butterfly2.png',
+                                isCreator: doc.id === tripData.creatorId // Add creator flag here
+                            };
+                        }
+                    });
+                }
+
                 
                 // Update trip data with full info
                 tripData = { 
                     ...fullTripData,
                     id: tripId,
+                    attendeesData,
                     placesData,
                     isFullyLoaded: true 
                 };
@@ -243,9 +305,21 @@ async function loadTripData(tripId) {
             };
         });
 
+        // Initialize display list from existing attendees
+        currentAttendeesList = tripData.attendees.map(attendeeId => {
+            const attendeeData = tripData.attendeesData[attendeeId];
+            return {
+                ...attendeeData,
+                isNew: false,
+                isMarkedForDeletion: false
+            };
+        });
+
+
         currentTripId = tripId;
         
         loadPlacesList();
+        renderAttendeesList();
 
         // Update form fields
         const mainHeader = document.querySelector('.main-header');
@@ -342,10 +416,11 @@ function setupRefreshButton() {
 }
 
 function loadPhotosGrid(photos = []) {
-    console.log('Loading photos grid with photos:', photos);
-    console.log('Current photosToAdd:', photosToAdd);
+    console.log('Loading photos grid...');
+    //console.log('Loading photos grid with photos:', photos);
+    //console.log('Current photosToAdd:', photosToAdd);
     const grid = document.querySelector('.image-grid');
-    //console.log('Found grid element:', grid);
+    
     grid.innerHTML = ''; // Clear existing content
 
     // Add the "Add Photos" button
@@ -376,16 +451,16 @@ function loadPhotosGrid(photos = []) {
 
     // Add click handler directly to the button
     addButton.addEventListener('click', () => {
-        console.log('Add photos button clicked from loadPhotosGrid');
+        //console.log('Add photos button clicked from loadPhotosGrid');
         document.getElementById('tripImages').click();
     });
     grid.appendChild(addButton);
     
-    console.log('Adding photos button to grid');
+    //console.log('Adding photos button to grid');
     grid.appendChild(addButton);
 
     updatePhotosSaveButton();
-    console.log('Grid updated with total children:', grid.children.length);
+    console.log('Photos grid loaded with total children:', grid.children.length);
 }
 
 function createPhotoContainer(photo, isNew = false) {
@@ -456,7 +531,7 @@ function createPhotoContainer(photo, isNew = false) {
         actionBtn.classList.add('photo-delete-btn');
         actionBtn.innerHTML = '×';
         actionBtn.onclick = () => {
-            console.log('Removing new photo:', photo);
+            //console.log('Removing new photo:', photo);
             photosToAdd = photosToAdd.filter(p => p !== photo);
             // Get current trip's photos
             const tripIndex = userTrips.findIndex(trip => trip.id === currentTripId);
@@ -467,10 +542,10 @@ function createPhotoContainer(photo, isNew = false) {
         actionBtn.classList.add('photo-undo-btn');
         actionBtn.innerHTML = '↩';
         actionBtn.onclick = () => {
-            console.log('Undoing photo deletion. Photo:', photo);
-            console.log('photosToDelete before:', new Set(photosToDelete));
+            //console.log('Undoing photo deletion. Photo:', photo);
+            //console.log('photosToDelete before:', new Set(photosToDelete));
             photosToDelete.delete(imageUrl);
-            console.log('photosToDelete after:', new Set(photosToDelete));
+            //console.log('photosToDelete after:', new Set(photosToDelete));
             const tripIndex = userTrips.findIndex(trip => trip.id === currentTripId);
             const tripPhotos = tripIndex !== -1 ? userTrips[tripIndex].photos || [] : [];
             loadPhotosGrid(tripPhotos);
@@ -480,11 +555,11 @@ function createPhotoContainer(photo, isNew = false) {
         actionBtn.innerHTML = '×';
         actionBtn.onclick = () => {
             //console.log('Marking photo for deletion. URL:', imageUrl);
-            console.log('Marking Photo object for deletion:', photo);
-            console.log('photosToDelete before:', new Set(photosToDelete));
+            //console.log('Marking Photo object for deletion:', photo);
+            //console.log('photosToDelete before:', new Set(photosToDelete));
             if (imageUrl) {
                 photosToDelete.add(imageUrl);
-                console.log('photosToDelete after:', new Set(photosToDelete));
+                //console.log('photosToDelete after:', new Set(photosToDelete));
                 const tripIndex = userTrips.findIndex(trip => trip.id === currentTripId);
                 const tripPhotos = tripIndex !== -1 ? userTrips[tripIndex].photos || [] : [];
                 loadPhotosGrid(tripPhotos);
@@ -494,15 +569,6 @@ function createPhotoContainer(photo, isNew = false) {
         };
     }
     container.appendChild(actionBtn);
-
-    /*console.log('Photo container created:', {
-        containerChildren: container.children.length,
-        hasImage: !!container.querySelector('img'),
-        hasStatus: !!container.querySelector('.photo-status'),
-        hasActionBtn: !!container.querySelector('.photo-action-btn'),
-        imageUrl: imageUrl,
-        isMarkedForDeletion: photosToDelete.has(imageUrl)
-    });*/
 
     return container;
 }
@@ -621,7 +687,7 @@ function initializeForm() {
         menubar: false,
         plugins: 'lists link',
         toolbar: 'undo redo | formatselect | bold italic | bullist numlist | link',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 16px }'
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px }'
     });
 
     // Initialize month select
@@ -694,22 +760,22 @@ function setupEventListeners() {
 
     // Photo file selection
     document.getElementById('tripImages').addEventListener('change', async function(e) {
-        console.log('File input change event triggered with files:', e.target.files);
+        //console.log('File input change event triggered with files:', e.target.files);
         const files = Array.from(e.target.files);
-        console.log('Converted FileList to array:', files);
+        //console.log('Converted FileList to array:', files);
         
         for (const file of files) {
             try {
                 console.log('Processing file:', file.name);
                 // Create preview URL
                 const previewUrl = URL.createObjectURL(file);
-                console.log('Created preview URL:', previewUrl);
+                //console.log('Created preview URL:', previewUrl);
                 
                 // Load image to check dimensions
                 const img = new Image();
                 await new Promise((resolve, reject) => {
                     img.onload = () => {
-                        console.log('Image loaded with dimensions:', img.width, 'x', img.height);
+                        //console.log('Image loaded with dimensions:', img.width, 'x', img.height);
                         resolve();
                     };
                     img.onerror = (error) => {
@@ -722,7 +788,7 @@ function setupEventListeners() {
                 // Resize if needed
                 let finalFile = file;
                 if (img.width > 500) {
-                    console.log('Image needs resizing from', img.width, 'to 500px width');
+                    //console.log('Image needs resizing from', img.width, 'to 500px width');
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const scale = 500 / img.width;
@@ -738,18 +804,18 @@ function setupEventListeners() {
                     });
                     
                     finalFile = new File([blob], file.name, { type: 'image/jpeg' });
-                    console.log('Created resized file:', finalFile);
+                    //console.log('Created resized file:', finalFile);
                 }
     
-                console.log('Adding to photosToAdd array:', {
+                /*console.log('Adding to photosToAdd array:', {
                     file: finalFile,
                     previewUrl: previewUrl
-                });
+                });*/
                 photosToAdd.push({
                     file: finalFile,
                     previewUrl: previewUrl
                 });
-                console.log('Current photosToAdd array:', photosToAdd);
+                //console.log('Current photosToAdd array:', photosToAdd);
             } catch (error) {
                 console.error('Error processing image:', error);
             }
@@ -781,9 +847,10 @@ function setupEventListeners() {
     const saveBasicInfoBtn = document.getElementById('saveBasicInfoBtn');
     saveBasicInfoBtn.addEventListener('click', saveBasicInfo);
 
-    // Add event listner to the save updated places list button
+    // Add event listners to the save updated places/attendees list button
     document.getElementById('savePlacesBtn').addEventListener('click', saveUpdatedPlacesListToFirebase);
-
+    document.getElementById('saveAttendeesBtn').addEventListener('click', saveUpdatedAttendeesListToFirebase);
+    
     // Add event listener to the submit button
     document.getElementById('submitButton').addEventListener('click', async (e) => {
         e.preventDefault();
@@ -796,7 +863,39 @@ function setupEventListeners() {
         }
     });
 
-    document.getElementById('saveRedditTripBtn').addEventListener('click', handleRedditExtract);
+    const redditUrlInput = document.getElementById('redditUrl');
+    const saveRedditTripBtn = document.getElementById('saveRedditTripBtn');
+
+    redditUrlInput.addEventListener('input', function() {
+        const url = this.value.trim();
+        if (!url) {
+            this.classList.remove('invalid', 'valid');
+            saveRedditTripBtn.disabled = true;
+            return;
+        }
+
+        if (isValidRedditUrl(url)) {
+            this.classList.remove('invalid');
+            this.classList.add('valid');
+            saveRedditTripBtn.disabled = false;
+        } else {
+            this.classList.remove('valid');
+            this.classList.add('invalid');
+            saveRedditTripBtn.disabled = true;
+        }
+    });
+
+    saveRedditTripBtn.addEventListener('click', async function() {
+        const url = redditUrlInput.value.trim();
+        if (!isValidRedditUrl(url)) {
+            showStatus('Please enter a valid Reddit post URL', 'error');
+            return;
+        }
+        handleRedditExtract();
+    });
+
+    // Initialize attendees search
+    initializeAttendeesSearch();
 } 
 
 async function saveNotes() {
@@ -2287,6 +2386,111 @@ async function saveUpdatedPlacesListToFirebase() {
     }
 }
 
+async function saveUpdatedAttendeesListToFirebase() {
+    try {
+        const tripRef = firebase.firestore()
+            .collection('trips')
+            .doc(currentTripId);
+
+        // Get current trip data
+        const tripDoc = await tripRef.get();
+        if (!tripDoc.exists) {
+            throw new Error('Trip not found');
+        }
+
+        const batch = firebase.firestore().batch();
+
+        // Handle removals
+        for (const userId of attendeesToRemove) {
+            // Update trip's attendees list
+            batch.update(tripRef, {
+                attendees: firebase.firestore.FieldValue.arrayRemove(userId)
+            });
+
+            // Update user's trips list
+            const userRef = firebase.firestore().collection('users').doc(userId);
+            batch.update(userRef, {
+                trips: firebase.firestore.FieldValue.arrayRemove(currentTripId)
+            });
+        }
+
+        // Handle additions
+        for (const attendee of attendeesToAdd) {
+            // Update trip's attendees list
+            batch.update(tripRef, {
+                attendees: firebase.firestore.FieldValue.arrayUnion(attendee.userId)
+            });
+
+            // Update user's trips list
+            const userRef = firebase.firestore().collection('users').doc(attendee.userId);
+            batch.update(userRef, {
+                trips: firebase.firestore.FieldValue.arrayUnion(currentTripId)
+            });
+        }
+
+        // Execute all updates atomically
+        await batch.commit();
+
+        // Update local state in userTrips
+        const tripIndex = userTrips.findIndex(t => t.id === currentTripId);
+        if (tripIndex !== -1) {
+            // Start with existing data
+            let updatedAttendees = [...userTrips[tripIndex].attendees || []];
+            let updatedAttendeesData = { ...userTrips[tripIndex].attendeesData || {} };
+
+            // Remove deleted attendees from both arrays and objects
+            updatedAttendees = updatedAttendees.filter(
+                attendeeId => !attendeesToRemove.has(attendeeId)
+            );
+            attendeesToRemove.forEach(userId => {
+                delete updatedAttendeesData[userId];
+            });
+
+            // Add new attendees
+            attendeesToAdd.forEach(attendee => {
+                if (!updatedAttendees.includes(attendee.userId)) {
+                    updatedAttendees.push(attendee.userId);
+                    updatedAttendeesData[attendee.userId] = {
+                        userId: attendee.userId,
+                        displayName: attendee.displayName,
+                        pPic: attendee.pPic || '/assets/Butterfly2.png'
+                    };
+                }
+            });
+
+            // Update userTrips with new attendees data
+            userTrips[tripIndex] = {
+                ...userTrips[tripIndex],
+                attendees: updatedAttendees,
+                attendeesData: updatedAttendeesData
+            };
+
+            // Update currentAttendeesList for the UI
+            currentAttendeesList = currentAttendeesList
+                .filter(a => !a.isMarkedForDeletion)
+                .map(a => ({
+                    ...a,
+                    isNew: false,
+                    isMarkedForDeletion: false
+                }));
+        }
+
+        // Reset state
+        attendeesToAdd = [];
+        attendeesToRemove.clear();
+
+        // Refresh the UI
+        renderAttendeesList();
+        document.getElementById('saveAttendeesBtn').disabled = true;
+
+        console.log('Attendees updated successfully');
+
+    } catch (error) {
+        console.error('Error updating attendees:', error);
+        throw error;
+    }
+}
+
 function updateSavePlacesButton() {
     const saveBtn = document.getElementById('savePlacesBtn');
     if (!saveBtn) return;
@@ -2658,7 +2862,7 @@ async function handleRedditExtract() {
         alert('Error processing Reddit content: ' + error.message);
     } finally {
         button.disabled = false;
-        buttonText.textContent = 'Save New Reddit Trip';
+        buttonText.textContent = 'Save New Trip';
         spinner.style.display = 'none';
     }
 }
@@ -2831,5 +3035,140 @@ function createRedditPlacesSection(places) {
             }
         };
         placesList.appendChild(placeButton);
+    });
+}
+
+function initializeAttendeesSearch() {
+    const searchInput = document.getElementById('attendeesSearch');
+    const searchResults = document.getElementById('attendeesSearchResults');
+    const saveButton = document.getElementById('saveAttendeesBtn');
+
+    let debounceTimeout;
+
+    searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(async () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                searchResults.innerHTML = '';
+                return;
+            }
+
+            try {
+                const { hits } = await userIndex.search(query);
+                searchResults.innerHTML = '';
+
+                hits.forEach(user => {
+                    // Skip if user is already in attendees list
+                    if (currentAttendeesList.some(a => a.userId === user.userId)) {
+                        return;
+                    }
+
+                    const li = document.createElement('li');
+                    li.className = 'attendee-result';
+                    li.innerHTML = `
+                        <div class="attendee-info">
+                            <img src="${user.pPic || '/assets/Butterfly2.png'}" alt="${user.displayName}" class="attendee-avatar">
+                            <span>${user.displayName}</span>
+                        </div>
+                    `;
+
+                    li.onclick = () => {
+                        addAttendee(user);
+                        searchResults.innerHTML = '';
+                        searchInput.value = '';
+                        saveButton.disabled = false;
+                    };
+
+                    searchResults.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error searching users:', error);
+            }
+        }, 300);
+    });
+}
+
+function addAttendee(user) {
+    attendeesToAdd.push({
+        userId: user.userId,
+        displayName: user.displayName,
+        pPic: user.pPic
+    });
+
+    currentAttendeesList.push({
+        userId: user.userId,
+        displayName: user.displayName,
+        pPic: user.pPic,
+        isNew: true
+    });
+
+    renderAttendeesList();
+}
+
+function renderAttendeesList() {
+    const attendeesGrid = document.querySelector('.attendees-grid');
+    attendeesGrid.innerHTML = '';
+
+    currentAttendeesList.forEach(attendee => {
+        const attendeeElement = document.createElement('div');
+        attendeeElement.className = `attendee-item ${attendee.isNew ? 'to-be-added' : ''} ${attendee.isMarkedForDeletion ? 'to-be-removed' : ''}`;
+        
+        // Only show remove/undo button if not the creator
+        const buttonHtml = !attendee.isCreator ? (
+            attendee.isMarkedForDeletion 
+                ? `<button class="undo-remove-btn">
+                     <i class="fas fa-undo"></i>
+                   </button>`
+                : `<button class="remove-attendee-btn">
+                     <i class="fas fa-times"></i>
+                   </button>`
+        ) : '';
+
+        attendeeElement.innerHTML = `
+        <div class="attendee-info">
+            <img src="${attendee.pPic || '/assets/Butterfly2.png'}" alt="${attendee.displayName}" class="attendee-avatar">
+            <div class="attendee-details">
+                <span class="attendee-name">${attendee.displayName}</span>
+                ${attendee.isCreator ? '<span class="creator-badge">Trip Creator</span>' : ''}
+            </div>
+        </div>
+        ${buttonHtml}
+    `;
+
+         // Only add click handlers if not the creator
+         if (!attendee.isCreator) {
+            if (attendee.isMarkedForDeletion) {
+                attendeeElement.querySelector('.undo-remove-btn').onclick = () => {
+                    attendeesToRemove.delete(attendee.userId);
+                    const index = currentAttendeesList.findIndex(a => a.userId === attendee.userId);
+                    if (index !== -1) {
+                        currentAttendeesList[index].isMarkedForDeletion = false;
+                    }
+                    renderAttendeesList();
+                    document.getElementById('saveAttendeesBtn').disabled = false;
+                };
+            } else {
+                const removeBtn = attendeeElement.querySelector('.remove-attendee-btn');
+                if (removeBtn) {
+                    removeBtn.onclick = () => {
+                        if (attendee.isNew) {
+                            attendeesToAdd = attendeesToAdd.filter(a => a.userId !== attendee.userId);
+                            currentAttendeesList = currentAttendeesList.filter(a => a.userId !== attendee.userId);
+                        } else {
+                            attendeesToRemove.add(attendee.userId);
+                            const index = currentAttendeesList.findIndex(a => a.userId === attendee.userId);
+                            if (index !== -1) {
+                                currentAttendeesList[index].isMarkedForDeletion = true;
+                            }
+                        }
+                        renderAttendeesList();
+                        document.getElementById('saveAttendeesBtn').disabled = false;
+                    };
+                }
+            }
+        }
+
+        attendeesGrid.appendChild(attendeeElement);
     });
 }

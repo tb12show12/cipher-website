@@ -29,7 +29,6 @@ body {
     padding: 20px;
     overflow-y: auto;
     z-index: 10;
-    margin-top: 52px;
 }
 
 /* Main Content Area */
@@ -43,8 +42,8 @@ body {
 .content-container {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 18px;
-    width: 1000px;
+    gap: 30px;
+    width: 1200px;
     margin: 0 auto;
     padding: 0;
 }
@@ -59,15 +58,14 @@ body {
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 24px;
     width: 100%;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     font-weight: 500;
-    font-size: 12px;
     color: #333;
 }
 
@@ -76,10 +74,10 @@ body {
 .form-group textarea {
     width: 100%;
     box-sizing: border-box;
-    padding: 8px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 16px;
     transition: border-color 0.2s;
 }
 
@@ -94,7 +92,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    margin-bottom: 16px;
+    margin-bottom: 30px;
 }
 
 .form-row .form-group {
@@ -108,13 +106,13 @@ body {
     justify-content: center;
     gap: 8px;
     width: 100%;
-    padding: 8px;
+    padding: 12px;
     margin: 20px 0;
     background: #007AFF;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
@@ -130,7 +128,7 @@ body {
 }
 
 .trip-item {
-    padding: 8px;
+    padding: 15px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -146,13 +144,12 @@ body {
 }
 
 .trip-item-title {
-    font-size: 14px;
     font-weight: 600;
     margin-bottom: 5px;
 }
 
 .trip-item-date {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
 }
 
@@ -160,7 +157,7 @@ body {
 .tabs {
     display: flex;
     gap: 40px;
-    margin-bottom: 12px;
+    margin-bottom: 30px;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
 }
@@ -168,10 +165,10 @@ body {
 .tab {
     background: none;
     border: none;
-    padding: 2px 6px;
+    padding: 8px 0;
     color: #666;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 16px;
     border-bottom: 2px solid transparent;
     font-weight: normal;
 }
@@ -326,14 +323,15 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 6px 12px;
+    padding: 12px 24px;
     background: #007AFF;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s;
+    height: 44px;
 }
 
 #submitButton:hover,
@@ -366,10 +364,10 @@ body {
 
 /* Character Counter */
 .char-counter {
-    font-size: 10px;
+    font-size: 14px;
     color: #666;
     text-align: right;
-    margin-top: 4px;
+    margin-top: 8px;
 }
 
 /* Profile Section */
@@ -397,7 +395,7 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
     .content-container {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -426,25 +424,24 @@ body {
 
 .main-header {
     background: white;
-    padding: 12px 0px;
+    padding: 20px 0px;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    margin-bottom: 18px;
-    width: 1000px;
+    margin-bottom: 20px;
+    width: 1200px;
     margin-left: auto;
     margin-right: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height:72px;
 }
 
 .main-header h1 {
-    flex:1;
     margin: 0;
     padding-left: 30px;
     padding-right: 30px;
-    text-align: center;
-    font-size: 24px;
+    text-align: left;
 }
 
 .refresh-trip-btn {
@@ -497,8 +494,9 @@ input[type="file"] {
     min-height: 120px;
     height: 120px;
     line-height: 1.5;
+    padding: 12px;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 12px;
+    font-size: 16px;
     width: 100%;
     box-sizing: border-box;
     border: 1px solid #ddd;
@@ -510,8 +508,8 @@ input[type="file"] {
     margin: 20px auto;
     border-radius: 8px;
     overflow: hidden;
-    height: 225px;
-    width: calc(225px * 16/9);
+    height: 350px;
+    width: calc(350px * 16/9);
     background-color: #f5f5f5;
     border: 2px dashed #ddd;
     display: flex;
@@ -522,7 +520,7 @@ input[type="file"] {
 .img-container:empty::before {
     content: 'No image selected';
     color: #999;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .img-container img {
@@ -531,6 +529,13 @@ input[type="file"] {
     object-fit: cover;
 }
 
+/* Form spacing */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
 
 /* Trip Type spacing */
 #tripType {
@@ -604,9 +609,21 @@ input[type="file"] {
     display: flex;
     flex-direction: column;
     gap: 0px;
+    padding: 12px;
 }
 
-
+.place-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 8px;
+    min-height: 60px;
+    position: relative;
+    border: 1px solid #ddd;  /* Add default border */
+    border-radius: 8px;      /* Match the border radius */
+    background: white;       /* Add white background */
+}
 
 /* Keep the top section (icon, title, type) aligned */
 .place-info {
@@ -641,6 +658,15 @@ input[type="file"] {
     display: none;
 }
 
+/* Keep the existing styles for the internal elements */
+.place-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
 .deletion-tag {
     color: #ff3b30;
     font-size: 12px;
@@ -652,6 +678,7 @@ input[type="file"] {
     display: flex;
     align-items: center;
     color: #666;
+    padding-top: 8px;
     margin-left: 0;
 }
 
@@ -662,7 +689,6 @@ input[type="file"] {
 
 .place-info h3 {
     margin: 0 0 4px 0;
-    font-size: 1em;
 }
 
 .place-type {
@@ -695,7 +721,7 @@ input[type="file"] {
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 16px;
     margin-bottom: 16px;
 }
 
@@ -708,6 +734,7 @@ input[type="file"] {
 
 .section-header h2 {
     margin: 0;
+    font-size: 1.5rem;
     color: #333;
 }
 
@@ -723,14 +750,13 @@ input[type="file"] {
 }
 
 .secondary-button {
-    padding: 6px 12px;
+    padding: 8px 16px;
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     color: #212529;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 12px;
 }
 
 .secondary-button:hover {
@@ -746,12 +772,12 @@ input[type="file"] {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 8px 16px;
     background: #007AFF;
     color: white;
     border: none;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
@@ -773,7 +799,7 @@ input[type="file"] {
 }
 
 .save-button .success-message i {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .notes-header {
@@ -785,7 +811,7 @@ input[type="file"] {
 
 .notes-header h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #333;
 }
 
@@ -798,7 +824,7 @@ input[type="file"] {
 
 .photos-header h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #333;
 }
 
@@ -811,7 +837,7 @@ input[type="file"] {
 
 .places-header h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #333;
 }
 
@@ -824,7 +850,7 @@ input[type="file"] {
 
 .attendees-header h2 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: #333;
 }
 
@@ -945,7 +971,7 @@ input[type="file"] {
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: 6px 12px;
+    padding: 8px;
     align-self: stretch;
     background: none;
     border: none;
@@ -1023,13 +1049,10 @@ input[type="file"] {
     flex-direction: column;
     align-items: center;
     padding: 12px;
+    gap: 12px;
     margin-bottom: 8px;
-    height: auto;
     min-height: 60px;
     position: relative;
-    border: 1px solid #ddd;  /* Add default border */
-    border-radius: 8px;      /* Match the border radius */
-    background: white;       /* Add white background */
 }
 
 /* Top container for all the main elements */
@@ -1185,7 +1208,7 @@ input[type="file"] {
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 #redditTab .save-button {
@@ -1199,8 +1222,8 @@ input[type="file"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 10px;
-    background: rgb(242, 242, 242);
+    padding: 15px 20px;
+    background: #f8f9fa;
     border-radius: 8px;
     margin-bottom: 20px;
 }
@@ -1208,7 +1231,7 @@ input[type="file"] {
 #optionAHeader .column-header,
 #optionBSection .column-header {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #2c3e50;
 }
 
@@ -1225,10 +1248,11 @@ input[type="file"] {
 
 .reddit-option input[type="text"] {
     width: 100%;
-    padding: 8px;
+    padding: 12px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
-    font-size: 12px;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 .reddit-option input[type="text"]:focus {
@@ -1247,7 +1271,7 @@ input[type="file"] {
 
 .reddit-places-section h3 {
     margin: 0 0 12px 0;
-    font-size: 12px;
+    font-size: 16px;
     color: #333;
 }
 
@@ -1382,6 +1406,10 @@ input[type="file"] {
     overflow-y: visible;
 }
 
+.place-item {
+    height: auto;
+    min-height: 60px;
+}
 
 
 .commentary-input {
@@ -1415,6 +1443,7 @@ input[type="file"] {
 }
 
 .existing-comments {
+    margin-top: 10px;
     padding: 0;  /* Remove horizontal padding */
     width: 100%; /* Ensure full width */
 }
@@ -1432,7 +1461,7 @@ input[type="file"] {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
-    font-size: 0.75em;
+    font-size: 0.9em;
     padding: 0px 4px;
 }
 
@@ -1448,7 +1477,6 @@ input[type="file"] {
 .comment-body {
     color: #333;
     line-height: 1.4;
-    font-size: 0.75em;
     padding: 0px 4px;
 }
 
@@ -1459,7 +1487,7 @@ input[type="file"] {
 
 .add-comment-btn, .save-comment-btn, .cancel-comment-btn {
     text-decoration: none;
-    font-size: 0.75em;
+    font-size: 0.9em;
     display: inline-flex;
     align-items: center;
     gap: 4px;  /* Space between icon and text */
@@ -1712,67 +1740,3 @@ input[type="file"] {
     color: #1976D2;
 }
 
-/* TinyMCE Editor Styles */
-.tox.tox-tinymce {
-    font-size: 12px !important;
-}
-
-/* Editor content area */
-.tox .tox-edit-area__iframe {
-    font-size: 12px !important;
-}
-
-/* Toolbar buttons and icons */
-.tox .tox-tbtn {
-    height: 24px !important;
-    width: 24px !important;
-    margin: 0 !important;
-}
-
-.tox .tox-tbtn svg {
-    transform: scale(0.75);
-}
-
-/* Menubar items */
-.tox .tox-mbtn {
-    font-size: 12px !important;
-    height: 24px !important;
-}
-
-/* Dropdown menus */
-.tox .tox-menu {
-    font-size: 12px !important;
-}
-
-/* Status bar */
-.tox .tox-statusbar {
-    font-size: 10px !important;
-    height: 24px !important;
-}
-
-/* Toolbar */
-.tox .tox-toolbar,
-.tox .tox-toolbar__primary,
-.tox .tox-toolbar__overflow {
-    min-height: 24px !important;
-}
-
-/* File input styling */
-input[type="file"] {
-    font-size: 12px;
-}
-
-/* Style the file input button */
-input[type="file"]::-webkit-file-upload-button {
-    font-size: 12px;
-}
-
-/* For Firefox */
-input[type="file"]::file-selector-button {
-    font-size: 12px;
-}
-
-/* Cropper.js styles */
-.cropper-instructions {
-    font-size: 12px;
-}
