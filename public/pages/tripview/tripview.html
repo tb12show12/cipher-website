@@ -104,11 +104,64 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Quick links column -->
+            <div class="quick-links">
+                <!--<div class="quick-links-content">
+                    <div class="quick-links-header">
+                        <div class="header-icon">
+                            <img src="/assets/Butterfly2.png" alt="Butterfly Logo" class="nav-icon">
+                        </div>
+                        <div class="header-text">QUICK ACTIONS</div>
+                    </div>
+                    <div class="quick-links-list">
+                        <button id="shareButton" class="quick-link-item share-button">
+                            <div class="quick-link-icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <span class="quick-link-text">Share with friends</span>
+                        </button>
+            
+                        <button id="bookmarkButton" class="quick-link-item bookmark-button">
+                            <div class="quick-link-icon">
+                                <i class="fas fa-bookmark"></i>
+                            </div>
+                            <span class="quick-link-text">Add to bookmarks</span>
+                        </button>
+
+                        <button id="messageButton" class="quick-link-item message-button">
+                            <div class="quick-link-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span class="quick-link-text">Message creator</span>
+                        </button>
+                    </div>
+                </div> --!>
+                
+                <!-- New Comments container -->
+                <div class="quick-links-content comments-section" >
+                    <div class="quick-links-header">
+                        <div class="header-text">COMMENTS (<span id="commentCount">0</span>)</div>
+                    </div>
+                    <div id="commentsList" class="comments-list">
+                        <!-- Comments will be loaded here -->
+                        <div class="comments-loading">Loading comments...</div>
+                    </div>
+                    <div class="comment-input-section">
+                        <textarea id="newCommentText" 
+                                  class="comment-input" 
+                                  placeholder="Write a comment..."></textarea>
+                        <button id="submitComment" class="comment-submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
     <!-- Scripts -->
-    <script src="/components/nav/nav.js"></script>
+    <script type="module" src="/components/nav/nav.js"></script>
     <script src="/admin/clientConfig.js"></script>
     <script type="module" src="/pages/tripview/tripview.js"></script>
     <div class="lightbox" id="lightbox">

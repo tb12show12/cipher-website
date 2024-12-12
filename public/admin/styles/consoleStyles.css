@@ -13,46 +13,46 @@ body {
 /* Page Layout */
 .page-container {
     display: flex;
-    min-height: 100vh;
-    margin-top: 52px;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 52px auto 20px;
+    padding: 20px 20px;
 }
 
 /* Sidebar Styles */
 .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 300px;
-    height: 100vh;
+    top: 72px;
+    width: 100%;
+    max-width: 260px;
     background: white;
-    border-right: 1px solid #eee;
+    border-radius: 8px;
     padding: 20px;
     overflow-y: auto;
-    z-index: 10;
-    margin-top: 52px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-sizing: content-box;  /* Make padding add to width */
 }
 
 /* Main Content Area */
 .main-content {
     flex: 1;
-    margin-left: 340px; /* 300px (sidebar width) + 40px (sidebar padding) */
-    padding: 20px;
-    background: rgb(242,242,242);
+    min-width: 0;
+    margin-left: 0;
+    padding: 0;
 }
 
 .content-container {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 18px;
-    width: 1000px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     padding: 0;
 }
 
 /* Form Elements */
 .form-column {
     background: white;
-    padding: 30px;
+    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     min-width: 0;
@@ -207,6 +207,7 @@ body {
     position: relative;
     border-radius: 8px;
     transition: background-color 0.2s;
+    font-size: 12px;
 }
 
 .places-list li:hover,
@@ -258,7 +259,7 @@ body {
 .image-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 4px;
     padding: 12px;
 }
 
@@ -374,7 +375,6 @@ body {
 
 /* Profile Section */
 .user-welcome {
-    display: flex;
     align-items: center;
     gap: 15px;
     padding-bottom: 15px;
@@ -430,7 +430,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     margin-bottom: 18px;
-    width: 1000px;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
     display: flex;
@@ -441,8 +441,6 @@ body {
 .main-header h1 {
     flex:1;
     margin: 0;
-    padding-left: 30px;
-    padding-right: 30px;
     text-align: center;
     font-size: 24px;
 }
@@ -461,7 +459,8 @@ body {
 }
 
 .main-header-actions {
-    padding-right: 30px;
+    align-self: center;
+    padding-right: 12px;
 }
 
 .refresh-trip-btn:hover {
@@ -510,8 +509,9 @@ input[type="file"] {
     margin: 20px auto;
     border-radius: 8px;
     overflow: hidden;
-    height: 225px;
-    width: calc(225px * 16/9);
+    height: 250px;
+    max-width: 100%; /* Add this */
+    width: min(calc(250px * 16/9), 100%); /* Replace fixed width with responsive width */
     background-color: #f5f5f5;
     border: 2px dashed #ddd;
     display: flex;
@@ -912,17 +912,28 @@ input[type="file"] {
     display: block;
 }
 
+.deletion-tag,
+.addition-tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    color: #666;
+    width: fit-content;
+}
 
+/*
 .deletion-tag,
 .addition-tag {
     display: none;
-    position: relative;  /* Change from absolute to relative */
-    font-size: 13px;
+    position: relative;  
+    font-size: 12px;
     font-weight: 600;
     padding: 8px 12px;
     border-radius: 6px;
-    margin-left: auto;  /* Push it to the right */
-}
+    margin-left: auto; 
+}*/
 
 .deletion-tag {
     color: #FF3B30;
@@ -936,7 +947,8 @@ input[type="file"] {
 
 .place-item.marked-for-deletion .deletion-tag,
 .place-item.to-be-added .addition-tag {
-    display: block;
+    display: inline-block;
+    font-size: 12px;
 }
 
 /* Common styles for both button types */
@@ -1007,7 +1019,7 @@ input[type="file"] {
 
 
 .place-item.to-be-added .addition-tag {
-    display: block;
+    display: inline-block;
 }
 
 .drag-handle {
@@ -1410,10 +1422,6 @@ input[type="file"] {
     height: auto;
 }
 
-.place-info h3 {
-    margin: 0 0 4px 0;
-}
-
 .existing-comments {
     padding: 0;  /* Remove horizontal padding */
     width: 100%; /* Ensure full width */
@@ -1511,18 +1519,18 @@ input[type="file"] {
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    margin-bottom: 10px;
 }
 
 .header-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
 }
 
 .header-row h2 {
     margin: 0;
+    
 }
 
 .logout-button {
@@ -1775,4 +1783,73 @@ input[type="file"]::file-selector-button {
 /* Cropper.js styles */
 .cropper-instructions {
     font-size: 12px;
+}
+
+/* Quick Links Column - Hide by default */
+.quick-links {
+    width: 300px;
+    flex-shrink: 0;
+    display: none;  /* Hidden by default */
+}
+
+/* Show quick links only when trip is loaded */
+.trip-loaded .quick-links {
+    display: block;
+}
+
+.sidebar-helper-message {
+    margin: 8px 0 0 0;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* Update create trip button to match trip item style */
+#createNewTrip {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #fff5e6;  /* Light gold background by default */
+    border: none;
+    border-left: 2px solid #ad780066;  /* Semi-transparent gold border */
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(173, 120, 0, 0.1);  /* Subtle gold shadow */
+}
+
+#createNewTrip:hover {
+    background-color: #fff0d4;  /* Slightly darker on hover */
+    border-left: 2px solid #ad7800;
+    box-shadow: 0 2px 4px rgba(173, 120, 0, 0.15);
+}
+
+#createNewTrip.active {
+    background-color: #fff5e6;
+    border-left: 3px solid #ad7800;
+    box-shadow: none;  /* Remove shadow when active */
+}
+
+.create-trip-title {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #ad7800;
+}
+
+.create-trip-date {
+    font-size: 12px;
+    color: #8b6100;  /* Darker gold for subtitle */
+}
+
+#createNewTrip .fa-plus {
+    width: 16px;
+    margin-right: 8px;
+    color: #ad7800;
 }

@@ -15,33 +15,64 @@
     <link rel="apple-touch-icon" href="/assets/Butterfly2.png">
     <meta name="theme-color" content="#ffffff">
     <!-- <meta name="apple-itunes-app" content="app-id=6503364756, app-argument=https://cipher-app.com/trip-share/XYZ"> -->
+    
     <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/components/signup/signup.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+    <!-- Firebase SDKs - load only once -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="/admin/firebaseConfig.js"></script>
+
+    <script src="/scripts/backgroundLoader.js"></script>
 </head>
 <body>
-    <!-- Logo Image -->
-    <img src="assets/Butterfly2.png" alt="Cipher Logo" class="logo">
+    <main class="hero-section">
+        <div class="left-content">
+            <img src="assets/Butterfly2.png" alt="Cipher Logo" class="hero-logo">
+        </div>
+        <div class="right-content">
+            <h1>Cipher</h1>
+            <p class="subtitle">Travel Memories Shared</p>
+            
+            <div class="auth-buttons">
+                <button onclick="showAuthModal('login')" class="auth-btn login">
+                    Login
+                </button>
+                <button onclick="showAuthModal('signup')" class="auth-btn signup">
+                    Sign Up
+                </button>
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                <button onclick="handleAppleSignIn()" class="auth-btn apple">
+                    <i class="fab fa-apple"></i>
+                    Continue with Apple
+                </button>
+            </div>
+        </div>
+    </main>
 
-    <!-- App Store Badge -->
-    <a href="https://apps.apple.com/us/app/cipher-travel-memories-shared/id6503364756">
-        <img src="https://apple-resources.s3.amazonaws.com/media-badges/download-on-the-app-store/black/en-us.svg" alt="Download on the App Store" class="app-store-badge">
-    </a>
-
-    <!-- Login Button -->
-    <div class="login-section">
-        <a href="/admin" class="login-button">
-            <i class="fas fa-sign-in-alt"></i>
-            Existing Users: Login Here
-        </a>
-    </div>
-    
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Show Me The Way LLC<br>All Rights Reserved</p>
-        <div class="footer-menu">
-            <a href="/privacy-policy.html">Privacy Policy</a> | 
-            <a href="/data-deletion.html">Data Deletion</a>
+    <footer class="bottom-bar">
+        <div class="footer-content">
+            <span>&copy; 2024 Show Me The Way LLC</span>
+            <div class="footer-links">
+                <a href="/privacy-policy.html">Privacy Policy</a>
+                <a href="/data-deletion.html">Data Deletion</a>
+                <a href="/terms.html">Terms</a>
+            </div>
         </div>
     </footer>
+
+    <!-- Add our auth modal code -->
+    <script type="module" src="/components/signup/signup.js"></script>
+    <script type="module">
+        import { showAuthModal } from '/components/signup/signup.js';
+        window.showAuthModal = showAuthModal;
+    </script>
 </body>
 </html>

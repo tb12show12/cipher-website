@@ -110,16 +110,22 @@ async function loadUserTrips() {
             .doc(user.uid)
             .get();
 
-        if (!userDoc.exists || !userDoc.data().trips) {
-            tripsList.innerHTML = '<div class="no-trips">No trips found</div>';
+        if (!userDoc.exists) {
+            console.log('No user document found');
             return;
         }
 
-        const tripIds = userDoc.data().trips;
+        const userData = userDoc.data();
+        if (!userData || !userData.trips) {
+            console.log('No trips found for user');
+            tripsList.innerHTML = '<p class="no-trips">No trips found</p>';
+            return;
+        }
+
         userTrips = []; // Reset global trips array
 
         // Fetch only essential trip data in parallel
-        const tripPromises = tripIds.map(tripId => 
+        const tripPromises = userData.trips.map(tripId => 
             firebase.firestore()
                 .collection('trips')
                 .doc(tripId)
@@ -167,6 +173,11 @@ async function loadUserTrips() {
 
 async function loadTripData(tripId) {
     try {
+         // Show both columns
+         document.querySelectorAll('.form-column').forEach(col => {
+            col.style.display = 'block';
+        });
+
         // Enable right column
         const additionalInfo = document.getElementById('additionalTripInfo');
         additionalInfo.classList.remove('disabled');
@@ -181,7 +192,6 @@ async function loadTripData(tripId) {
         document.getElementById('submitButton').style.display = 'none';
 
         // Hide option headers and show regular trip info
-        document.getElementById('optionAHeader').style.display = 'none';
         document.getElementById('optionBSection').style.display = 'none';
         document.getElementById('additionalTripInfo').style.display = 'block';
 
@@ -216,6 +226,8 @@ async function loadTripData(tripId) {
                 item.classList.add('active');
             }
         });
+
+        document.getElementById('createNewTrip').classList.remove('active');
 
         // Find the trip in our cached array
         let tripData = userTrips.find(trip => trip.id === tripId);
@@ -323,6 +335,7 @@ async function loadTripData(tripId) {
 
         // Update form fields
         const mainHeader = document.querySelector('.main-header');
+        mainHeader.style.display = 'flex';
         mainHeader.innerHTML = `
             <h1 id="mainTitle">${tripData.title}</h1>
             <div class="main-header-actions">
@@ -338,7 +351,7 @@ async function loadTripData(tripId) {
         document.getElementById('yearSelect').value = parseInt(tripData.year) || '';
         document.getElementById('numDays').value = parseInt(tripData.days) || '';
         document.getElementById('numPeople').value = parseInt(tripData.numPeople) || '';
-        document.getElementById('familyType').value = tripData.familyType || 0;
+        document.getElementById('familyType').value = parseInt(tripData.familyType) || 0;
         document.getElementById('shortDescription').value = tripData.shortDescription || '';
 
         // Update character counters
@@ -723,8 +736,12 @@ function setupEventListeners() {
     if (newTripBtn) {
         newTripBtn.addEventListener('click', () => {
             console.log('Create New Trip clicked');
+            
+            newTripBtn.classList.add('active');
             resetForNewTrip();
         });
+
+        
     }
 
     // Tab switching
@@ -896,6 +913,28 @@ function setupEventListeners() {
 
     // Initialize attendees search
     initializeAttendeesSearch();
+
+    // In the setupEventListeners function, add:
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set create new trip as active by default
+        const createNewTripBtn = document.getElementById('createNewTrip');
+        createNewTripBtn.classList.add('active');
+        
+        // When any trip item is clicked, remove active state from create new trip
+        document.querySelectorAll('.trip-item').forEach(item => {
+            item.addEventListener('click', () => {
+                createNewTripBtn.classList.remove('active');
+            });
+        });
+        
+        // When create new trip is clicked, add active state back
+        createNewTripBtn.addEventListener('click', () => {
+            document.querySelectorAll('.trip-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            createNewTripBtn.classList.add('active');
+        });
+    });
 } 
 
 async function saveNotes() {
@@ -1414,21 +1453,30 @@ function resetForNewTrip() {
 
     // Update header without refresh button
     const mainHeader = document.querySelector('.main-header');
-    mainHeader.innerHTML = `
-        <h1 id="mainTitle">Create New Trip</h1>
-    `;
+    mainHeader.style.display = 'none';
+
+    const saveBasicInfoBtn = document.getElementById('saveBasicInfoBtn');
+    saveBasicInfoBtn.style.display = 'none';
+
+    // Show only left column, hide right column
+    document.querySelectorAll('.form-column').forEach((col, index) => {
+        if (index === 0) {
+            col.style.display = 'block';  // Show left column
+        } else {
+            col.style.display = 'block';   // Hide right column
+        }
+    });
 
     // Update main save button text and show it
     const submitButton = document.getElementById('submitButton');
     const submitButtonText = submitButton.querySelector('.button-text');
     submitButton.style.display = 'block';
     submitButtonText.textContent = 'Save New Trip';
-    
+
 
      // Show option headers and hide regular trip info
-     document.getElementById('optionAHeader').style.display = 'flex';
      document.getElementById('optionBSection').style.display = 'block';
-     document.getElementById('additionalTripInfo').style.display = 'none';
+     //document.getElementById('additionalTripInfo').style.display = 'none';
      
      // Clear form fields
      document.getElementById('tripForm').reset();
@@ -1442,7 +1490,7 @@ function resetForNewTrip() {
     const now = new Date();
     document.getElementById('monthSelect').value = now.toLocaleString('default', { month: 'long' });
     document.getElementById('yearSelect').value = now.getFullYear().toString();
-    document.getElementById('familyType').value = '0'; // Adults only
+    document.getElementById('familyType').value = 0; // Adults only
     
     // Clear other fields
     document.getElementById('title').value = '';
@@ -1499,9 +1547,6 @@ function resetForNewTrip() {
     if (redditPlacesSection) {
         redditPlacesSection.remove();
     }
-    
-    // Update main title
-    document.getElementById('mainTitle').textContent = 'Create New Trip';
     
     // Remove active state from any selected trip in the list
     document.querySelectorAll('.trip-item').forEach(item => {
@@ -1742,17 +1787,76 @@ async function loadPlacesList() {
                     </div>
                     <div class="place-info">
                         <h3>${place.name}</h3>
-                        <span class="place-type">New Place</span>
+                        <span class="place-type">New Place</span>&nbsp;&nbsp;<span class="addition-tag">To Be Added</span>
                     </div>
-                    <span class="addition-tag">To Be Added</span>
+                    
                     <button class="action-btn delete-btn">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-                <div class="place-commentary">
-                    <textarea class="commentary-input" placeholder="(Optional) Add a comment...">${place.commentary || ''}</textarea>
-                </div>
+                 ${place.commentary ? `
+                    <div class="place-commentary">
+                        <textarea class="commentary-input" placeholder="(Optional) Add a comment...">${place.commentary}</textarea>
+                    </div>
+                ` : `
+                    <div class="place-commentary">    
+                        <div class="comment-actions">
+                            <a href="#" class="add-comment-btn">
+                                <i class="fas fa-plus"></i> Add a comment
+                            </a>
+                            <div class="new-comment-section" style="display: none;">
+                                <textarea class="commentary-input" placeholder="Type your comment here..."></textarea>
+                                <div class="comment-buttons">
+                                    <a href="#" class="cancel-comment-btn">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                    <a href="#" class="save-comment-btn">
+                                        <i class="fas fa-check"></i> Save
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `}
             `;
+            
+             // Add event listeners for comment actions if no initial commentary
+             if (!place.commentary) {
+                const addCommentBtn = placeElement.querySelector('.add-comment-btn');
+                const newCommentSection = placeElement.querySelector('.new-comment-section');
+                const cancelCommentBtn = placeElement.querySelector('.cancel-comment-btn');
+                const saveCommentBtn = placeElement.querySelector('.save-comment-btn');
+                const commentaryInput = placeElement.querySelector('.commentary-input');
+
+                addCommentBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    newCommentSection.style.display = 'block';
+                    addCommentBtn.style.display = 'none';
+                    commentaryInput.focus();
+                });
+
+                cancelCommentBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    newCommentSection.style.display = 'none';
+                    addCommentBtn.style.display = 'block';
+                    commentaryInput.value = '';
+                });
+
+                saveCommentBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const comment = commentaryInput.value.trim();
+                    if (comment) {
+                        const index = currentPlaceDisplayList.findIndex(p => 
+                            p.isNew && p.placeId === place.placeId
+                        );
+                        if (index !== -1) {
+                            currentPlaceDisplayList[index].commentary = comment;
+                            loadPlacesList();
+                        }
+                    }
+                });
+            }
+
             if (place.commentary){
                 console.log(`New Place: Name ${place.title} and Feedback ${JSON.stringify(place.commentary, null, 2)}`);
             }
@@ -1794,8 +1898,8 @@ async function loadPlacesList() {
                     <div class="place-info">
                         <h3>${place.title}</h3>
                         <span class="place-type">${finalPlaceType.label}</span>
+                        ${place.isMarkedForDeletion ? '<span class="deletion-tag">Marked for Deletion</span>' : ''}
                     </div>
-                    ${place.isMarkedForDeletion ? '<span class="deletion-tag">Marked for Deletion</span>' : ''}
                     <button class="${buttonClass}" data-placeid="${place.id}">
                         ${buttonIcon}
                     </button>
@@ -1821,7 +1925,7 @@ async function loadPlacesList() {
                             <i class="fas fa-plus"></i> Add a comment
                         </a>
                         <div class="new-comment-section" style="display: none;">
-                            <textarea class="new-comment-input" placeholder="Type your comment here..."></textarea>
+                            <textarea id="newCommentInput" class="new-comment-input" placeholder="Type your comment here..."></textarea>
                             <div class="comment-buttons">
                                 <a href="#" class="cancel-comment-btn">
                                     <i class="fas fa-times"></i> Cancel
@@ -2518,12 +2622,13 @@ function updateSavePlacesButton() {
 
 function initializePlacesAutocomplete() {
     const input = document.getElementById('placesAutocomplete');
-    const searchResults = document.getElementById('searchResults');
+    const searchResults = document.getElementById('placesSearchResults');
 
     function addPlaceToResults(place) {
         const li = document.createElement('li');
         li.textContent = place.description;
         li.onclick = () => {
+            console.log('place', place);
             savePlace(place);
             input.value = ''; // Clear the search bar
             searchResults.innerHTML = '';
@@ -2536,13 +2641,13 @@ function initializePlacesAutocomplete() {
 
         // Add to placesToAdd array
         placesToAdd.push({
-            name: place.description,
+            name: place.description.split(',')[0] || place.description,
             placeId: place.place_id
         });
 
         // Add to the top of display list
         currentPlaceDisplayList.push({
-            name: place.description,
+            name: place.description.split(',')[0] || place.description,
             placeId: place.place_id,
             isNew: true,
             isMarkedForDeletion: false
@@ -2572,6 +2677,8 @@ function initializePlacesAutocomplete() {
             searchResults.innerHTML = '';
             return;
         }
+
+        console.log('Fetching places for input:', input.value);
 
         fetch(`/api/googlePlacesProxy?input=${encodeURIComponent(input.value)}`)
             .then(response => {
@@ -2733,7 +2840,7 @@ function loadCommentsList() {
                 <div class="comment-place-name">${placeData.title}</div>
                 <div class="comment-place-type">${placeTypeInfo?.label || 'Place'}</div>
             </div>
-            <textarea rows="4" class="comment-input" placeholder="Add a comment..."></textarea>
+            <textarea id="commentInput" name="commentInput" rows="4" class="comment-input" placeholder="Add a comment..."></textarea>
             <button class="save-comment-btn" data-place-id="${placeId}">Save</button>
         `;
 
@@ -3069,7 +3176,10 @@ function initializeAttendeesSearch() {
                     li.innerHTML = `
                         <div class="attendee-info">
                             <img src="${user.pPic || '/assets/Butterfly2.png'}" alt="${user.displayName}" class="attendee-avatar">
-                            <span>${user.displayName}</span>
+                            <div class="attendee-details">
+                                <span class="attendee-name">${user.displayName}</span>
+                                <span class="attendee-badge">${user.location}</span>
+                            </div>
                         </div>
                     `;
 

@@ -97,5 +97,7 @@ export const IMAGE_CONFIG = {
 
 // Default values
 export const DEFAULTS = {
-    coverImage: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a"
+    coverImage: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a",
+    defaultPPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/users%2Fdefault%2FdefaultProfilePic.png?alt=media&token=44444444-4444-4444-4444-444444444444",
+    defaultBPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/users%2Fdefault%2FdefaultBackgroundPic2.png?alt=media&token=b6cf24e2-ab4f-4a4e-96e9-5dc01ab22bbc"
 };

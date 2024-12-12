@@ -1,3 +1,625 @@
-.discover-container {
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                 "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f3f2ef;
+}
+
+main {
+    background-color: #f3f2ef;
+    min-height: 100vh;
     padding: 20px;
 }
+
+.page-container {
+    max-width: 1400px;
+    margin: 0px auto;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start; /* Keep items aligned to top */
+}
+
+/* Left column - Creator Profile */
+.creator-profile {
+    width: 400px;
+    flex-shrink: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* Right column container */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 300px;
+    flex-shrink: 0;
+}
+
+/* Search Criteria Column */
+.search-criteria {
+    width: 300px;
+    box-sizing: border-box;  /* Add this to include padding in width */
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.search-criteria h1 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #AD7800;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* Network Toggle */
+.network-toggle {
+    background: #f5f5f5;
+    border-radius: 24px;
+    padding: 4px;
+    display: flex;
+    margin-bottom: 24px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: none;
+    color: #666;
+}
+
+.toggle-btn.active {
+    background: #2196f3;
+    color: white;
+}
+
+/* Search Sections */
+.search-section {
+    margin-bottom: 24px;
+}
+
+.search-section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+/* Keyword Search */
+#keywordSearch {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+/* Trip Types Grid */
+.trip-types-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.trip-type-chip {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid #2196f3;
+    color: #2196f3;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    background: none;
+}
+
+.trip-type-chip.selected {
+    background: #2196f3;
+    color: white;
+}
+
+.trip-type-chip i {
+    font-size: 12px;
+}
+
+/* Days Slider */
+.days-slider {
+    padding: 0 10px;
+    position: relative;
+    margin: 15px 0;
+}
+
+.range-slider {
+    position: relative;
+    width: 100%;
+    height: 5px;
+    background: #ddd;
+    border-radius: 5px;
+}
+
+.slider-track {
+    position: absolute;
+    height: 100%;
+    background: #2196f3;
+    border-radius: 5px;
+}
+
+.range-input {
+    position: relative;
+    width: 100%;
+}
+
+.range-input input {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    background: none;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.range-input input::-webkit-slider-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #2196f3;
+    pointer-events: auto;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+}
+
+/* Action Buttons */
+.search-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.search-actions button {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-btn {
+    background: #f5f5f5;
+    color: #666;
+}
+
+.search-btn {
+    background: #2196f3;
+    color: white;
+}
+
+/* Search Results Column */
+.advanced-search-results {
+    flex: 1;
+    min-width: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    padding: 20px;
+    box-sizing: border-box;
+    height: auto;
+}
+
+.search-results-header {
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-results-header h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #AD7800;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #666;
+    text-align: center;
+}
+
+.no-results i {
+    font-size: 32px;
+    margin-bottom: 16px;
+    color: #999;
+}
+
+.no-results p {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+}
+
+.no-results span {
+    font-size: 14px;
+    color: #999;
+}
+
+/* Quick Links Column */
+.quick-links {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.quick-links-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    padding: 16px;
+}
+
+.quick-links-header {
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.quick-links-header .header-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #AD7800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.quick-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quick-link-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-link-item:hover {
+    background: #f8f8f8;
+}
+
+.quick-link-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-link-icon i {
+    font-size: 12px;
+    color: #666;
+}
+
+.quick-link-text {
+    font-size: 12px;
+    color: #333;
+    text-align: left;
+}
+
+/* View Toggle specific styles */
+.view-toggle {
+    background: #f5f5f5;
+    border-radius: 24px;
+    display: flex;
+}
+
+.view-toggle-btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: none;
+    color: #666;
+    display: flex; /* Ensure flexbox is used */
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Horizontally center items */
+    gap: 6px; /* Space between icon and text */
+}
+
+.view-toggle-btn.active {
+    background: #2196f3;
+    color: white;
+}
+
+.view-toggle-btn i {
+    font-size: 12px;
+}
+
+/* Results Content Container */
+.results-content {
+    position: relative;
+    min-height: 200px;
+    height: auto;
+    width:100%;
+}
+
+.map-view {
+    width: 100%;
+    height: 400px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+}
+
+.map-view.active {
+    display: block;
+}
+
+/* Search Result Items (matching trip-item style) */
+.discover-search-result-item {
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.discover-search-result-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.trip-item-header {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+}
+
+.trip-item-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.7); /* Black overlay with 0.7 opacity */
+    color: white;
+    display: flex;           /* Add flexbox */
+    flex-direction: column;  /* Stack children vertically */
+    justify-content: flex-end; /* Align children to bottom */
+}
+
+.trip-item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.trip-item-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.trip-item-title-block h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.trip-item-creator {
+    font-size: 11px;
+}
+
+.trip-item-description {
+    font-size: 12px;
+}
+
+.trip-item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.trip-item-meta-left {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.meta-separator {
+    opacity: 0.6;
+}
+
+.trip-type {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.trip-type i {
+    font-size: 12px;
+}
+
+/* Results Grid 
+.results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}*/
+
+.results-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;  /* Default to 1 column */
+}
+
+/* Middle Column Container */
+.search-results-column {
+    flex: 1;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    container-type: inline-size;
+    container-name: results;
+}
+
+
+/* When container is wide enough (roughly >900px), show 2 columns */
+@container results (min-width: 1300px) {
+    .results-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.selected-trip-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    padding: 12px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.selected-trip-container .discover-search-result-item {
+    width: 100%;
+}
+
+.trip-date {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.trip-item-creator {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+#map-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.marker {
+    cursor: pointer;
+}
+
+.marker-circle {
+    width: 36px;
+    height: 36px;
+    background: rgb(221, 205, 170);
+    border: 2px solid #AD7800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-size: 20px;
+}
+
+.marker-circle i {
+    font-size: 16px;
+}
+
+/* Reuse the map popup styles from tripview.css */
+.maplibregl-popup {
+    max-width: 300px !important;
+    min-width: 300px !important;
+}
+
+.maplibregl-popup-content {
+    padding: 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: none !important;
+    box-shadow: 0 2px 7px 1px rgba(0,0,0,0.3) !important;
+}
+
+/* Add these styles */
+.quick-link-item.active {
+    background: #f0f7ff;
+}
+
+.quick-link-item.active .quick-link-icon {
+    background: #2196f3;
+}
+
+.quick-link-item.active .quick-link-icon i {
+    color: white;
+}
+
+.quick-link-item.active .quick-link-text {
+    color: #2196f3;
+    font-weight: 500;
+}
+

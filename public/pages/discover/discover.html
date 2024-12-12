@@ -4,31 +4,125 @@
     <meta charset="UTF-8">
     <title>Discover - Butterfly</title>
     
-    <!-- Global Styles -->
-    <link rel="stylesheet" href="/shared/styles/global.css">
-    <!-- Nav Styles -->
+    <!-- Styles -->
     <link rel="stylesheet" href="/components/nav/nav.css">
-    <!-- Discover Styles -->
     <link rel="stylesheet" href="/pages/discover/discover.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
+    <link rel="stylesheet" href="/components/creator-profile/creator-profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css' rel='stylesheet' />
+
     <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="/admin/firebaseConfig.js"></script>
+    <script src='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.17.0/dist/algoliasearch.umd.js"></script>
 </head>
 <body>
-    <!-- Navigation Container -->
+    <!-- Navigation -->
     <div id="nav-container"></div>
 
-     <!-- Main Content -->
-     <main>
-        <h1>Discover Page</h1>
-        <p>Coming soon!</p>
+    <!-- Main Content -->
+    <main>
+        <div class="page-container">
+            <!-- Left Column - Creator Profile -->
+            <div class="creator-profile">
+                <!-- Content will be inserted by JavaScript -->
+            </div>
+            
+            <!-- Search Results (Center Column) -->
+            <div class="search-results-column">
+                <div class="advanced-search-results">
+                    <div class="search-results-header">
+                        <h2>SEARCH RESULTS</h2>
+                    </div>
+                    <div class="results-content">
+                        <div class="list-view">
+                            <!-- List view content -->
+                        </div>
+                        <div class="map-view" style="display: none;">
+                            <!-- Map view content -->
+                        </div>
+                    </div>
+                </div>    
+                <div class="selected-trip-container" style="display: none;">
+                    <!-- Selected trip details will be injected here -->
+                </div>
+            </div>
+
+
+             <!-- Right Column -->
+            <div class="right-column">
+                <div class="quick-links">
+                    <div class="quick-links-content">
+                        <div class="quick-links-header">
+                            <div class="header-text">QUICK LINKS</div>
+                        </div>
+                        <div class="quick-links-list">
+                            <button id="recentActivityButton" class="quick-link-item">
+                                <div class="quick-link-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <span class="quick-link-text">Recent Activity</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Criteria -->
+                <div class="search-criteria">
+                    <h1>Search Criteria</h1>
+                    
+                    <!-- Network Toggle -->
+                    <div class="network-toggle">
+                        <button class="toggle-btn left active">My Network</button>
+                        <button class="toggle-btn right">All Users</button>
+                    </div>
+
+                    <!-- Keyword Search -->
+                    <div class="search-section">
+                        <h2>Keyword (Optional)</h2>
+                        <input type="text" id="keywordSearch" placeholder="Search Trips...">
+                    </div>
+
+                    <!-- Trip Types -->
+                    <div class="search-section">
+                        <h2>Trip Type</h2>
+                        <div class="trip-types-grid" id="tripTypesGrid">
+                            <!-- Will be populated from TRIP_TYPES -->
+                        </div>
+                    </div>
+
+                    <!-- Number of Days -->
+                    <div class="search-section">
+                        <h2>Number of Days</h2>
+                        <div class="days-slider">
+                            <div class="range-slider">
+                                <div class="slider-track"></div>
+                                <div class="range-input">
+                                    <input type="range" class="min-days" min="1" max="14" value="1">
+                                    <input type="range" class="max-days" min="1" max="14" value="14">
+                                </div>
+                            </div>
+                            <div class="slider-labels">
+                                <span class="min-value">1</span>
+                                <span class="max-value">14+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="search-actions">
+                        <button class="clear-btn">Clear All</button>
+                        <button class="search-btn">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- Scripts -->
-    <script src="/components/nav/nav.js"></script>
-    <script src="/pages/discover/discover.js"></script>
+    <script type="module" src="/components/nav/nav.js"></script>
+    <script type="module" src="/pages/discover/discover.js"></script>
 </body>
 </html>

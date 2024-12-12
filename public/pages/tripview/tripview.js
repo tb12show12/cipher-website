@@ -5,6 +5,7 @@ const state = {
     currentTrip: null,
     currentUser: null,
     currentUserTrips: null,
+    currentMap: null, // Add this to track the map instance
     filters: {
         tripTypes: [],
         duration: {
@@ -118,6 +119,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const tripMain = document.querySelector('.trip-main');
             if (tripMain) tripMain.style.display = 'block';
             await loadTripData(tripId, true);
+            await loadComments();
             initializeTabs();
         } else {
             // Hide trip-main if no trip selected
@@ -166,6 +168,8 @@ async function loadUserData(userId) {
 
 async function loadTripData(tripId, firstLoad = false) {
     try {
+        cleanupMap();
+
         // First fetch the trip data
         const tripDoc = await firebase.firestore()
             .collection('trips')
@@ -243,7 +247,7 @@ function displayUserData() {
     if (!userData) return;
 
     // Get unique trip types from user's trips
-    const availableTripTypes = [...new Set(userTripsDetail.map(trip => trip.familyType))]
+    const availableTripTypes = [...new Set(userTripsDetail.map(trip => parseInt(trip.familyType)))]
         .map(typeValue => TRIP_TYPES.find(type => type.value === typeValue))
         .filter(type => type); // Remove any undefined values
 
@@ -376,7 +380,8 @@ function attachTripItemHandlers() {
             
             // Load and display the new trip
             await loadTripData(tripId); // Add true parameter to indicate first load
-            initializeTabs(); // Initialize tabs after loading trip dat
+            await loadComments();
+            initializeTabs(); // Initialize tabs after loading trip data
         });
     });
 }
@@ -389,7 +394,28 @@ function updateTripsList(filteredTrips) {
     attachTripItemHandlers();
 }
 
+function resetTabsStructure() {
+    const tabContainer = document.querySelector('.trip-nav');
+    const contentContainer = document.querySelector('.trip-content');
+    
+    // Only proceed if we have our containers
+    if (!tabContainer || !contentContainer) return;
+
+    // Reset tabs structure
+    tabContainer.innerHTML = `
+        <button class="trip-nav-item active" data-tab="places">Places</button>
+        <button class="trip-nav-item" data-tab="notes">Notes</button>
+        <button class="trip-nav-item" data-tab="attendees">Attendees</button>
+        <button class="trip-nav-item" data-tab="photos">Photos</button>
+        <button class="trip-nav-item" data-tab="map">Map</button>
+    `;
+}
+
 function displayTripData() {
+
+    resetTabsStructure();
+    initializeTabs();
+    initializeCommentForm();
 
     const tripData = state.currentTrip;
     if (!tripData) return;
@@ -421,7 +447,7 @@ function displayTripData() {
         `${tripData.numPeople} ${parseInt(tripData.numPeople) === 1 ? 'person' : 'people'}`;
     
     // Display trip type using your configuration
-    const tripType = TRIP_TYPES.find(type => type.value === tripData.familyType) || TRIP_TYPES[0];
+    const tripType = TRIP_TYPES.find(type => type.value === parseInt(tripData.familyType)) || TRIP_TYPES[0];
     document.getElementById('tripType').textContent = tripType.label;
 
     // Handle Notes tab visibility
@@ -432,7 +458,7 @@ function displayTripData() {
     if (!hasNotes) {
         // Remove Notes tab and content if no description exists
         notesTab?.remove();
-        notesContent?.remove();
+        //notesContent?.remove();
     } else {
         // Show and populate Notes tab
         const noteContent = tripData.longDescriptionHTML || tripData.longDescription;
@@ -467,7 +493,7 @@ function displayTripData() {
         const photosTab = document.querySelector('[data-tab="photos"]');
         const photosContent = document.getElementById('photos');
         photosTab?.remove();
-        photosContent?.remove();
+        //photosContent?.remove();
     }
 
     // Handle Attendees tab
@@ -553,7 +579,9 @@ function displayTripData() {
                                         </div>
                                         <div class="place-address">${place.address}</div>
                                         <div class="place-rating">
-                                            <span class="stars">★</span> ${place.starRating} · ${place.numReviews} reviews
+                                            ${place.starRating !== null && place.numReviews !== null ? `
+                                                <span class="stars">★</span> ${place.starRating} · ${place.numReviews} reviews
+                                            ` : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -738,8 +766,26 @@ function displayTripData() {
             maxZoom: 8,
         });
     }
-}
 
+    const commentInput = document.getElementById('newCommentText');
+    const submitButton = document.getElementById('submitComment');
+
+    // Auto-grow textarea function
+    function autoGrow(element) {
+        element.style.height = 'auto';
+        element.style.height = (element.scrollHeight) + 'px';
+    }
+
+    // Handle input changes
+    commentInput.addEventListener('input', () => {
+        submitButton.disabled = !commentInput.value.trim();
+        autoGrow(commentInput);
+    });
+
+    // Reset height on initial load
+    autoGrow(commentInput);
+
+}
 
 function initializeFilters() {
     const filterBtn = document.getElementById('tripFilterBtn');
@@ -844,7 +890,7 @@ function applyFilters() {
     
     const filteredTrips = state.currentUserTrips.filter(trip => {
         const typeMatch = state.filters.tripTypes.length === 0 || 
-                         state.filters.tripTypes.includes(trip.familyType);
+                         state.filters.tripTypes.includes(parseInt(trip.familyType));
         
         const tripDays = parseInt(trip.days);
         // Only apply duration filter if both min and max are set
@@ -966,7 +1012,7 @@ function clearFilters() {
 }
 
 function generateTripItemHTML(trip) {
-    const tripType = TRIP_TYPES.find(type => type.value === trip.familyType) || TRIP_TYPES[0];
+    const tripType = TRIP_TYPES.find(type => type.value === parseInt(trip.familyType)) || TRIP_TYPES[0];
     
     return `
         <button class="trip-item" data-trip-id="${trip.id}">
@@ -999,3 +1045,191 @@ function generateTripItemHTML(trip) {
         </button>
     `;
 }
+
+async function loadComments() {
+    const commentsList = document.getElementById('commentsList');
+    const commentCount = document.getElementById('commentCount');
+    
+    try {
+        const comments = state.currentTrip.commentsHistory || [];
+        
+        // Update comment count in header
+        commentCount.textContent = comments.length;
+        
+        // Clear loading message
+        commentsList.innerHTML = '';
+
+        if (comments.length === 0) {
+            commentsList.innerHTML = `
+                <div class="no-comments">
+                    No comments yet
+                </div>
+            `;
+            return;
+        }
+
+        // Fetch user data for all comments in parallel
+        const userPromises = [...new Set(comments.map(comment => comment.userId))]
+            .map(userId => 
+                firebase.firestore()
+                    .collection('users')
+                    .doc(userId)
+                    .get()
+                    .then(doc => {
+                        if (!doc.exists) return null;
+                        return { id: doc.id, ...doc.data() };
+                    })
+            );
+
+        const users = await Promise.all(userPromises);
+        const userMap = Object.fromEntries(
+            users.filter(user => user !== null)
+                 .map(user => [user.id, user])
+        );
+
+        // Sort comments by date (newest first)
+        const sortedComments = [...comments].sort((a, b) => 
+            new Date(b.date) - new Date(a.date)
+        );
+
+        // Render each comment
+        sortedComments.forEach(comment => {
+            const user = userMap[comment.userId];
+            if (!user) return; // Skip if user data not found
+
+            const commentHTML = `
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <img src="${user.pPic || '/assets/default-avatar.png'}" 
+                             alt="${user.displayName}">
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                <button class="comment-author-btn" data-user-id="${user.userId}">
+                                    ${user.displayName}
+                                </button>
+                                <div class="comment-date">${comment.date}</div>
+                            </div>
+                        </div>
+                        <div class="comment-text">${comment.msg}</div>
+                    </div>
+                </div>
+            `;
+            
+            commentsList.insertAdjacentHTML('beforeend', commentHTML);
+        });
+
+        // Add event listener for author clicks using event delegation
+        commentsList.addEventListener('click', async (e) => {
+            const authorBtn = e.target.closest('.comment-author-btn');
+            if (authorBtn) {
+                const userId = authorBtn.dataset.userId;
+                await loadUserData(userId);
+            }
+        });
+
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        commentsList.innerHTML = `
+            <div class="no-comments">
+                Error loading comments
+            </div>
+        `;
+    }
+}
+
+function cleanupMap() {
+    if (state.currentMap) {
+        state.currentMap.remove(); // Remove the previous map instance
+        state.currentMap = null;
+    }
+}
+
+function initializeMap(places) {
+    // Clean up any existing map first
+    cleanupMap();
+    
+    // Get the map container
+    const mapContainer = document.getElementById('tripMap');
+    if (!mapContainer) return;
+    
+    // Clear the container
+    mapContainer.innerHTML = '';
+    
+    // Create new map instance
+    const map = new mapboxgl.Map({
+        container: 'tripMap',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [0, 0], // Default center
+        zoom: 1
+    });
+    
+    // Store the map instance
+    state.currentMap = map;
+    
+    // Add navigation controls
+    map.addControl(new mapboxgl.NavigationControl());
+    
+    // Rest of your map initialization code...
+    // Add markers, fit bounds, etc.
+}
+
+function initializeCommentForm() {
+    const submitButton = document.getElementById('submitComment');
+    const commentInput = document.getElementById('newCommentText');
+
+    submitButton.addEventListener('click', async () => {
+        const comment = commentInput.value.trim();
+        if (!comment) return;
+
+        try {
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                console.error('No authenticated user found');
+                return;
+            }
+
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true 
+            }).replace(',', ' at');
+
+            const commentData = {
+                date: formattedDate,
+                msg: comment,
+                userId: user.uid
+            };
+
+            // Update Firestore
+            const tripRef = firebase.firestore()
+                .collection('trips')
+                .doc(state.currentTrip.id);
+
+            await tripRef.update({
+                commentsHistory: firebase.firestore.FieldValue.arrayUnion(commentData)
+            });
+
+            // Update local state
+            state.currentTrip.commentsHistory = state.currentTrip.commentsHistory || [];
+            state.currentTrip.commentsHistory.push(commentData);
+
+            // Clear input and refresh comments display
+            commentInput.value = '';
+            await loadComments();
+
+        } catch (error) {
+            console.error('Error saving comment:', error);
+        }
+    });
+
+    // Enable/disable submit button based on input
+    commentInput.addEventListener('input', () => {
+        submitButton.disabled = !commentInput.value.trim();
+    });
+}
+

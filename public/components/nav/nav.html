@@ -17,32 +17,43 @@
                 <input type="text" id="searchInput" placeholder="Search..." class="search-input">
                 <i class="fas fa-search search-icon"></i>
             </div>
-            <div id="searchResults" class="search-results"></div>
+            <div id="navSearchResults" class="nav-search-results"></div>
         </div>
         
         <div class="nav-right">
-            <a href="/pages/tripview/tripview.html" class="nav-item">
+            <!-- 
+            <a href="/discover" class="nav-item nav-discover-old">
+                <div class="nav-icon-container">
+                    <img src="/assets/Butterfly2.png" alt="Profile" class="nav-icon-pic">
+                </div>
+                <span>Discover</span>
+            </a> 
+            -->
+
+            <a href="/pages/navigate/navigate.html" class="nav-item nav-discover">
+                <div class="nav-icon-container">
+                    <img src="/assets/Butterfly2.png" alt="Profile" class="nav-icon-pic">
+                </div>
+                <span>Discover</span>
+            </a>
+
+            <!----
+            <a href="/pages/navigate/navigate.html" class="nav-item nav-profile">
                 <div class="nav-icon-container">
                     <img src="/assets/Butterfly2.png" alt="Profile" class="nav-profile-pic">
                 </div>
                 <span>My Profile</span>
             </a>
+            -->
             
-            <a href="/admin/console.html" class="nav-item">
+            <a href="/admin/console.html" class="nav-item nav-console">
                 <div class="nav-icon-container">
                     <i class="fas fa-compass"></i>
                 </div>
                 <span>Add / Edit Trips</span>
             </a>
 
-            <a href="/pages/tripview/tripview.html" class="nav-item">
-                <div class="nav-icon-container">
-                    <i class="fas fa-sliders-h"></i>
-                </div>
-                <span>Advanced Search</span>
-            </a>
-
-            <a class="nav-item">
+            <a class="nav-item nav-logout">
                 <div class="nav-icon-container">
                     <i class="fas fa-sign-out-alt"></i>
                 </div>

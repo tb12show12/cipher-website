@@ -210,13 +210,23 @@ async function handleAppleSignIn() {
     try {
         showStatus('Signing in...', 'info');
         const provider = new firebase.auth.OAuthProvider('apple.com');
+        
         provider.addScope('email');
         provider.addScope('name');
         
+        // Set custom parameters with production URLs
+        provider.setCustomParameters({
+            client_id: 'services.cipher-app.web.authentication',
+            redirect_uri: 'https://cipher-4fa1c.firebaseapp.com/__/auth/handler',
+            response_mode: 'form_post',
+            // Remove context_uri since we're not in localhost
+            response_type: 'code'
+        });
+
         const result = await firebase.auth().signInWithPopup(provider);
         console.log('Apple sign-in successful:', result.user.email);
         showStatus('Sign in successful!', 'success');
-        window.location.href = '/admin/console.html';  // Changed this line
+        window.location.href = '/admin/console.html';
     } catch (error) {
         console.error('Apple sign-in error:', error);
         let errorMessage = 'Sign in failed';
@@ -227,6 +237,12 @@ async function handleAppleSignIn() {
     }
 }
 
+// Helper function to generate random state parameter
+function generateRandomString() {
+    const array = new Uint32Array(28);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+}
 // Revised admin auth handler to log in with admin creds
 async function handleAdminAuth() {
     const password = document.getElementById('adminPassword').value;

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/components/nav/nav.css">
+    <link rel="stylesheet" href="/components/signup/signup.css">
     
     <!-- Add Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
@@ -31,13 +32,14 @@
                 <div class="header-row">
                     <h2 id="sidebarTitle">My Trips</h2>
                 </div>
+                <p class="sidebar-helper-message">Create a new trip or click on an existing trip to edit it.</p>
             </div>
             
-            <button id="createNewTrip" class="create-trip-button">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-                Create New Trip
+            <button id="createNewTrip" class="active">
+                <div class="create-trip-title">
+                    Create New Trip
+                </div>
+                <div class="create-trip-date">Click here to begin.</div>
             </button>
 
             <div class="trips-list" id="tripsList">
@@ -47,30 +49,25 @@
 
         <!-- Main Content Area -->
         <div class="main-content">
-            <div class="main-header">
+            <div class="main-header" style="display: none;">
                 <!-- Moved submit button to Option A header -->
             </div>
             <div class="content-container">
                 <!-- Left Column -->
                 <div class="form-column">
-                    <!-- New Option A Header -->
-                    <div id="optionAHeader" class="section-header" style="display: none;">
-                        <h2 class="column-header">Option A: Input Manually</h2>
-                        <button type="submit" id="submitButton">
-                            <span class="loading-spinner" style="display: none;"></span>
-                            <span class="button-text">Save New Trip</span>
-                        </button>
-                    </div>
-
                     <!-- Basic Info Section -->
                     <div id="basicInfoSection">
                         <div class="section-header">
                             <h2 class="column-header">Basic Info</h2>
-                            <button id="saveBasicInfoBtn" class="save-button">
+                            <button id="saveBasicInfoBtn" class="save-button" style="display: none;">
                                 <span class="button-text">Save Basic Info</span>
                                 <span class="success-message" style="display: none;">
                                     <i class="fa-solid fa-check"></i> Successfully Saved!
                                 </span>
+                            </button>
+                            <button type="submit" id="submitButton">
+                                <span class="loading-spinner" style="display: none;"></span>
+                                <span class="button-text">Save New Trip</span>
                             </button>
                         </div>
                         <form id="tripForm">
@@ -142,12 +139,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="form-column">
                     <!-- New Reddit Option Section -->
-                    <div id="optionBSection" class="reddit-option" style="display: none;">
+                    <div id="optionBSection" class="reddit-option">
                         <div class="section-header">
                             <h2 class="column-header">Option B: Add Trip Via Reddit Link</h2>
                             <button id="saveRedditTripBtn" class="save-button">
@@ -160,7 +153,10 @@
                             <input type="text" id="redditUrl" placeholder="Enter Reddit post URL">
                         </div>
                     </div>
+                </div>
 
+                <!-- Right Column -->
+                <div class="form-column">
                     <!-- Existing Trip Info Section -->
                     <div id="additionalTripInfo" class="additional-trip-info">
                         <div class="disabled-message">Save trip first to edit these sections</div>
@@ -193,7 +189,7 @@
                             <div class="places-header">
                                 <h2>Places</h2>
                                 <button id="savePlacesBtn" class="save-button" disabled>
-                                    <span class="button-text">Save Updated Places List</span>
+                                    <span class="button-text">Save Places</span>
                                     <span class="success-message" style="display: none;">
                                         <i class="fa-solid fa-check"></i> Successfully Saved!
                                     </span>
@@ -202,7 +198,7 @@
                             <div class="form-group">
                                 <label for="placesAutocomplete">Add Places via Search</label>
                                 <input type="text" id="placesAutocomplete" placeholder="Enter location">
-                                <ul id="searchResults" class="places-list"></ul>
+                                <ul id="placesSearchResults" class="places-list"></ul>
                             </div>
                         </div>
 
@@ -211,7 +207,7 @@
                             <div class="attendees-header">
                                 <h2>Trip Attendees</h2>
                                 <button id="saveAttendeesBtn" class="save-button" disabled>
-                                    <span class="button-text">Save Updated Attendees List</span>
+                                    <span class="button-text">Save Attendees</span>
                                     <span class="success-message" style="display: none;">
                                         <i class="fa-solid fa-check"></i> Successfully Saved!
                                     </span>
@@ -231,7 +227,7 @@
                             <div class="photos-header">
                                 <h2>Trip Photos</h2>
                                 <button id="savePhotosBtn" class="save-button" disabled>
-                                    <span class="button-text">Save Changes to Photos</span>
+                                    <span class="button-text">Save Photos</span>
                                     <span class="success-message" style="display: none;">
                                         <i class="fa-solid fa-check"></i> Successfully Saved!
                                     </span>
@@ -249,20 +245,6 @@
                                 <!-- Comments will be populated here -->
                             </div>
                         </div>
-
-                        <!-- Comments Tab -->
-                        <div id="redditTab" class="tab-content">
-                            <div class="reddit-header">
-                                <h2>Extract Reddit Content</h2>
-                            </div>
-                            <div class="form-group">
-                                <label for="redditUrl">Reddit Post URL</label>
-                                <input type="text" id="redditUrl" placeholder="Enter Reddit post URL">
-                                <button id="extractRedditBtn" class="save-button">
-                                    <span class="button-text">Extract Content</span>
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -271,8 +253,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
-    <script src="/components/nav/nav.js"></script>
+    <script type="module" src="/components/nav/nav.js"></script>
     <script type="module" src="/admin/console.js"></script>
+    <script type="module" src="/components/signup/signup.js"></script>
 
     <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
         <button class="lightbox-close">&times;</button>
