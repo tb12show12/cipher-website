@@ -232,7 +232,6 @@ async function handleAppleSignIn() {
     try {
         showStatus('Signing in...', 'info');
         
-        // Wait for Firebase to be initialized
         await window.firebaseAuthReady;
         console.log('Firebase ready, proceeding with Apple Sign In');
 
@@ -247,12 +246,7 @@ async function handleAppleSignIn() {
         appleAuthUrl.searchParams.append('response_mode', 'form_post');
         appleAuthUrl.searchParams.append('state', generateRandomString());
 
-        // Add development return URL if in development
-        if (window.location.hostname === 'localhost') {
-            appleAuthUrl.searchParams.append('context_uri', window.location.origin);
-        }
-
-        console.log('Apple Auth URL:', appleAuthUrl.toString());
+        console.log('Opening Apple Auth URL:', appleAuthUrl.toString());
 
         // Add message listener before opening popup
         const messageHandler = async (event) => {
@@ -268,23 +262,17 @@ async function handleAppleSignIn() {
                 return;
             }
 
-            // Remove the event listener once we've received the message
+            // Remove the event listener
             window.removeEventListener('message', messageHandler);
 
             const { id_token, code } = event.data;
             
             try {
-                console.log('Processing auth tokens...');
-                // Send the Apple ID token to your backend to verify and create a custom Firebase token
+                // Send the Apple ID token to your backend
                 const response = await fetch('/.netlify/functions/apple-auth', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        id_token,
-                        code
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_token, code })
                 });
 
                 if (!response.ok) {
@@ -292,8 +280,6 @@ async function handleAppleSignIn() {
                 }
 
                 const { firebaseToken } = await response.json();
-
-                // Sign in to Firebase with the custom token
                 await firebase.auth().signInWithCustomToken(firebaseToken);
                 
                 showStatus('Sign in successful!', 'success');
