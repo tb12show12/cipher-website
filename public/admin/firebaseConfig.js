@@ -206,22 +206,13 @@ async function handleEmailSignIn() {
     }
 }
 
-async function handleAppleSignIn() {
+async function handleAppleSignInOLD() {
     try {
         showStatus('Signing in...', 'info');
         const provider = new firebase.auth.OAuthProvider('apple.com');
         
         provider.addScope('email');
         provider.addScope('name');
-        
-        // Set custom parameters with production URLs
-        provider.setCustomParameters({
-            client_id: 'services.cipher-app.web.authentication',
-            redirect_uri: 'https://cipher-4fa1c.firebaseapp.com/__/auth/handler',
-            response_mode: 'form_post',
-            // Remove context_uri since we're not in localhost
-            response_type: 'code'
-        });
 
         const result = await firebase.auth().signInWithPopup(provider);
         console.log('Apple sign-in successful:', result.user.email);
@@ -237,12 +228,106 @@ async function handleAppleSignIn() {
     }
 }
 
+async function handleAppleSignIn() {
+    try {
+        showStatus('Signing in...', 'info');
+        
+        // Wait for Firebase to be initialized
+        await window.firebaseAuthReady;
+        console.log('Firebase ready, proceeding with Apple Sign In');
+
+        // Always use production URL for Apple Sign In
+        const redirectUri = 'https://cipher-app.com/auth/apple-callback';
+
+        const appleAuthUrl = new URL('https://appleid.apple.com/auth/authorize');
+        appleAuthUrl.searchParams.append('response_type', 'code id_token');
+        appleAuthUrl.searchParams.append('client_id', 'services.cipher-app.web.authentication');
+        appleAuthUrl.searchParams.append('redirect_uri', redirectUri);
+        appleAuthUrl.searchParams.append('scope', 'email name');
+        appleAuthUrl.searchParams.append('response_mode', 'form_post');
+        appleAuthUrl.searchParams.append('state', generateRandomString());
+
+        // Add development return URL if in development
+        if (window.location.hostname === 'localhost') {
+            appleAuthUrl.searchParams.append('context_uri', window.location.origin);
+        }
+
+        console.log('Apple Auth URL:', appleAuthUrl.toString());
+
+        // Add message listener before opening popup
+        const messageHandler = async (event) => {
+            console.log('Received message:', event);
+            
+            if (event.origin !== window.location.origin) {
+                console.log('Ignoring message from unknown origin:', event.origin);
+                return;
+            }
+            
+            if (event.data.type !== 'apple-auth') {
+                console.log('Ignoring non-auth message:', event.data);
+                return;
+            }
+
+            // Remove the event listener once we've received the message
+            window.removeEventListener('message', messageHandler);
+
+            const { id_token, code } = event.data;
+            
+            try {
+                console.log('Processing auth tokens...');
+                // Send the Apple ID token to your backend to verify and create a custom Firebase token
+                const response = await fetch('/.netlify/functions/apple-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        id_token,
+                        code
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Backend error: ${response.status}`);
+                }
+
+                const { firebaseToken } = await response.json();
+
+                // Sign in to Firebase with the custom token
+                await firebase.auth().signInWithCustomToken(firebaseToken);
+                
+                showStatus('Sign in successful!', 'success');
+                window.location.href = '/admin/console.html';
+            } catch (error) {
+                console.error('Custom token sign-in error:', error);
+                showStatus('Sign in failed: ' + error.message, 'error');
+            }
+        };
+
+        // Add the message listener
+        window.addEventListener('message', messageHandler);
+
+        // Open the popup
+        const popup = window.open(appleAuthUrl.toString(), 'Apple Sign In', 
+            'width=600,height=600');
+
+        if (!popup) {
+            throw new Error('Popup blocked! Please allow popups for this site.');
+        }
+
+    } catch (error) {
+        console.error('Apple sign-in error:', error);
+        showStatus('Sign in failed: ' + error.message, 'error');
+    }
+}
+
 // Helper function to generate random state parameter
 function generateRandomString() {
     const array = new Uint32Array(28);
     window.crypto.getRandomValues(array);
     return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
 }
+
 // Revised admin auth handler to log in with admin creds
 async function handleAdminAuth() {
     const password = document.getElementById('adminPassword').value;

@@ -50,11 +50,17 @@ status = 200
 force = true
 
 [[redirects]]
-  from = "/discover"
-  to = "/pages/discover/discover.html"
-  status = 200
+from = "/discover"
+to = "/pages/discover/discover.html"
+status = 200
 
-  [[redirects]]
-  from = "/tripview"
-  to = "/pages/tripview/tripview.html"
-  status = 200
+[[redirects]]
+from = "/tripview"
+to = "/pages/tripview/tripview.html"
+status = 200
+
+[[redirects]]
+from = "/auth/*"
+to = "/auth/:splat"
+status = 200
+force = true
