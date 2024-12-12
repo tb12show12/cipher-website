@@ -8,18 +8,13 @@
     <script>
         console.log('Callback page loaded');
         
-        // Log all available data
-        console.log('Search params:', window.location.search);
-        console.log('Hash:', window.location.hash);
-        console.log('Full URL:', window.location.href);
-
         // Handle form_post response
         const params = new URLSearchParams(window.location.search);
         const id_token = params.get('id_token');
         const code = params.get('code');
         const state = params.get('state');
 
-        console.log('Parsed response:', { id_token, code, state });
+        console.log('Received response:', { id_token, code, state });
 
         document.getElementById('status').textContent = 'Received response, processing...';
 
@@ -34,7 +29,6 @@
                 }, window.location.origin);
                 
                 document.getElementById('status').textContent = 'Authentication complete, closing window...';
-                // Close this popup window
                 window.close();
             } catch (error) {
                 document.getElementById('status').textContent = 'Error: ' + error.message;

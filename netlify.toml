@@ -60,7 +60,11 @@ to = "/pages/tripview/tripview.html"
 status = 200
 
 [[redirects]]
-from = "/auth/*"
-to = "/auth/:splat"
-status = 200
-force = true
+  from = "/auth/*"
+  to = "/auth/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/auth/apple-callback"
+  to = "/auth/apple-callback.html"
+  status = 200
