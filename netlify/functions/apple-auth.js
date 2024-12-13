@@ -146,15 +146,48 @@ exports.handler = async (event, context) => {
             };
 
         } else {
-            console.log('⛔ No existing user found for email:', payload.email);
-            return {
-                statusCode: 403,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    error: 'User not found',
-                    details: 'No existing user account found for this Apple ID'
-                })
-            };
+            console.log('⚠️ No existing user found, creating new account...');
+
+            try {
+                // Create new Firebase user (without specifying UID)
+                const newUserRecord = await admin.auth().createUser({
+                    email: payload.email,
+                    emailVerified: true, // Apple has verified this email
+                    providerData: [{
+                        providerId: 'apple.com',
+                        uid: payload.sub
+                    }]
+                });
+
+                console.log('✅ Created new user:', {
+                    uid: newUserRecord.uid,
+                    email: newUserRecord.email,
+                    providers: newUserRecord.providerData.map(p => p.providerId)
+                });
+
+                // Create custom token for the new user
+                const firebaseToken = await admin.auth().createCustomToken(newUserRecord.uid, {
+                    email: payload.email,
+                    provider: 'apple.com'
+                });
+                console.log('🎟️ Created Firebase token for new user');
+
+                return {
+                    statusCode: 200,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        firebaseToken,
+                        isNewUser: true 
+                    })
+                };
+            } catch (error) {
+                console.error('❌ Error creating new user:', {
+                    name: error.name,
+                    message: error.message,
+                    code: error.code
+                });
+                throw error; // Will be caught by outer try-catch
+            }
         }
 
     } catch (error) {

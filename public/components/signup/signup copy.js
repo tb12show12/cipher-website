@@ -12,7 +12,7 @@ export function showAuthModal(mode = 'login') {
     if (mode === 'login') {
         modal.initializeLoginForm(modalElement);
     } else {
-        modal.initializeSignupForm(modalElement);
+        modal.initializeEmailValidation(modalElement);
     }
 }
 
@@ -33,68 +33,57 @@ class SignupModal {
         };
     }
 
-    generateModalHTML() {
+    generateModalHTML(mode) {
         return `
             <div class="signup-modal">
                 <div class="signup-modal-content">
                     <div class="signup-modal-nav">
-                        <button class="signup-back-btn" style="display: none;">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
                         <button class="signup-close-btn">&times;</button>
                     </div>
                     
                     <div class="signup-header-container">
                         <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
                         <div class="signup-modal-header">
-                            <h2>Cipher</h2>
-                            <p>Your travel memories, shared.</p>
+                            <h2>${mode === 'login' ? 'Login' : 'Sign Up'}</h2>
+                            <p>${mode === 'login' ? 'Enter e-mail and password below.' : 'Create your account here.'}</p>
                         </div>
                     </div>
                     
-                    <div class="signup-auth-methods">
-                        <button class="signup-login-btn">
-                            Login
-                        </button>
-                        <button class="signup-register-btn">
-                            Sign Up
-                        </button>
-                        
-                        <div class="signup-divider">
-                            <span>Other Options</span>
-                        </div>
-                        
-                        <button class="signup-apple-btn">
-                            <i class="fab fa-apple"></i> Continue with Apple
-                        </button>
-                    </div>
-
-                    <form class="signup-auth-form" style="display: none;">
-                        <!-- Form content will be added dynamically -->
+                    <form class="signup-auth-form">
+                        ${mode === 'login' ? this.generateLoginHTML() : this.generateSignupHTML()}
                     </form>
                 </div>
             </div>
         `;
     }
 
-    showEmailSignupForm(modalElement) {
-        const methods = modalElement.querySelector('.signup-auth-methods');
-        const form = modalElement.querySelector('.signup-auth-form');
-        const backBtn = modalElement.querySelector('.signup-back-btn');
-        const header = modalElement.querySelector('.signup-modal-header h2');
-        const subtitle = modalElement.querySelector('.signup-modal-header p');
-        
-        methods.style.display = 'none';
-        backBtn.style.display = 'flex';
-        form.innerHTML = this.generateEmailSignupHTML();
-        form.style.display = 'block';
-        header.textContent = 'Sign Up';
-        subtitle.textContent = 'Create your account here.';
-        
-        this.initializeEmailValidation(modalElement);
+    generateLoginHTML() {
+        return `
+            <div class="signup-form-step signup-login-step">
+                <div class="signup-form-group">
+                    <input type="email" id="loginEmail" 
+                           class="signup-auth-input full-width" 
+                           placeholder="Email address" required>
+                </div>
+
+                <div class="signup-form-group">
+                    <input type="password" id="loginPassword" 
+                           class="signup-auth-input full-width" 
+                           placeholder="Password" required>
+                </div>
+
+                <div class="signup-error-container">
+                    <p class="signup-error-message" id="loginError"></p>
+                </div>
+
+                <button type="button" id="loginBtn" class="signup-auth-btn">
+                    Login
+                </button>
+            </div>
+        `;
     }
 
-    generateEmailSignupHTML() {
+    generateSignupHTML() {
         return `
             <div class="signup-form-step signup-email-step">
                 <div class="signup-form-group">
@@ -116,13 +105,14 @@ class SignupModal {
                            placeholder="Confirm password" required>
                     <p class="signup-error-message" id="confirmError"></p>
                     <p class="signup-password-requirement" id="passwordRequirement">
-                        Password must contain at least 8 characters, one uppercase letter, one number and one special character (!@#$%^&*(),.?":{}|<>)
+                        Password must contain at least 8 characters, one uppercase letter, 
+                        one number and one special character (!@#$%^&*(),.?":{}|<>)
                     </p>
                 </div>
 
                 <button type="button" id="createAccountBtn" 
                         class="signup-auth-btn" disabled>
-                    Create Account
+                    Next
                 </button>
             </div>
         `;
@@ -136,14 +126,11 @@ class SignupModal {
         const emailError = modalElement.querySelector('#emailError');
 
         emailInput.addEventListener('input', () => {
-            // Clear existing error message when user starts typing
             emailError.textContent = '';
         });
         
         createBtn.addEventListener('click', async () => {
-            // Check password match when clicking button
             const confirmError = modalElement.querySelector('#confirmError');
-
             emailError.textContent = '';
             confirmError.textContent = '';
 
@@ -157,12 +144,8 @@ class SignupModal {
                 createBtn.disabled = true;
                 createBtn.textContent = 'Creating Account...';
 
-                const email = emailInput.value;
-                const password = passwordInput.value;
-
-                // Create Firebase account
                 const userCredential = await firebase.auth()
-                    .createUserWithEmailAndPassword(email, password);
+                    .createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
 
                 this.showNextStep(userCredential.user, modalElement);
 
@@ -173,21 +156,18 @@ class SignupModal {
                 if (error.code === 'auth/email-already-in-use') {
                     emailError.textContent = 'This email is already registered, please try again';
                     emailError.style.color = '#dc3545';
-                    // Clear password fields
                     passwordInput.value = '';
                     confirmInput.value = '';
-                    // Reset password validation
                     const requirementElement = modalElement.querySelector('#passwordRequirement');
                     requirementElement.style.display = 'block';
-                    requirementElement.className = 'password-requirement';
-                    // Reset confirm password error
+                    requirementElement.className = 'signup-password-requirement';
                     confirmError.textContent = '';
                 } else {
                     emailError.textContent = 'Error creating account. Please try again.';
                 }
                 
                 createBtn.disabled = false;
-                createBtn.textContent = 'Create Account';
+                createBtn.textContent = 'Next';
             }
         });
 
@@ -204,22 +184,17 @@ class SignupModal {
 
             const isValid = Object.values(this.passwordCriteria).every(Boolean);
             requirementElement.style.display = isValid ? 'none' : 'block';
-
             this.validateForm(modalElement);
         });
 
-        // Remove password match validation from input event
         confirmInput.addEventListener('input', () => {
             const confirmError = modalElement.querySelector('#confirmError');
-            confirmError.textContent = ''; // Just clear any existing error message
+            confirmError.textContent = '';
         });
     }
 
     validateForm(modalElement) {
-        const passwordInput = modalElement.querySelector('input[id="signupPassword"]');
         const createBtn = modalElement.querySelector('button[id="createAccountBtn"]');
-
-        // Only check password requirements, not matching
         const isPasswordValid = Object.values(this.passwordCriteria).every(Boolean);
         createBtn.disabled = !isPasswordValid;
     }
@@ -313,30 +288,24 @@ class SignupModal {
             submitBtn.textContent = 'Creating Profile...';
 
             try {
-                // Validate age
                 const birthday = new Date(form.querySelector('input[name="birthday"]').value);
                 if (!this.validateAge(birthday)) {
                     throw new Error('You must be 13 or older to use Cipher');
                 }
 
-                // Validate display name
                 const displayName = form.querySelector('input[name="displayName"]').value;
                 const isNameUnique = await this.checkDisplayNameUnique(displayName);
                 if (!isNameUnique) {
                     throw new Error('This display name is already taken');
                 }
 
-                // Create user profile in Firestore
                 await this.createUserProfile(this.user, form);
-                
-                // Redirect to appropriate page
                 window.location.href = '/pages/tripview/tripview.html';
 
             } catch (error) {
                 console.error('Profile creation error:', error);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Finish!';
-                // Show error message to user
                 const errorMessage = document.createElement('p');
                 errorMessage.className = 'error-message';
                 errorMessage.textContent = error.message;
@@ -359,9 +328,7 @@ class SignupModal {
     }
 
     async createUserProfile(user, form) {
-        // Convert birthday string to Firebase Timestamp
         const birthdayDate = new Date(form.querySelector('input[name="birthday"]').value);
-        // Set to midnight UTC on the selected day
         birthdayDate.setUTCHours(0, 0, 0, 0);
 
         const profileData = {
@@ -384,7 +351,6 @@ class SignupModal {
             kidAges: [],
         };
 
-        // Handle profile picture upload if selected
         const profilePicInput = form.querySelector('input[name="profilePic"]');
         if (profilePicInput.files.length > 0) {
             const file = profilePicInput.files[0];
@@ -392,55 +358,12 @@ class SignupModal {
             const profilePicRef = storageRef.child(`profilePics/${user.uid}`);
             await profilePicRef.put(file);
             profileData.pPic = await profilePicRef.getDownloadURL();
-        } else {
-            profileData.pPic = DEFAULTS.defaultPPic;
         }
 
-        // Create the user document in Firestore
         await firebase.firestore()
             .collection('users')
             .doc(user.uid)
             .set(profileData);
-    }
-
-    showLoginForm(modalElement) {
-        const methods = modalElement.querySelector('.signup-auth-methods');
-        const form = modalElement.querySelector('.signup-auth-form');
-        const backBtn = modalElement.querySelector('.signup-back-btn');
-        const header = modalElement.querySelector('.signup-modal-header h2');
-        const subtitle = modalElement.querySelector('.signup-modal-header p');
-        
-        methods.style.display = 'none';
-        backBtn.style.display = 'flex';
-        header.textContent = 'Login';
-        subtitle.textContent = 'Enter e-mail and password below.';
-        
-        form.innerHTML = `
-            <div class="signup-form-step signup-login-step">
-                <div class="signup-form-group">
-                    <input type="email" id="loginEmail" 
-                           class="signup-auth-input full-width" 
-                           placeholder="Email address" required>
-                </div>
-
-                <div class="signup-form-group">
-                    <input type="password" id="loginPassword" 
-                           class="signup-auth-input full-width" 
-                           placeholder="Password" required>
-                </div>
-
-                <div class="signup-error-container">
-                    <p class="signup-error-message" id="loginError"></p>
-                </div>
-
-                <button type="button" id="loginBtn" class="signup-auth-btn">
-                    Login
-                </button>
-            </div>
-        `;
-        
-        form.style.display = 'block';
-        this.initializeLoginForm(modalElement);
     }
 
     initializeLoginForm(modalElement) {
@@ -450,7 +373,6 @@ class SignupModal {
         const errorMessage = modalElement.querySelector('#loginError');
 
         loginBtn.addEventListener('click', async () => {
-            // Clear any existing error message
             errorMessage.textContent = '';
             
             try {
@@ -463,9 +385,6 @@ class SignupModal {
                 window.location.href = '/admin/console.html';
 
             } catch (error) {
-                //console.error('Login error:', error);
-                
-                // More specific error messages
                 let errorText = 'Invalid email or password';
                 if (error.code === 'auth/user-not-found') {
                     errorText = 'No account found with this email';
@@ -485,7 +404,6 @@ class SignupModal {
             }
         });
 
-        // Add enter key support
         const handleEnterKey = (e) => {
             if (e.key === 'Enter') {
                 loginBtn.click();

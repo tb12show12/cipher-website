@@ -269,12 +269,22 @@ async function handleAppleSignIn() {
                         throw new Error(error.details || 'User not authorized');
                     }
         
-                    const { firebaseToken } = await response.json();
+                    const { firebaseToken, isNewUser } = await response.json();
                     console.log('Got Firebase token, signing in...');
-                    await firebase.auth().signInWithCustomToken(firebaseToken);
+                    const userCredential = await firebase.auth().signInWithCustomToken(firebaseToken);
                     
-                    showStatus('Sign in successful!', 'success');
-                    window.location.href = '/admin/console.html';
+                    if (isNewUser) {
+                        console.log('New user detected, showing signup modal...');
+                        // Dynamically import the SignupModal class
+                        const { default: SignupModal } = await import('/components/signup/signup.js');
+                        const modal = new SignupModal();
+                        await modal.collectUserInfoForAppleLogin(userCredential.user);
+                        // Modal will handle redirect after completion
+                    } else {
+                        showStatus('Sign in successful!', 'success');
+                        window.location.href = '/pages/navigate/navigate.html';
+                    }
+
                 } catch (error) {
                     console.error('Custom token sign-in error:', error);
                     showStatus('Sign in failed: ' + error.message, 'error');

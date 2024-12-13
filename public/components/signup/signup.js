@@ -413,4 +413,137 @@ class SignupModal {
         emailInput.addEventListener('keypress', handleEnterKey);
         passwordInput.addEventListener('keypress', handleEnterKey);
     }
+
+    async collectUserInfoForAppleLogin(user) {
+        const modalHTML = `
+            <div class="signup-modal">
+                <div class="signup-modal-content">
+                    <div class="signup-modal-nav">
+                        <button class="signup-close-btn">&times;</button>
+                    </div>
+                    
+                    <div class="signup-header-container">
+                        <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
+                        <div class="signup-modal-header">
+                            <h2>Complete Your Profile</h2>
+                            <p>Just a few more details needed</p>
+                        </div>
+                    </div>
+                    
+                    <div class="signup-form-step signup-user-info-step">
+                        <div class="signup-form-group">
+                            <input type="text" id="displayName" 
+                                   class="signup-auth-input" 
+                                   placeholder="Display Name" required>
+                            <p class="signup-error-message" id="displayNameError"></p>
+                        </div>
+
+                        <div class="signup-form-group">
+                            <input type="date" id="birthday" 
+                                   class="signup-auth-input" 
+                                   required>
+                            <label for="birthday">Birthday</label>
+                            <p class="signup-error-message" id="birthdayError"></p>
+                        </div>
+
+                        <div class="signup-form-group">
+                            <input type="text" id="location" 
+                                   class="signup-auth-input" 
+                                   placeholder="Location" required>
+                        </div>
+
+                        <div class="signup-form-group">
+                            <label for="profilePic">Profile Picture (optional)</label>
+                            <input type="file" id="profilePic" 
+                                   accept="image/*">
+                        </div>
+
+                        <button type="button" id="completeSignupBtn" 
+                                class="signup-auth-btn">
+                            Complete Signup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to page
+        const modalWrapper = document.createElement('div');
+        modalWrapper.innerHTML = modalHTML;
+        document.body.appendChild(modalWrapper.firstElementChild);
+
+        const modalElement = document.querySelector('.signup-modal');
+        const completeBtn = modalElement.querySelector('#completeSignupBtn');
+        const closeBtn = modalElement.querySelector('.signup-close-btn');
+        const displayNameInput = modalElement.querySelector('#displayName');
+        const birthdayInput = modalElement.querySelector('#birthday');
+
+        // Initialize display name validation
+        this.initializeDisplayNameValidation(displayNameInput, modalElement);
+
+        // Handle close button
+        closeBtn.addEventListener('click', () => {
+            // Sign out if they try to close before completing
+            firebase.auth().signOut();
+            modalElement.remove();
+            window.location.href = '/admin/index.html';
+        });
+
+        // Handle form submission
+        completeBtn.addEventListener('click', async () => {
+            try {
+                completeBtn.disabled = true;
+                completeBtn.textContent = 'Saving...';
+
+                // Collect user data
+                const displayName = displayNameInput.value;
+                const birthday = birthdayInput.value;
+                const location = modalElement.querySelector('#location').value;
+                const profilePic = modalElement.querySelector('#profilePic').files[0];
+
+                // Validate required fields
+                if (!displayName || !birthday || !location) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Use existing validation functions
+                if (!await this.checkDisplayName(displayName, modalElement)) {
+                    completeBtn.disabled = false;
+                    completeBtn.textContent = 'Complete Signup';
+                    return;
+                }
+
+                if (!this.validateAge(birthday, modalElement)) {
+                    completeBtn.disabled = false;
+                    completeBtn.textContent = 'Complete Signup';
+                    return;
+                }
+
+                // Use existing profile creation function
+                await this.createUserProfile(user, {
+                    displayName,
+                    birthday,
+                    location,
+                    profilePic
+                });
+
+                // Success! Remove modal and redirect
+                modalElement.remove();
+                window.location.href = '/pages/navigate/navigate.html';
+
+            } catch (error) {
+                console.error('Error completing signup:', error);
+                completeBtn.disabled = false;
+                completeBtn.textContent = 'Complete Signup';
+                alert('Error saving profile: ' + error.message);
+            }
+        });
+
+        // Initialize any other validations or listeners
+        if (this.initializeValidations) {
+            this.initializeValidations(modalElement);
+        }
+    }
 }
+
+export default SignupModal;
