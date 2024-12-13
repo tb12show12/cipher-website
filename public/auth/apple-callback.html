@@ -19,31 +19,30 @@
         if (!id_token || !code) {
             document.getElementById('status').textContent = 'Error: Missing authentication data';
             console.error('Missing auth data:', { id_token, code, state });
-            return;
-        }
-
-        // Try to send message to opener window
-        if (window.opener) {
-            try {
-                console.log('Sending message to opener');
-                window.opener.postMessage({
-                    type: 'apple-auth',
-                    id_token,
-                    code,
-                    state
-                }, window.location.origin);
-                
-                document.getElementById('status').textContent = 'Authentication complete!';
-                // Close after a short delay
-                setTimeout(() => window.close(), 1000);
-            } catch (error) {
-                document.getElementById('status').textContent = 'Error: ' + error.message;
-                console.error('Error sending message:', error);
-            }
         } else {
-            // If opened directly (not as popup)
-            document.getElementById('status').textContent = 'Please return to the main page and try again';
-            console.log('No opener window found - page was opened directly');
+            // Try to send message to opener window
+            if (window.opener) {
+                try {
+                    console.log('Sending message to opener');
+                    window.opener.postMessage({
+                        type: 'apple-auth',
+                        id_token,
+                        code,
+                        state
+                    }, window.location.origin);
+                    
+                    document.getElementById('status').textContent = 'Authentication complete!';
+                    // Close after a short delay
+                    setTimeout(() => window.close(), 1000);
+                } catch (error) {
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                    console.error('Error sending message:', error);
+                }
+            } else {
+                // If opened directly (not as popup)
+                document.getElementById('status').textContent = 'Please return to the main page and try again';
+                console.log('No opener window found - page was opened directly');
+            }
         }
     </script>
 </body>

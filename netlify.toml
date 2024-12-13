@@ -11,6 +11,12 @@ publish = "public"  # This is important for local development
   FIREBASE_SERVICE_ACCOUNT = "FIREBASE_SERVICE_ACCOUNT"
 
 [[redirects]]
+  from = "/auth/apple-callback"
+  to = "/auth/apple-callback.html"
+  status = 200
+  force = true
+
+[[redirects]]
 # Redirect all paths starting with /trip-share/ to the redirect function
 from = "/trip-share/*"
 to = "/.netlify/functions/createOGPage"
@@ -59,14 +65,5 @@ from = "/tripview"
 to = "/pages/tripview/tripview.html"
 status = 200
 
-[[redirects]]
-  from = "/auth/*"
-  to = "/auth/:splat"
-  status = 200
-  force = true
 
-[[redirects]]
-  from = "/auth/apple-callback"
-  to = "/auth/apple-callback.html"
-  status = 200
-  force = true
+
