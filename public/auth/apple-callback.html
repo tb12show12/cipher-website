@@ -8,13 +8,37 @@
     <script>
         console.log('Callback page loaded at:', window.location.href);
         
-        // Handle form_post response
-        const params = new URLSearchParams(window.location.search);
-        const id_token = params.get('id_token');
-        const code = params.get('code');
-        const state = params.get('state');
+        // Function to handle parameters from either source
+        function getAuthParams() {
+            // Try URL parameters first (our test case)
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // If no URL params, try form data (Apple's case)
+            if (!urlParams.get('id_token')) {
+                console.log('No URL parameters, checking form data...');
+                const forms = document.getElementsByTagName('form');
+                if (forms.length > 0) {
+                    const formData = new FormData(forms[0]);
+                    console.log('Form data found:', formData);
+                    return {
+                        id_token: formData.get('id_token'),
+                        code: formData.get('code'),
+                        state: formData.get('state')
+                    };
+                }
+            }
+            
+            // Return URL parameters if they exist
+            return {
+                id_token: urlParams.get('id_token'),
+                code: urlParams.get('code'),
+                state: urlParams.get('state')
+            };
+        }
 
-        console.log('Received response:', { id_token, code, state });
+        // Get parameters from either source
+        const { id_token, code, state } = getAuthParams();
+        console.log('Auth parameters:', { id_token, code, state });
         
         if (!id_token || !code) {
             document.getElementById('status').textContent = 'Error: Missing authentication data';

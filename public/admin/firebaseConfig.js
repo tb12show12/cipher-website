@@ -235,71 +235,44 @@ async function handleAppleSignIn() {
         await window.firebaseAuthReady;
         console.log('Firebase ready, proceeding with Apple Sign In');
 
-        // Always use production URL for Apple Sign In
+        // Build the Apple auth URL with test parameters
         const redirectUri = 'https://cipher-app.com/auth/apple-callback';
+        const testState = 'test123'; // For tracking
 
         const appleAuthUrl = new URL('https://appleid.apple.com/auth/authorize');
         appleAuthUrl.searchParams.append('response_type', 'code id_token');
         appleAuthUrl.searchParams.append('client_id', 'services.cipher-app.web.authentication');
         appleAuthUrl.searchParams.append('redirect_uri', redirectUri);
         appleAuthUrl.searchParams.append('scope', 'email name');
-        appleAuthUrl.searchParams.append('response_mode', 'form_post');
-        appleAuthUrl.searchParams.append('state', generateRandomString());
+        appleAuthUrl.searchParams.append('response_mode', 'form_post');  // This is important!
+        appleAuthUrl.searchParams.append('state', testState);
 
-        console.log('Opening Apple Auth URL:', appleAuthUrl.toString());
+        // Log the full URL for testing
+        console.log('Apple Auth URL:', appleAuthUrl.toString());
 
-        // Add message listener before opening popup
-        const messageHandler = async (event) => {
-            console.log('Received message:', event);
-            
-            if (event.origin !== window.location.origin) {
-                console.log('Ignoring message from unknown origin:', event.origin);
-                return;
-            }
-            
-            if (event.data.type !== 'apple-auth') {
-                console.log('Ignoring non-auth message:', event.data);
-                return;
-            }
+        // First, let's test if our callback page works with test parameters
+        const testUrl = `${redirectUri}?id_token=test_token&code=test_code&state=${testState}`;
+        console.log('Testing callback with:', testUrl);
 
-            // Remove the event listener
-            window.removeEventListener('message', messageHandler);
-
-            const { id_token, code } = event.data;
-            
-            try {
-                // Send the Apple ID token to your backend
-                const response = await fetch('/.netlify/functions/apple-auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_token, code })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Backend error: ${response.status}`);
-                }
-
-                const { firebaseToken } = await response.json();
-                await firebase.auth().signInWithCustomToken(firebaseToken);
-                
-                showStatus('Sign in successful!', 'success');
-                window.location.href = '/admin/console.html';
-            } catch (error) {
-                console.error('Custom token sign-in error:', error);
-                showStatus('Sign in failed: ' + error.message, 'error');
-            }
-        };
-
-        // Add the message listener
-        window.addEventListener('message', messageHandler);
-
-        // Open the popup
-        const popup = window.open(appleAuthUrl.toString(), 'Apple Sign In', 
+        // Open in a new window for testing
+        const popup = window.open(testUrl, 'Apple Sign In Test', 
             'width=600,height=600');
 
         if (!popup) {
             throw new Error('Popup blocked! Please allow popups for this site.');
         }
+
+        // Add message listener for the test
+        window.addEventListener('message', async (event) => {
+            console.log('Received message:', event);
+            
+            if (event.data.state === testState) {
+                console.log('Test successful! Now trying real Apple auth...');
+                // If test works, try the real Apple auth
+                window.open(appleAuthUrl.toString(), 'Apple Sign In', 
+                    'width=600,height=600');
+            }
+        });
 
     } catch (error) {
         console.error('Apple sign-in error:', error);
