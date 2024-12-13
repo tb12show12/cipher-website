@@ -12,10 +12,10 @@ publish = "public"  # This is important for local development
 
 [[redirects]]
   from = "/auth/apple-callback"
-  to = "/auth/apple-callback.html"
+  to = "/.netlify/functions/apple-callback"
   status = 200
   force = true
-  methods = ["GET", "POST"]  # Add this line
+  methods = ["POST"]
 
 [[redirects]]
 # Redirect all paths starting with /trip-share/ to the redirect function

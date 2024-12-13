@@ -237,6 +237,10 @@ async function handleAppleSignIn() {
 
         // Add message handler BEFORE opening the popup
         const messageHandler = async (event) => {
+
+            if (event.origin !== window.location.origin) {
+                return;
+            }
             // Only log messages that might be auth-related
             if (event.data.type === 'apple-auth') {
                 console.log('Received Apple auth message:', event.data);
