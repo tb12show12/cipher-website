@@ -15,6 +15,7 @@ publish = "public"  # This is important for local development
   to = "/auth/apple-callback.html"
   status = 200
   force = true
+  methods = ["GET", "POST"]  # Add this line
 
 [[redirects]]
 # Redirect all paths starting with /trip-share/ to the redirect function
