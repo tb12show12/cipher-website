@@ -263,6 +263,11 @@ async function handleAppleSignIn() {
                     if (!response.ok) {
                         throw new Error(`Backend error: ${response.status}`);
                     }
+
+                    if (response.status === 403) {
+                        const error = await response.json();
+                        throw new Error(error.details || 'User not authorized');
+                    }
         
                     const { firebaseToken } = await response.json();
                     console.log('Got Firebase token, signing in...');

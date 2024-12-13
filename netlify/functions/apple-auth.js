@@ -56,10 +56,7 @@ exports.handler = async (event, context) => {
             });
         });
 
-        console.log('Token verified, payload:', {
-            sub: payload.sub,
-            email: payload.email
-        });
+        console.log('Token verified, payload:', payload);
 
         // Initialize Firebase Admin
         if (!admin.apps.length) {
@@ -68,17 +65,55 @@ exports.handler = async (event, context) => {
                 credential: admin.credential.cert(serviceAccount)
             });
         }
+        // Try to find existing user by email
+        const userRecord = await admin.auth()
+            .getUserByEmail(payload.email)
+            .catch(error => {
+                if (error.code !== 'auth/user-not-found') {
+                    throw error;
+                }
+                return null;
+            });
 
-        // Create a custom token
-        const firebaseToken = await admin.auth().createCustomToken(payload.sub, {
-            email: payload.email,
-            provider: 'apple.web'
-        });
+        let uid;
+        if (userRecord) {
+            // Existing user found
+            console.log('Found existing user:', userRecord.uid);
+            uid = userRecord.uid;
+            
+            // Update user's Apple credentials if needed
+            await admin.auth().updateUser(uid, {
+                providerToLink: {
+                    providerId: 'apple.com',
+                    uid: payload.sub
+                }
+            });
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ firebaseToken })
-        };
+            
+            // Create a custom token
+            const firebaseToken = await admin.auth().createCustomToken(uid, {
+                email: payload.email,
+                provider: 'apple.com'
+            });
+
+            return {
+                statusCode: 200,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ firebaseToken })
+            };
+
+        } else {
+            // No existing user found
+            console.log('No existing user found for email:', payload.email);
+            return {
+                statusCode: 403,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    error: 'User not found',
+                    details: 'No existing user account found for this Apple ID'
+                })
+            };
+        }
 
     } catch (error) {
         console.error('Apple auth error:', {
