@@ -85,7 +85,7 @@ async function handleEmailSignIn() {
         showStatus('Sign in successful!', 'success');
         
         // Force redirect after successful login
-        window.location.replace('/admin/console.html');
+        window.location.replace('/pages/navigate/navigate.html');
     } catch (error) {
         console.error('Email sign-in error:', error);
         let errorMessage = 'Sign in failed';
@@ -195,7 +195,7 @@ async function handleEmailSignIn() {
     try {
         showStatus('Signing in...', 'info');
         await firebase.auth().signInWithEmailAndPassword(emailInput.value, passwordInput.value);
-        window.location.href = '/admin/console.html';  // Changed this line
+        window.location.href = '/pages/navigate/navigate.html';  // Changed this line
     } catch (error) {
         console.error('Email sign-in error:', error);
         let errorMessage = 'Sign in failed';
@@ -217,7 +217,7 @@ async function handleAppleSignInOLD() {
         const result = await firebase.auth().signInWithPopup(provider);
         console.log('Apple sign-in successful:', result.user.email);
         showStatus('Sign in successful!', 'success');
-        window.location.href = '/admin/console.html';
+        window.location.href = '/pages/navigate/navigate.html';
     } catch (error) {
         console.error('Apple sign-in error:', error);
         let errorMessage = 'Sign in failed';
@@ -269,21 +269,12 @@ async function handleAppleSignIn() {
                         throw new Error(error.details || 'User not authorized');
                     }
         
-                    const { firebaseToken, isNewUser } = await response.json();
+                    const { firebaseToken } = await response.json();
                     console.log('Got Firebase token, signing in...');
                     const userCredential = await firebase.auth().signInWithCustomToken(firebaseToken);
                     
-                    if (isNewUser) {
-                        console.log('New user detected, showing signup modal...');
-                        // Dynamically import the SignupModal class
-                        const { default: SignupModal } = await import('/components/signup/signup.js');
-                        const modal = new SignupModal();
-                        await modal.collectUserInfoForAppleLogin(userCredential.user);
-                        // Modal will handle redirect after completion
-                    } else {
-                        showStatus('Sign in successful!', 'success');
-                        window.location.href = '/pages/navigate/navigate.html';
-                    }
+                    showStatus('Sign in successful!', 'success');
+                    window.location.href = '/pages/navigate/navigate.html';
 
                 } catch (error) {
                     console.error('Custom token sign-in error:', error);
@@ -339,7 +330,7 @@ async function handleAdminAuth() {
             showStatus('Signing in...', 'info');
             await firebase.auth().signInWithEmailAndPassword('anon@cipher-app.com', password);
             showStatus('Sign in successful!', 'success');
-            window.location.href = '/admin/console.html';  // Changed this line
+            window.location.href = '/pages/navigate/navigate.html';  // Changed this line
         } catch (error) {
             console.error('Email sign-in error:', error);
             let errorMessage = 'Sign in failed';

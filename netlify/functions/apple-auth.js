@@ -166,10 +166,7 @@ exports.handler = async (event, context) => {
                 });
 
                 // Create custom token for the new user
-                const firebaseToken = await admin.auth().createCustomToken(newUserRecord.uid, {
-                    email: payload.email,
-                    provider: 'apple.com'
-                });
+                const firebaseToken = await admin.auth().createCustomToken(newUserRecord.uid);
                 console.log('🎟️ Created Firebase token for new user');
 
                 return {
@@ -177,7 +174,6 @@ exports.handler = async (event, context) => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         firebaseToken,
-                        isNewUser: true 
                     })
                 };
             } catch (error) {

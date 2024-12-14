@@ -328,6 +328,7 @@ class SignupModal {
     }
 
     async createUserProfile(user, form) {
+        console.log('Create user profile function called', user);
         const birthdayDate = new Date(form.querySelector('input[name="birthday"]').value);
         birthdayDate.setUTCHours(0, 0, 0, 0);
 
@@ -382,7 +383,7 @@ class SignupModal {
                 const userCredential = await firebase.auth()
                     .signInWithEmailAndPassword(emailInput.value, passwordInput.value);
                 
-                window.location.href = '/admin/console.html';
+                window.location.href = '/pages/navigate/navigate.html';
 
             } catch (error) {
                 let errorText = 'Invalid email or password';
@@ -414,136 +415,161 @@ class SignupModal {
         passwordInput.addEventListener('keypress', handleEnterKey);
     }
 
-    async collectUserInfoForAppleLogin(user) {
+    async showUserInfoStep(user) {
+        console.log('🎨 Starting to show user info step');
         const modalHTML = `
-            <div class="signup-modal">
-                <div class="signup-modal-content">
-                    <div class="signup-modal-nav">
-                        <button class="signup-close-btn">&times;</button>
-                    </div>
-                    
-                    <div class="signup-header-container">
-                        <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
-                        <div class="signup-modal-header">
-                            <h2>Complete Your Profile</h2>
-                            <p>Just a few more details needed</p>
-                        </div>
-                    </div>
-                    
-                    <div class="signup-form-step signup-user-info-step">
-                        <div class="signup-form-group">
-                            <input type="text" id="displayName" 
-                                   class="signup-auth-input" 
-                                   placeholder="Display Name" required>
-                            <p class="signup-error-message" id="displayNameError"></p>
-                        </div>
-
-                        <div class="signup-form-group">
-                            <input type="date" id="birthday" 
-                                   class="signup-auth-input" 
-                                   required>
-                            <label for="birthday">Birthday</label>
-                            <p class="signup-error-message" id="birthdayError"></p>
-                        </div>
-
-                        <div class="signup-form-group">
-                            <input type="text" id="location" 
-                                   class="signup-auth-input" 
-                                   placeholder="Location" required>
-                        </div>
-
-                        <div class="signup-form-group">
-                            <label for="profilePic">Profile Picture (optional)</label>
-                            <input type="file" id="profilePic" 
-                                   accept="image/*">
-                        </div>
-
-                        <button type="button" id="completeSignupBtn" 
-                                class="signup-auth-btn">
-                            Complete Signup
-                        </button>
+        <div class="signup-modal">
+            <div class="signup-modal-content" style="max-width: 500px;">
+                <div class="signup-modal-nav">
+                    <button class="signup-close-btn" id="signupCloseBtn">&times;</button>
+                </div>
+                <div class="signup-header-container">
+                    <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
+                    <div class="signup-modal-header">
+                        <h2>Finish Sign Up</h2>
+                        <p>Tell us a little about yourself</p>
                     </div>
                 </div>
-            </div>
-        `;
+                <form class="signup-auth-form">
+                    <div class="signup-form-step">
+                        <div class="signup-question-group">
+                            <div class="signup-question-content">
+                                <label class="signup-question">Enter your birthday?</label>
+                                <p class="signup-hint">You must be 13 or older.</p>
+                            </div>
+                            <input type="date" name="birthday" class="signup-auth-input" required>
+                        </div>
+                    </div>
 
+                    <div class="signup-form-step">
+                        <div class="signup-question-group">
+                            <div class="signup-question-content">
+                                <label class="signup-question">Choose a display name</label>
+                                <p class="signup-hint">This will be unique to you.</p>
+                            </div>
+                            <input type="text" name="displayName" class="signup-auth-input" maxlength="25" required>
+                        </div>
+                    </div>
+
+                    <div class="signup-form-step">
+                        <div class="signup-question-group">
+                            <div class="signup-question-content">
+                                <label class="signup-question">Where do you live?</label>
+                                <p class="signup-hint">We only show your city and state.</p>
+                            </div>
+                            <input type="text" name="location" class="signup-auth-input" placeholder="City, State" maxlength="25">
+                        </div>
+                    </div>
+
+                    <div class="signup-form-step">
+                        <div class="signup-question-group">
+                            <div class="signup-question-content">
+                                <label class="signup-question">Add a profile photo</label>
+                                <p class="signup-hint">Help others recognize you</p>
+                            </div>
+                            <div class="signup-profile-pic-upload">
+                                <label for="profilePic" class="signup-profile-pic-label">
+                                    <img src="${DEFAULTS.defaultPPic}" alt="Profile" class="signup-preview-pic">
+                                    <div class="signup-upload-overlay">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </label>
+                                <input type="file" id="profilePic" name="profilePic" accept="image/*" hidden>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="completeSignupBtn" class="signup-auth-btn">
+                        Finish!
+                    </button>
+                </form>
+            </div>
+        </div>
+    `;
+    
         // Add modal to page
         const modalWrapper = document.createElement('div');
         modalWrapper.innerHTML = modalHTML;
         document.body.appendChild(modalWrapper.firstElementChild);
-
+        console.log('🎭 Modal added to DOM');
+    
         const modalElement = document.querySelector('.signup-modal');
-        const completeBtn = modalElement.querySelector('#completeSignupBtn');
-        const closeBtn = modalElement.querySelector('.signup-close-btn');
-        const displayNameInput = modalElement.querySelector('#displayName');
-        const birthdayInput = modalElement.querySelector('#birthday');
+        console.log('🔍 Modal element found:', modalElement);
 
-        // Initialize display name validation
-        this.initializeDisplayNameValidation(displayNameInput, modalElement);
-
-        // Handle close button
-        closeBtn.addEventListener('click', () => {
-            // Sign out if they try to close before completing
-            firebase.auth().signOut();
-            modalElement.remove();
-            window.location.href = '/admin/index.html';
+        const profilePicInput = modalElement.querySelector('#profilePic');
+        const previewPic = modalElement.querySelector('.signup-preview-pic');
+        
+        profilePicInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => previewPic.src = e.target.result;
+                reader.readAsDataURL(file);
+            }
         });
+                
+        const closeBtn = modalElement.querySelector('#signupCloseBtn');
+        console.log('Found close button:', closeBtn);
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', async () => {
+                console.log('Close button clicked!');
+                try {
+                    await firebase.auth().signOut();
+                    console.log('User signed out successfully');
+                    window.location.href = '/';
+                } catch (error) {
+                    console.error('Error signing out:', error);
+                }
+            });
+        } else {
+            console.error('Could not find close button!');
+        }
 
-        // Handle form submission
+        // Get form elements and setup finish button
+        const completeBtn = modalElement.querySelector('#completeSignupBtn');
+        const form = modalElement.querySelector('.signup-auth-form');
+
         completeBtn.addEventListener('click', async () => {
             try {
-                completeBtn.disabled = true;
-                completeBtn.textContent = 'Saving...';
-
-                // Collect user data
-                const displayName = displayNameInput.value;
-                const birthday = birthdayInput.value;
-                const location = modalElement.querySelector('#location').value;
-                const profilePic = modalElement.querySelector('#profilePic').files[0];
-
-                // Validate required fields
-                if (!displayName || !birthday || !location) {
-                    throw new Error('Please fill in all required fields');
-                }
-
-                // Use existing validation functions
-                if (!await this.checkDisplayName(displayName, modalElement)) {
-                    completeBtn.disabled = false;
-                    completeBtn.textContent = 'Complete Signup';
-                    return;
-                }
-
-                if (!this.validateAge(birthday, modalElement)) {
-                    completeBtn.disabled = false;
-                    completeBtn.textContent = 'Complete Signup';
-                    return;
-                }
-
-                // Use existing profile creation function
-                await this.createUserProfile(user, {
-                    displayName,
-                    birthday,
-                    location,
-                    profilePic
+                // Clear any existing error messages
+                modalElement.querySelectorAll('.error-message').forEach(error => {
+                    error.remove();
                 });
 
-                // Success! Remove modal and redirect
-                modalElement.remove();
+                const birthday = new Date(form.querySelector('input[name="birthday"]').value);
+                if (!this.validateAge(birthday)) {
+                    throw new Error('You must be 13 or older to use Cipher');
+                }
+
+                const displayName = form.querySelector('input[name="displayName"]').value;
+                if (!displayName) {
+                    throw new Error('Display name cannot be empty');
+                }
+
+                const isNameUnique = await this.checkDisplayNameUnique(displayName);
+                if (!isNameUnique) {
+                    throw new Error('This display name is already taken');
+                }
+
+                await this.createUserProfile(user, form);
                 window.location.href = '/pages/navigate/navigate.html';
 
             } catch (error) {
-                console.error('Error completing signup:', error);
+                console.error('Profile creation error:', error);
                 completeBtn.disabled = false;
-                completeBtn.textContent = 'Complete Signup';
-                alert('Error saving profile: ' + error.message);
+                completeBtn.textContent = 'Finish!';
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'error-message';
+                errorMessage.textContent = error.message;
+                completeBtn.parentNode.insertBefore(errorMessage, completeBtn);
             }
         });
-
-        // Initialize any other validations or listeners
-        if (this.initializeValidations) {
-            this.initializeValidations(modalElement);
-        }
     }
+
+    
+
+
 }
 
 export default SignupModal;

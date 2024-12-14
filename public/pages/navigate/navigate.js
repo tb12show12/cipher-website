@@ -2,6 +2,7 @@
  * IMPORTS AND CONSTANTS
  ******************************************************************************/
 import { TRIP_TYPES, DEFAULTS, PLACE_TYPES } from '/admin/config.js';
+import SignupModal from '/components/signup/signup.js'; 
 
 // Algolia Setup
 const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
@@ -45,6 +46,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         const user = await window.firebaseAuthReady;
         if (!user) {
             window.location.href = '/';
+            return;
+        }
+
+        const userDoc = await firebase.firestore()
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (!userDoc.exists) {
+            console.log('🚀 New user detected, showing signup modal...');
+            const modal = new SignupModal();
+            modal.showUserInfoStep(user);
             return;
         }
 
@@ -268,6 +281,13 @@ async function initializeUserConnections() {
             .get();
 
         const userData = userDoc.data();
+
+        // If no user document exists, set empty state
+        if (!userDoc.exists) {
+            console.log('No user document found, initializing empty connections');
+            state.userConnections = new Set([]);
+            return;
+        }
         
         // Combine all connections
         const connections = new Set([
@@ -1631,7 +1651,7 @@ function initializePlaceViewToggle() {
 }
 
 function initializeFilterMenu() {
-    console.log('Initializing filter menu');
+    console.log('Initializing trip places filter menu');
     const filterButton = document.querySelector('.filter-button');
     const filterMenu = document.querySelector('.filter-menu');
     const filterOptions = document.querySelectorAll('.filter-option');
@@ -1951,6 +1971,18 @@ async function loadUserData(userId) {
 
     const userData = userDoc.data();
 
+    // If no user document exists, set empty state
+    if (!userDoc.exists) {
+        console.log('No user document found, initializing empty state');
+        state.currentUser = {
+            trips: [],
+            // Add any other default fields needed
+        };
+        state.currentUserTrips = [];
+        displayUserData();
+        return;
+    }
+
     // Fetch places data in parallel
     const userTripPromises = (userData.trips || []).map(tripId => 
         firebase.firestore()
@@ -2017,7 +2049,7 @@ function displayUserData() {
             <div class="creator-details-container">
                 <div class="creator-details">
                     <div class="creator-name">
-                        ${userData.displayName}
+                        ${userData.displayName || 'XXX'}
                     </div>
                     <div class="creator-location">${userData.location || ''}</div>
                     <div class="creator-joined">Joined ${new Date(userData.dateJoined?.toDate?.()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
@@ -2026,9 +2058,74 @@ function displayUserData() {
         </div>
 
         <div class="creator-trips">
-            <div class="trips-list">
-                ${userTripsDetail.map(trip => generateTripHTML(trip)).join('')}
-            </div>
+            ${!Array.isArray(userData.trips) || userData.trips.length === 0 ? `
+                <div class="empty-state" style="text-align: center; font-style: italic; font-size: 14px; padding: 20px;">
+                    <p style="margin: 0;">No trips created yet</p>
+                </div>
+            ` : `
+                <div class="trips-filter-bar">
+                    <button class="filter-toggle-btn" id="tripFilterBtn">
+                        <i class="fas fa-filter"></i>
+                        Filter
+                    </button>
+                    
+                    <div class="active-filters" id="activeFilters" style="display: none">
+                        <div class="filter-chips">
+                            <!-- Filter chips will be inserted here -->
+                        </div>
+                    </div>
+
+                    <div class="filter-menu" id="filterMenu">
+                        ${availableTripTypes.length > 0 ? `
+                            <div class="user-filter-section">
+                                <h3>Trip Types</h3>
+                                <div class="filter-options">
+                                    ${availableTripTypes.map(type => `
+                                        <label class="filter-checkbox">
+                                            <input type="checkbox" value="${type.value}">
+                                            <i class="${type.icon}"></i>
+                                            ${type.label}
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="user-filter-section">
+                            <h3>Duration</h3>
+                            <div class="duration-slider">
+                                <div class="slider-inputs">
+                                    <input type="range" 
+                                        min="${minDays}" 
+                                        max="${maxDays}" 
+                                        value="${minDays}" 
+                                        class="slider" 
+                                        id="minDurationSlider">
+                                    <input type="range" 
+                                        min="${minDays}" 
+                                        max="${maxDays}" 
+                                        value="${maxDays}" 
+                                        class="slider" 
+                                        id="maxDurationSlider">
+                                </div>
+                                <div class="slider-labels">
+                                    <span>${minDays} days</span>
+                                    <span>${maxDays} days</span>
+                                </div>
+                                <div class="current-duration">Currently: ${minDays}-${maxDays} days</div>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="filter-apply-btn">Apply</button>
+                            <button class="filter-clear-btn">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="trips-list">
+                    ${userTripsDetail.map(trip => generateTripHTML(trip)).join('')}
+                </div>
+            `}
         </div>
     </div>
     `;
@@ -2036,6 +2133,7 @@ function displayUserData() {
     document.querySelector('.creator-profile').innerHTML = creatorProfile;
 
     // Initialize filters after rendering
+    initializeFilters();
     attachTripItemHandlers();
     attachStatHandlers();
 }
@@ -2158,8 +2256,21 @@ async function loadComments() {
 
 async function displayUserList(listType, startIndex = 0, limit = 20) {
     const userData = state.currentUser;
-    const userIds = listType === 'following' ? userData.friends : userData.followedBy;
-    if (!userData || !userIds) return;
+    const userIds = listType === 'friends' ? userData.friends : userData.followedBy;
+    
+    // Guard against undefined/null userData or empty userIds array
+    if (!userData || !Array.isArray(userIds) || userIds.length === 0) {
+        const containerClass = `creator-${listType}`;
+        const creatorTripsDiv = document.querySelector('.creator-trips');
+        creatorTripsDiv.innerHTML = `
+            <div class="${containerClass}">
+            <div class="empty-state" style="text-align: center; font-style: italic; font-size: 14px; padding: 20px;">
+                <p style="margin: 0;">Not ${listType === 'friends' ? 'following' : 'followed by'} anyone yet</p>
+            </div>
+        </div>
+        `;
+        return;
+    }
 
     try {
         // Create or get the container
@@ -2292,4 +2403,242 @@ function attachStatHandlers() {
             // Add other stat types as needed
         });
     });
+}
+
+function initializeFilters() {
+    const filterBtn = document.getElementById('tripFilterBtn');
+    const filterMenu = document.getElementById('filterMenu');
+    
+
+    if (!filterBtn || !filterMenu) return;
+
+    console.log('Initialize filters called');
+
+    // Toggle filter menu
+    filterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterMenu.classList.toggle('show');
+        console.log('Showing filter menu');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!filterMenu.contains(e.target) && !filterBtn.contains(e.target)) {
+            filterMenu.classList.remove('show');
+        }
+    });
+
+    // Handle checkbox changes
+    document.querySelectorAll('.filter-checkbox input').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateFilterState();
+        });
+    });
+
+    // Handle duration slider
+    const durationSlider = document.getElementById('durationSlider');
+    
+    const minSlider = document.getElementById('minDurationSlider');
+    const maxSlider = document.getElementById('maxDurationSlider');
+    const currentDuration = document.querySelector('.current-duration');
+    
+    minSlider.addEventListener('input', (e) => {
+        if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
+            minSlider.value = maxSlider.value;
+        }
+        updateDurationText();
+    });
+
+    maxSlider.addEventListener('input', (e) => {
+        if (parseInt(maxSlider.value) < parseInt(minSlider.value)) {
+            maxSlider.value = minSlider.value;
+        }
+        updateDurationText();
+    });
+
+    function updateDurationText() {
+        currentDuration.textContent = `Currently: ${minSlider.value}-${maxSlider.value} days`;
+    }
+
+    // Handle apply button
+    document.querySelector('.filter-apply-btn').addEventListener('click', () => {
+        applyFilters();
+        filterMenu.classList.remove('show');
+    });
+
+    // Handle clear button in menu
+    document.querySelector('.filter-clear-btn').addEventListener('click', () => {
+        clearFilters();
+        filterMenu.classList.remove('show');
+    });
+
+    // Add event delegation for chips and clear all button
+    document.querySelector('.active-filters').addEventListener('click', (e) => {
+        // Handle remove chip button clicks
+        if (e.target.classList.contains('remove-chip')) {
+            const chip = e.target.closest('.filter-chip');
+            if (chip) {
+                removeFilter(chip);
+            }
+        }
+        
+        // Handle clear all button clicks
+        if (e.target.classList.contains('clear-filters-chip')) {
+            clearFilters();
+        }
+    });
+}
+
+function updateFilterState() {
+    // Get all checked trip type checkboxes and convert values to integers
+    const checkedTypes = document.querySelectorAll('.filter-checkbox input:checked');
+    state.filters.tripTypes = Array.from(checkedTypes).map(cb => parseInt(cb.value));
+    
+    // Update duration
+    const minSlider = document.getElementById('minDurationSlider');
+    const maxSlider = document.getElementById('maxDurationSlider');
+    
+    if (minSlider && maxSlider) {
+        const isAtInitialValues = 
+            minSlider.value === minSlider.min && 
+            maxSlider.value === maxSlider.max;
+
+        state.filters.duration = isAtInitialValues ? 
+            { min: null, max: null } : 
+            { min: parseInt(minSlider.value), max: parseInt(maxSlider.value) };
+    }
+}
+
+function applyFilters() {
+    updateFilterState();
+    
+    const filteredTrips = state.currentUserTrips.filter(trip => {
+        const typeMatch = state.filters.tripTypes.length === 0 || 
+                         state.filters.tripTypes.includes(parseInt(trip.familyType));
+        
+        const tripDays = parseInt(trip.days);
+        // Only apply duration filter if both min and max are set
+        const durationMatch = 
+            (state.filters.duration.min === null && state.filters.duration.max === null) ||
+            (tripDays >= state.filters.duration.min && tripDays <= state.filters.duration.max);
+        
+        return typeMatch && durationMatch;
+    });
+
+    updateFilterUI();
+    updateTripsList(filteredTrips);
+}
+
+function updateFilterUI() {
+    const activeFilters = document.getElementById('activeFilters');
+    const chipsList = document.querySelector('.filter-chips');
+    
+    // Create chips HTML
+    const chips = [];
+    
+    // Add trip type chips
+    if (state.filters.tripTypes.length > 0) {
+        state.filters.tripTypes.forEach(typeValue => {
+            const tripType = TRIP_TYPES.find(t => t.value === typeValue);
+            if (tripType) {
+                chips.push(`
+                    <span class="filter-chip" data-type="tripType" data-value="${typeValue}">
+                        <i class="${tripType.icon}"></i> ${tripType.label}
+                        <button class="remove-chip">×</button>
+                    </span>
+                `);
+            }
+        });
+    }
+
+    // Add duration chip
+    if (state.filters.duration.min !== null && state.filters.duration.max !== null) {
+        const minSlider = document.getElementById('minDurationSlider');
+        const maxSlider = document.getElementById('maxDurationSlider');
+        const isAtInitialValues = 
+            minSlider.value === minSlider.min && 
+            maxSlider.value === maxSlider.max;
+
+        if (!isAtInitialValues) {
+            chips.push(`
+                <span class="filter-chip" data-type="duration">
+                    ${state.filters.duration.min}-${state.filters.duration.max} days
+                    <button class="remove-chip">×</button>
+                </span>
+            `);
+        }
+    }
+
+    // Add clear all chip if there are filters
+    if (chips.length > 0) {
+        chips.push(`<button class="clear-filters-chip">Clear All</button>`);
+    }
+
+    // Update UI
+    chipsList.innerHTML = chips.join('');
+    activeFilters.style.display = chips.length ? 'block' : 'none';
+    
+}
+
+function removeFilter(chip) {
+    if (chip.dataset.type === 'tripType') {
+        const checkbox = document.querySelector(`.filter-checkbox input[value="${chip.dataset.value}"]`);
+        if (checkbox) checkbox.checked = false;
+    } else if (chip.dataset.type === 'duration') {
+        const minSlider = document.getElementById('minDurationSlider');
+        const maxSlider = document.getElementById('maxDurationSlider');
+        if (minSlider && maxSlider) {
+            // Reset sliders to their min/max values
+            minSlider.value = minSlider.min;
+            maxSlider.value = maxSlider.max;
+            document.querySelector('.current-duration').textContent = 
+                `Currently: ${minSlider.min}-${maxSlider.max} days`;
+            
+            // Reset duration in state
+            state.filters.duration = {
+                min: null,
+                max: null
+            };
+        }
+    }
+    
+    // Update state and reapply filters
+    updateFilterState();
+    applyFilters();
+}
+
+function clearFilters() {
+    // Reset checkboxes
+    document.querySelectorAll('.filter-checkbox input').forEach(cb => cb.checked = false);
+    
+    // Reset both sliders
+    const minSlider = document.getElementById('minDurationSlider');
+    const maxSlider = document.getElementById('maxDurationSlider');
+    if (minSlider && maxSlider) {
+        minSlider.value = minSlider.min;
+        maxSlider.value = maxSlider.max;
+        document.querySelector('.current-duration').textContent = 
+            `Currently: ${minSlider.min}-${maxSlider.max} days`;
+    }
+    
+    // Clear state
+    state.filters = {
+        tripTypes: [],
+        duration: {
+            min: null,
+            max: null
+        }
+    };
+    
+    // Update UI and refilter trips
+    updateFilterUI();
+    updateTripsList(state.currentUserTrips); // Reset to show all trips
+}
+
+function updateTripsList(filteredTrips) {
+    const tripsList = document.querySelector('.trips-list');
+    tripsList.innerHTML = filteredTrips.map(trip => generateTripHTML(trip)).join('');
+    
+    // Reattach click handlers
+    attachTripItemHandlers();
 }
