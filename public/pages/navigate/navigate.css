@@ -229,7 +229,7 @@ body {
 
 .list-view {
     display: grid;
-    gap: 16px;
+    gap: 8px;
     grid-template-columns: 1fr;
 }
 
@@ -1101,13 +1101,13 @@ body {
     padding-top: 4px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     position: relative;
     transition: box-shadow 0.2s ease;
 }
 
 .attendee-button:hover .attendee-card {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    box-shadow: 0 1px px rgba(0,0,0,0.3);
 }
 
 .attendee-photo {
@@ -1647,7 +1647,7 @@ body {
     gap: 8px;
 }
 
-.filter-button {
+.filter-button, .places-filter-button {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1661,32 +1661,28 @@ body {
 }
 
 /* Style for when a filter is active */
-.filter-button.active {
+.filter-button.active, .places-filter-button.active {
     background: #f0f0f0;
     border-color: #ccc;
 }
 
 
-.filter-button:hover {
+.filter-button:hover, .places-filter-button:hover {
     background: #f5f5f5;
 }
 
-.selected-filter {
+.selected-filter, .places-selected-filter {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px;
-    border-radius: 16px;
+    padding: 8px 16px;
+    border-radius: 20px;
     background: #f0f0f0;
-    font-size: 0.9em;
     color: #666;
 }
 
-.selected-filter i {
-    font-size: 0.9em;
-}
 
-.filter-menu {
+.filter-menu, .places-filter-menu {
     position: absolute;
     margin-top: 4px; /* Small gap between button and menu */
     background: white;
@@ -1699,7 +1695,7 @@ body {
 }
 
 /* Add a subtle arrow pointing up */
-.filter-menu::before {
+.filter-menu::before, .places-filter-menu::before {
     content: '';
     position: absolute;
     top: -6px;
@@ -1709,11 +1705,11 @@ body {
     border-right: 6px solid transparent;
 }
 
-.filter-menu.active {
+.filter-menu.active, .places-filter-menu.active {
     display: block;
 }
 
-.filter-option {
+.filter-option, .places-filter-option {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1722,24 +1718,24 @@ body {
     border-bottom: 1px solid #f0f0f0;
 }
 
-.filter-option:last-child {
+.filter-option:last-child, .places-filter-option:last-child {
     border-bottom: none;
 }
 
-.filter-option:hover {
+.filter-option:hover, .places-filter-option:hover {
     background: #f5f5f5;
 }
 
-.filter-option.selected {
+.filter-option.selected, .places-filter-option.selected  {
     background: #f0f0f0;
 }
 
-.filter-option i {
+.filter-option i, .places-filter-option i {
     width: 20px;
     text-align: center;
 }
 
-.filter-count {
+.filter-count, .places-filter-count {
     margin-left: auto;
     color: #666;
     font-size: 0.9em;
@@ -1758,11 +1754,12 @@ body {
 
 .places-table .place-row {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) 60px;  /* Fixed column proportions */
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);  /* Changed to 2 columns */
     align-items: center;
-    min-height: 48px;  /* Fixed row height */
+    min-height: 48px;
     border-bottom: 1px solid #eee;
     transition: background-color 0.2s ease;
+    position: relative; /* Add this */
 }
 
 .places-table .place-row:last-child {
@@ -1780,6 +1777,10 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;  /* Added */
+    align-items: center;  /* Added */
+    gap: 8px;  /* Added */
+    position: relative;
 }
 
 .place-row .place-type {
@@ -1800,18 +1801,22 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 16px;
+    padding: 0px;
 }
 
-.place-row .comment-indicator {
-    width: 28px;
-    height: 28px;
+.comment-indicator {
     display: flex;
     align-items: center;
     justify-content: center;
     color: #666;
     cursor: pointer;
     position: relative;
+    width: 24px;  /* Reduced from 28px */
+    height: 24px;  /* Reduced from 28px */
+}
+
+.comment-indicator i {
+    font-size: 12px;  /* Optional: make icon slightly smaller */
 }
 
 .place-row .comment-indicator:hover .comment-tooltip {
@@ -1819,18 +1824,23 @@ body {
 }
 
 .comment-tooltip {
-    display: none;
     position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
     background: white;
+    border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     padding: 12px;
-    width: 280px;
-    z-index: 1000; /* Increased z-index */
-    margin-right: 8px;
+    min-width: 300px;
+    z-index: 1000;
+    display: none;
+    left: 0;  /* Changed from 50% */
+    top: 0;  /* Position below the indicator */
+    margin-top: 8px;
+    white-space: normal; /* Allow text to wrap */
+}
+
+.places-table {
+    overflow: visible !important;
 }
 
 .comment-tooltip::after {
@@ -2068,4 +2078,23 @@ body {
     font-size: 13px;
     color: #666;
     cursor: pointer;
+}
+
+.places-table {
+    overflow: visible !important;
+}
+
+.place-row {
+    overflow: visible !important;
+    position: relative;
+}
+
+.place-name {
+    overflow: visible !important;
+    position: relative;
+}
+
+.comment-indicator {
+    position: relative;
+    z-index: 100; /* Ensure it's above other content */
 }

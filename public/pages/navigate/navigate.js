@@ -1435,7 +1435,7 @@ function filterPlaces(category) {
     const tableElements = document.querySelectorAll('.places-table .place-row');
     
     // Get the selected category from the filter menu
-    const selectedOption = document.querySelector('.filter-option.selected');
+    const selectedOption = document.querySelector('.places-filter-option.selected');
     const selectedText = selectedOption ? selectedOption.querySelector('span').textContent : 'All';
     
     // Map the filter text to category values
@@ -1502,9 +1502,9 @@ function updatePlacesTab(tripData) {
         };
 
          // Update the filter menu counts
-        document.querySelectorAll('.filter-option').forEach(option => {
+        document.querySelectorAll('.places-filter-option').forEach(option => {
             const filterType = option.querySelector('span').textContent;
-            const countSpan = option.querySelector('.filter-count');
+            const countSpan = option.querySelector('.places-filter-count');
             switch(filterType) {
                 case 'All':
                     countSpan.textContent = `(${counts.all})`;
@@ -1593,12 +1593,8 @@ function updatePlacesTab(tripData) {
             
             return `
                 <div class="place-row" data-category="${placeType.category}">
-                    <div class="place-name">${place.title}</div>
-                    <div class="place-type">
-                        <i class="${placeType.icon}"></i>
-                        ${placeType.label}
-                    </div>
-                    <div class="place-actions">
+                    <div class="place-name">
+                        ${place.title}
                         ${tripComments.length > 0 ? `
                             <div class="comment-indicator">
                                 <i class="fas fa-comment"></i>
@@ -1612,6 +1608,10 @@ function updatePlacesTab(tripData) {
                                 </div>
                             </div>
                         ` : ''}
+                    </div>
+                    <div class="place-type">
+                        <i class="${placeType.icon}"></i>
+                        ${placeType.label}
                     </div>
                 </div>
             `;
@@ -1652,10 +1652,10 @@ function initializePlaceViewToggle() {
 
 function initializeFilterMenu() {
     console.log('Initializing trip places filter menu');
-    const filterButton = document.querySelector('.filter-button');
-    const filterMenu = document.querySelector('.filter-menu');
-    const filterOptions = document.querySelectorAll('.filter-option');
-    const selectedFilter = document.querySelector('.selected-filter');
+    const filterButton = document.querySelector('.places-filter-button');
+    const filterMenu = document.querySelector('.places-filter-menu');
+    const filterOptions = document.querySelectorAll('.places-filter-option');
+    const selectedFilter = document.querySelector('.places-selected-filter');
 
     // Check if already initialized
     if (filterButton.dataset.initialized === 'true') {
@@ -1689,7 +1689,7 @@ function initializeFilterMenu() {
             // Update selected filter display
             const icon = option.querySelector('i').className;
             const text = option.querySelector('span').textContent;
-            const count = option.querySelector('.filter-count').textContent;
+            const count = option.querySelector('.places-filter-count').textContent;
 
             selectedFilter.innerHTML = `
                 <i class="${icon}"></i>

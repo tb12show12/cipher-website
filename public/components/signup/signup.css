@@ -107,7 +107,8 @@
     margin: 0;
 }
 
-.signup-error-message {
+
+.signup-error-message, .error-message {
     color: #dc3545;
     font-size: 0.75rem;
     margin-top: 0.25rem;

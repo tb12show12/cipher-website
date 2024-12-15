@@ -287,6 +287,10 @@ class SignupModal {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Creating Profile...';
 
+            form.querySelectorAll('.error-message').forEach(error => {
+                error.remove();
+            });
+
             try {
                 const birthday = new Date(form.querySelector('input[name="birthday"]').value);
                 if (!this.validateAge(birthday)) {
@@ -300,7 +304,7 @@ class SignupModal {
                 }
 
                 await this.createUserProfile(this.user, form);
-                window.location.href = '/pages/tripview/tripview.html';
+                window.location.href = '/pages/navigate/navigate.html';
 
             } catch (error) {
                 console.error('Profile creation error:', error);
@@ -498,7 +502,7 @@ class SignupModal {
 
         const profilePicInput = modalElement.querySelector('#profilePic');
         const previewPic = modalElement.querySelector('.signup-preview-pic');
-        
+
         profilePicInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
