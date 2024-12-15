@@ -3246,8 +3246,8 @@ function renderAttendeesList() {
         ${buttonHtml}
     `;
 
-         // Only add click handlers if not the creator
-         if (!attendee.isCreator) {
+        // Only add click handlers if not the creator
+        if (!attendee.isCreator) {
             if (attendee.isMarkedForDeletion) {
                 attendeeElement.querySelector('.undo-remove-btn').onclick = () => {
                     attendeesToRemove.delete(attendee.userId);
@@ -3281,4 +3281,51 @@ function renderAttendeesList() {
 
         attendeesGrid.appendChild(attendeeElement);
     });
+
+    // Add the "Invite New User" button at the end
+    const inviteButton = document.createElement('div');
+    inviteButton.className = 'attendee-item invite-new-user';
+    inviteButton.innerHTML = `
+        <div class="attendee-info">
+            <div class="invite-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="attendee-details">
+                <span class="attendee-name">Invite New User</span>
+                <span class="invite-description">Share link to join Cipher</span>
+            </div>
+        </div>
+    `;
+
+    inviteButton.addEventListener('click', () => {
+        const modalHtml = `
+            <div class="modal-overlay">
+                <div class="signup-modal-content" style="max-width: 400px;">
+                    <div class="signup-modal-nav">
+                        <button class="signup-close-btn">&times;</button>
+                    </div>
+                    
+                    <div class="signup-header-container">
+                        <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
+                        <div class="signup-modal-header">
+                            <h2>Coming Soon!</h2>
+                            <p>Invite friends to join your trip</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+        const modal = document.querySelector('.modal-overlay');
+        const closeBtn = modal.querySelector('.signup-close-btn');
+    
+        closeBtn.addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    });
+
+    attendeesGrid.appendChild(inviteButton);
 }

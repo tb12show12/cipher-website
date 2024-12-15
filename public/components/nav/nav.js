@@ -174,48 +174,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             const tripResult = e.target.closest('.search-result-item:not(.user-result)');
             const userResult = e.target.closest('.user-result');
             
+            // Close search results
+            searchInput.value = '';
+            searchResults.style.display = 'none';
+            
             if (tripResult) {
                 const tripId = tripResult.dataset.tripId;
                 const creatorId = tripResult.dataset.creatorId;
                 
-                // Close search results
-                searchInput.value = '';
-                searchResults.style.display = 'none';
-                
-                // Navigate to trip view
-                const event = new CustomEvent('loadNavigatePage', {
-                    detail: {
-                        tripId: tripId,
-                        userId: creatorId
-                    }
-                });
-                document.dispatchEvent(event);
-                
-                // Update URL
-                const newUrl = new URL('/navigate', window.location.origin);
-                newUrl.searchParams.set('tripId', tripId);
-                window.history.pushState({ tripId }, '', newUrl);
+                // Check if we're on the navigate page
+                if (window.location.pathname.includes('/pages/navigate')) {
+                    // Already on navigate, just dispatch event
+                    document.dispatchEvent(new CustomEvent('loadNavigatePage', {
+                        detail: { tripId, userId: creatorId }
+                    }));
+                } else {
+                    // Redirect to navigate page with parameters
+                    window.location.href = `/pages/navigate/navigate.html?tripId=${tripId}`;
+                }
             }
             
             if (userResult) {
                 const userId = userResult.dataset.userId;
                 
-                // Close search results
-                searchInput.value = '';
-                searchResults.style.display = 'none';
-                
-                // Navigate to user profile
-                const event = new CustomEvent('loadNavigatePage', {
-                    detail: {
-                        userId: userId
-                    }
-                });
-                document.dispatchEvent(event);
-                
-                // Update URL
-                const newUrl = new URL('/navigate', window.location.origin);
-                newUrl.searchParams.set('userId', userId);
-                window.history.pushState({ userId }, '', newUrl);
+                if (window.location.pathname.includes('/pages/navigate')) {
+                    // Already on navigate, just dispatch event
+                    document.dispatchEvent(new CustomEvent('loadNavigatePage', {
+                        detail: { userId }
+                    }));
+                } else {
+                    // Redirect to navigate page with parameter
+                    window.location.href = `/pages/navigate/navigate.html?userId=${userId}`;
+                }
             }
         });
 

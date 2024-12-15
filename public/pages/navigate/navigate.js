@@ -81,9 +81,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 /**
  * Determines initial view based on URL parameters
  */
-function handleInitialView() {
+async function handleInitialView() {
     const params = new URLSearchParams(window.location.search);
     const tripId = params.get('tripId');
+    const userId = params.get('userId');
+    
+    if (userId) await loadUserData(userId);
+
 
     if (tripId) {
         // Load specific trip
