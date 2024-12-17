@@ -12,8 +12,14 @@ body {
     margin: 0px auto;
     padding: 20px;
     display: flex;
-    gap: 24px;
+    flex-direction: column; /* Add this */
+    gap: 12px;
     min-height: calc(100vh - 100px);
+}
+
+.columns-container {
+    display: flex;
+    gap: 24px;
 }
 
 /* Creator Profile */
@@ -340,9 +346,17 @@ body {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.95);
     line-height: 1.3;
+    text-align: left;
+    
+    /* Add these properties for text truncation */
+    display: -webkit-box;
+    display: box;  /* Standard version */
+    -webkit-line-clamp: 3;
+    line-clamp: 3;  /* Standard version */
+    -webkit-box-orient: vertical;
+    box-orient: vertical;  /* Standard version */
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: left;  /* Explicitly set left alignment */
 }
 
 .trip-item-meta {
@@ -805,7 +819,7 @@ body {
 .search-actions button {
     flex: 1;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 20px;
     border: none;
     font-size: 12px;
     cursor: pointer;
@@ -2016,7 +2030,7 @@ body {
 
 .filter-apply-btn, .filter-clear-btn {
     padding: 6px 16px;
-    border-radius: 4px;
+    border-radius: 20px;
     font-size: 14px;
     cursor: pointer;
 }
@@ -2096,5 +2110,216 @@ body {
 
 .comment-indicator {
     position: relative;
-    z-index: 100; /* Ensure it's above other content */
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    animation: pulse 2s infinite;
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.quick-links-divider {
+    border-bottom: 1px dashed #EEE;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.share-success-message {
+    color: #4CAF50;
+    font-size: 12px;
+    margin-left: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    align-items: center;
+    gap: 4px;
+    display: inline-flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.share-success-message i {
+    font-size: 14px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.invite-banner {
+    position: relative;  /* For positioning the pseudo-element */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;  /* Keep the background within border radius */
+}
+
+.invite-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/assets/PatternBackgroundColor.svg');
+    background-size: cover;
+    background-position: center;
+    transform: scaleX(-1);  /* Mirror just the background */
+    z-index: -1;  /* Place behind the content */
+}
+
+.invite-banner .get-started-btn {
+    background: white;
+    color: #AD7800;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 16px; /* Add some space between text and button */
+    white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+.invite-banner .get-started-btn:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button container */
+.signup-modal .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Accept invite button */
+#acceptInvite, #continueBtn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    background: #AD7800;
+    color: #EEE;
+    border: none;
+}
+
+#acceptInvite:hover, #continueBtn:hover {
+    background: #966900;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#acceptInvite:disabled, #continueBtn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Decline invite button */
+#declineInvite {
+    width: 100%;
+    padding: 10px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    background: #EEE;
+    color: #AD7800;
+    border: 2px solid #AD7800;
+}
+
+#declineInvite:hover {
+    background: #E5E5E5;
+    color: #966900;
+    border-color: #966900;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.success-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.success-message.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.success-message i {
+    font-size: 16px;
 }

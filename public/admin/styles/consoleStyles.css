@@ -1947,3 +1947,24 @@ input[type="file"]::file-selector-button {
     line-height: 1.5;
     color: #666;
 }
+
+.share-success-message {
+    color: #4CAF50;
+    font-size: 12px;
+    margin-left: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    align-items: center;
+    gap: 4px;
+    display: inline-flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.share-success-message i {
+    font-size: 14px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

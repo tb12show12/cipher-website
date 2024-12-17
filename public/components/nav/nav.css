@@ -134,6 +134,10 @@
     object-fit: cover;
 }
 
+.nav-profile-pic {
+    border: 1px solid #AD7800;
+}
+
 /* Add margin to main content to account for fixed nav */
 main {
     margin-top: 52px;

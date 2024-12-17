@@ -1,0 +1,91 @@
+.signup-modal .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.signup-modal .auth-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 30px;  /* Changed from 8px to 30px */
+    font-size: 14px;      /* Changed from 16px to 14px */
+    font-weight: 600;     /* Changed from 500 to 600 */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+/* Login button */
+.signup-modal .auth-btn.login {
+    background: #AD7800;   /* Changed from white to #AD7800 */
+    color: #EEE;          /* Changed from #007AFF to #EEE */
+    border: none;         /* Removed border */
+}
+
+.signup-modal .auth-btn.login:hover {
+    background: #966900;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Sign up button */
+.signup-modal .auth-btn.signup {
+    background: #EEE;      /* Changed from #007AFF to #EEE */
+    color: #AD7800;       /* Changed from white to #AD7800 */
+    border: 2px solid #AD7800;
+}
+
+.signup-modal .auth-btn.signup:hover {
+    background: #E5E5E5;
+    color: #966900;
+    border-color: #966900;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Apple button */
+.signup-modal .auth-btn.apple {
+    background: black;
+    color: white;
+    border: none;
+}
+
+.signup-modal .auth-btn.apple:hover {
+    background: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Active states */
+.signup-modal .auth-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.signup-modal .divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 15px 0;
+    color: #666;
+    gap: 10px;
+}
+
+.signup-modal .divider::before,
+.signup-modal .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #666;
+}
+
+.signup-modal .divider span {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}

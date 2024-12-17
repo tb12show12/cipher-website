@@ -55,9 +55,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             resetForNewTrip();
             setupEventListeners();
             setupCoverImageHandlers();
+
+            const params = new URLSearchParams(window.location.search);
+            const tripId = params.get('tripId');
+            if (tripId) {
+                await loadTripData(tripId);
+            }
+
         } else {
             console.log('No user authenticated, redirecting to login');
-            window.location.href = '/admin/';
+            window.location.href = '/';
         }
     } catch (error) {
         console.error('Failed to initialize:', error);
@@ -3297,7 +3304,7 @@ function renderAttendeesList() {
         </div>
     `;
 
-    inviteButton.addEventListener('click', () => {
+    /*inviteButton.addEventListener('click', () => {
         const modalHtml = `
             <div class="modal-overlay">
                 <div class="signup-modal-content" style="max-width: 400px;">
@@ -3325,7 +3332,36 @@ function renderAttendeesList() {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) modal.remove();
         });
+    });*/
+
+    inviteButton.addEventListener('click', async () => {
+        const tripId = currentTripId;
+        const inviteUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripId}&invite=true`;
+        
+        // Remove any existing success messages
+        document.querySelectorAll('.share-success-message').forEach(msg => msg.remove());
+
+        // Create success message if it doesn't exist
+        let successSpan = document.querySelector('.invite-success-message');
+        if (!successSpan) {
+            successSpan = document.createElement('span');
+            successSpan.className = 'share-success-message';  // reuse same styling
+            successSpan.style.display = 'none';
+            successSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
+            inviteButton.parentNode.insertBefore(successSpan, inviteButton.nextSibling);
+        }
+        
+        try {
+            await navigator.clipboard.writeText(inviteUrl);
+            successSpan.style.display = 'inline-flex';
+            setTimeout(() => {
+                successSpan.style.display = 'none';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy invite URL:', err);
+        }
     });
 
     attendeesGrid.appendChild(inviteButton);
 }
+

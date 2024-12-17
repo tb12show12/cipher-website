@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Shared Trip - Cipher</title>
+    <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
+    
+    <!-- Static meta tags for social sharing -->
+    <meta property="og:title" content="">
+    <meta property="og:description" content="Discover this travel experience on Cipher">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    
+    <script>
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const title = params.get('title');
+            const image = params.get('image');
+            const tripId = params.get('tripId');
+            
+            // Update meta tags
+            document.querySelector('meta[property="og:title"]').setAttribute('content', 
+                title || 'Shared Trip - Cipher');
+            document.querySelector('meta[property="og:image"]').setAttribute('content', 
+                image || '/assets/Butterfly2.png');
+            document.querySelector('meta[property="og:url"]').setAttribute('content', 
+                `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripId}`);
+            
+            // Redirect to the actual trip page
+            window.location.href = `/pages/navigate/navigate.html?tripId=${tripId}`;
+        };
+    </script>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <p>Redirecting to trip...</p>
+    </div>
+</body>
+</html>

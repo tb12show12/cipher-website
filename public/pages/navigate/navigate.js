@@ -16,6 +16,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
  * STATE MANAGEMENT
  ******************************************************************************/
 const state = {
+    authedUserData: null,
     currentUser: null,
     currentUserTrips: null,
     currentTrip: null,
@@ -43,10 +44,48 @@ const state = {
  ******************************************************************************/
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        const params = new URLSearchParams(window.location.search);
+        let tripId = params.get('tripId');
+        let isInvite = params.get('invite') === 'true';
+        
         const user = await window.firebaseAuthReady;
+
         if (!user) {
+            // If there's a tripId, redirect to preview page
+            if (tripId) {
+                const previewParams = new URLSearchParams();
+                previewParams.set('tripId', tripId);
+                if (isInvite) {
+                    previewParams.set('invite', 'true');
+                }
+                window.location.href = `/pages/preview/preview.html?${previewParams.toString()}`;
+                return;
+            }
+            // Otherwise redirect to home
             window.location.href = '/';
-            return;
+            return; 
+        }
+
+        // Check if we're coming from the preview page and pass on relevant info.
+        const storedTripId = localStorage.getItem('redirectTripId');
+        const storedInvite = localStorage.getItem('redirectInvite');  // Will be null if not found
+
+        if (storedTripId) {  // Only proceeds if storedTripId exists
+            localStorage.removeItem('redirectTripId');
+            localStorage.removeItem('redirectInvite');   // Safe to remove even if it doesn't exist
+            
+            const params = new URLSearchParams(window.location.search);
+            if (!params.has('tripId')) {
+                params.set('tripId', storedTripId);
+                if (storedInvite === 'true') {  // Only adds invite param if specifically 'true'
+                    params.set('invite', 'true');
+                }
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.replaceState({}, '', newUrl);
+
+                tripId = storedTripId;
+                isInvite = storedInvite === 'true';
+            }
         }
 
         const userDoc = await firebase.firestore()
@@ -59,6 +98,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const modal = new SignupModal();
             modal.showUserInfoStep(user);
             return;
+        } else {
+            state.authedUserData = userDoc.data();
         }
 
         state.currentUser = user;
@@ -70,7 +111,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         initializeDefaultState();
         initializeEventListeners();
-        handleInitialView();
+        await handleInitialView();
+
+        // Show invite prompt if needed
+        if (isInvite && tripId) {
+            showInvitePrompt(tripId);
+        }
         
     } catch (error) {
         console.error('Initialization error:', error);
@@ -91,7 +137,7 @@ async function handleInitialView() {
 
     if (tripId) {
         // Load specific trip
-        loadTrip(tripId);
+        await loadTrip(tripId);
         switchToTripView();
     } else {
         // Show Recent Activity as default view
@@ -157,6 +203,12 @@ function initializeEventListeners() {
  */
 async function handleSearchCipher() {
     console.log('🎯 Search Cipher button clicked');
+
+    document.querySelectorAll('.quick-link-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById('searchCipherButton').classList.add('active');
     
     // Clear all filters
     handleClearAll();
@@ -249,6 +301,10 @@ function switchToTripView() {
     document.querySelector('.trip-details-view').style.display = 'block';
     document.querySelector('.search-context').style.display = 'none';
     document.querySelector('.trip-context').style.display = 'block';
+
+    document.querySelectorAll('.quick-link-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
 }
 
 function switchToSearchView() {
@@ -256,6 +312,11 @@ function switchToSearchView() {
     document.querySelector('.trip-details-view').style.display = 'none';
     document.querySelector('.search-context').style.display = 'block';
     document.querySelector('.trip-context').style.display = 'none';
+    
+    document.getElementById('shareTripButton').style.display = 'none';
+    document.getElementById('editTripButton').style.display = 'none';
+    document.getElementById('inviteUserButton').style.display = 'none';
+    document.getElementById('quickLinksDivider').style.display = 'none';
 }
 
 /******************************************************************************
@@ -478,7 +539,13 @@ async function handleShowMyProfile() {
  */
 async function handleRecentActivity() {
     console.log('🎯 Recent Activity button clicked');
-    
+
+    document.querySelectorAll('.quick-link-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById('recentActivityButton').classList.add('active');
+
     // Clear all filters
     initializeDefaultState();
     
@@ -517,6 +584,11 @@ async function displayRecentActivity() {
         document.querySelector('.trip-details-view').style.display = 'none';
         document.querySelector('.search-context').style.display = 'block';
         document.querySelector('.trip-context').style.display = 'none';
+
+        document.getElementById('shareTripButton').style.display = 'none';
+        document.getElementById('editTripButton').style.display = 'none';
+        document.getElementById('inviteUserButton').style.display = 'none';
+        document.getElementById('quickLinksDivider').style.display = 'none';
 
         // Use cache if valid
         if (isCacheValid()) {
@@ -1115,7 +1187,7 @@ function initializeDiscoverMap(hits) {
                 await loadUserData(hit.creatorId);
                 
                 // Load and display trip
-                loadTrip(tripId);
+                await loadTrip(tripId);
                 switchToTripView();
 
                 selectedTripContainer.style.display = 'none'; // hide the container
@@ -1336,6 +1408,8 @@ function updateTripDisplay(tripData) {
     toggleTabVisibility('attendees', tripData.attendeesDetail?.length > 0);
 
     loadComments();
+    updateQuickLinks(tripData);
+
 }
 
 /**
@@ -2156,7 +2230,7 @@ function attachTripItemHandlers() {
             const isCenterColumn = button.closest('.center-column') !== null;
             
             // Load and display trip
-            loadTrip(tripId, isCenterColumn);
+            await loadTrip(tripId, isCenterColumn);
             switchToTripView();
 
         });
@@ -2645,4 +2719,237 @@ function updateTripsList(filteredTrips) {
     
     // Reattach click handlers
     attachTripItemHandlers();
+}
+
+function showInvitePrompt(tripId) {
+    const isAlreadyAttendee = state.currentTrip.attendees.includes(state.authedUserData.userId);
+    
+    const modalHtml = `
+        <div class="signup-modal">
+            <div class="signup-modal-content">
+                <div class="signup-modal-nav">
+                    <button class="signup-close-btn">&times;</button>
+                </div>
+                
+                <div class="signup-header-container">
+                    <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
+                    <div class="signup-modal-header">
+                        <h2>Join Trip</h2>
+                        <p>${isAlreadyAttendee ? 
+                            'You are already an attendee on this trip' : 
+                            `Would you like to be added to ${state.currentTrip.title}?`}</p>
+                    </div>
+                </div>
+
+                <div class="auth-buttons">
+                    ${isAlreadyAttendee ? `
+                        <button class="auth-btn signup" id="continueBtn">
+                            Continue
+                        </button>
+                    ` : `
+                        <button class="auth-btn signup" id="acceptInvite">
+                            Yes, Add Me
+                        </button>
+                        <button class="auth-btn login" id="declineInvite">
+                            No Thanks
+                        </button>
+                    `}
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const modal = document.querySelector('.signup-modal');
+    const closeBtn = modal.querySelector('.signup-close-btn');
+
+    closeBtn.addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+    
+    if (isAlreadyAttendee) {
+        const continueBtn = modal.querySelector('#continueBtn');
+        continueBtn.addEventListener('click', () => {
+            modal.remove();
+            // Remove invite parameter from URL
+            const params = new URLSearchParams(window.location.search);
+            params.delete('invite');
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, '', newUrl);
+        });
+    } else {
+        const acceptBtn = modal.querySelector('#acceptInvite');
+        const declineBtn = modal.querySelector('#declineInvite');
+    
+        acceptBtn.addEventListener('click', async () => {
+            try {
+                acceptBtn.disabled = true;
+                acceptBtn.textContent = 'Adding...';
+
+                console.log('currentUser to add:', state.authedUserData);
+                
+                await writeNewAttendeeToFirebase(tripId, state.authedUserData.userId);
+
+                modal.remove();
+                displaySuccessMessage('Successfully joined the trip!');
+                
+                // Update URL without reloading
+                const params = new URLSearchParams(window.location.search);
+                params.delete('invite');
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.replaceState({}, '', newUrl);
+
+                // Reload trip data
+                await loadTrip(tripId);
+
+            } catch (error) {
+                console.error('Error joining trip:', error);
+                displayErrorMessage('Failed to join trip');
+                acceptBtn.disabled = false;
+                acceptBtn.textContent = 'Yes, Add Me';
+            }
+        });
+
+        declineBtn.addEventListener('click', () => {
+            modal.remove();
+            // Remove invite parameter from URL
+            const params = new URLSearchParams(window.location.search);
+            params.delete('invite');
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, '', newUrl);
+        });
+    }
+}
+
+async function writeNewAttendeeToFirebase(tripId, userId) {
+    const tripRef = firebase.firestore()
+            .collection('trips')
+            .doc(tripId);
+
+    // Get current trip data
+    const tripDoc = await tripRef.get();
+    if (!tripDoc.exists) {
+        throw new Error('Trip not found');
+    }
+
+    const batch = firebase.firestore().batch();
+    
+    batch.update(tripRef, {
+        attendees: firebase.firestore.FieldValue.arrayUnion(userId)
+    });
+
+    // Update user's trips list
+    const userRef = firebase.firestore().collection('users').doc(userId);
+    batch.update(userRef, {
+        trips: firebase.firestore.FieldValue.arrayUnion(tripId)
+    });
+
+    // Execute all updates atomically
+    await batch.commit();
+}
+
+function updateQuickLinks(tripData) {
+    // Check if user is an attendee
+    const authedUserId = firebase.auth().currentUser?.uid;
+    const isAttendee = tripData.attendees?.includes(authedUserId);
+
+    // Show/hide buttons based on attendance
+    document.getElementById('editTripButton').style.display = isAttendee ? 'flex' : 'none';
+    document.getElementById('inviteUserButton').style.display = isAttendee ? 'flex' : 'none';
+    document.getElementById('shareTripButton').style.display = 'flex';
+    document.getElementById('quickLinksDivider').style.display = 'flex';
+
+    document.getElementById('editTripButton').addEventListener('click', () => {
+        window.location.href = `/admin/console.html?tripId=${tripData.tripId}`;
+    });
+
+    // Add share button functionality
+    const shareTripButton = document.getElementById('shareTripButton');
+    
+    // Remove any existing success message
+    const existingSuccessSpan = document.querySelector('.share-success-message');
+    if (existingSuccessSpan) {
+        existingSuccessSpan.remove();
+    }
+
+    // Add new success message span
+    const successSpan = document.createElement('span');
+    successSpan.className = 'share-success-message';
+    successSpan.style.display = 'none';
+    successSpan.innerHTML = '<i class="fas fa-check"></i> Link Copied!';
+    shareTripButton.parentNode.insertBefore(successSpan, shareTripButton.nextSibling);
+
+    // Add click handler
+    shareTripButton.addEventListener('click', async () => {
+        const shareUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}`;
+        const shareUrlWithInfo = `${window.location.origin}/pages/share?tripId=${tripData.tripId}&title=${encodeURIComponent(tripData.title)}&image=${encodeURIComponent(tripData.tripCoverPic || '/assets/Butterfly2.png')}`;
+
+        try {
+            await navigator.clipboard.writeText(shareUrlWithInfo);
+            successSpan.style.display = 'inline-flex';
+            setTimeout(() => {
+                successSpan.style.display = 'none';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy URL:', err);
+        }
+    });
+
+
+    // Invite button functionality
+    const inviteButton = document.getElementById('inviteUserButton');
+    
+    // Remove any existing success message
+    const existingInviteSuccess = document.querySelector('.invite-success-message');
+    if (existingInviteSuccess) {
+        existingInviteSuccess.remove();
+    }
+
+    // Add success message span
+    const inviteSuccessSpan = document.createElement('span');
+    inviteSuccessSpan.className = 'share-success-message';  // reuse same styling
+    inviteSuccessSpan.style.display = 'none';
+    inviteSuccessSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
+    inviteButton.parentNode.insertBefore(inviteSuccessSpan, inviteButton.nextSibling);
+
+    inviteButton.addEventListener('click', async () => {
+        const inviteUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}&invite=true`;
+        
+        try {
+            await navigator.clipboard.writeText(inviteUrl);
+            inviteSuccessSpan.style.display = 'inline-flex';
+            setTimeout(() => {
+                inviteSuccessSpan.style.display = 'none';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy invite URL:', err);
+        }
+    });
+}
+
+/**
+ * Displays a success message that automatically disappears
+ * @param {string} message - The message to display
+ */
+function displaySuccessMessage(message) {
+    const existingMessage = document.querySelector('.success-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
+    const messageElement = document.createElement('div');
+    messageElement.className = 'success-message';
+    messageElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+    document.body.appendChild(messageElement);
+
+    // Trigger animation
+    setTimeout(() => messageElement.classList.add('show'), 100);
+
+    // Remove after delay
+    setTimeout(() => {
+        messageElement.classList.remove('show');
+        setTimeout(() => messageElement.remove(), 300);
+    }, 3000);
 }

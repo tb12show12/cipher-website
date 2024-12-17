@@ -2,20 +2,14 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Navigate - Cipher</title>
+    <title>Cipher: Preview Mode</title>
     <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
-
-    <meta property="og:title" content="Cipher: Travel Memories Shared" />
-    <meta property="og:description" content="Share your travel memories and experiences with friends and family using the Cipher app." />
-    <meta property="og:image" content="https://cipher-app.com/assets/Butterfly2.png" />
-    <meta property="og:url" content="https://cipher-app.com" />
-    <meta property="og:type" content="website" />
-
+    
     <!-- Styles -->
-     
-    <link rel="stylesheet" href="/components/nav/nav.css">
+    <link rel="stylesheet" href="/components/previewNav/previewNav.css">
     <link rel="stylesheet" href="/pages/navigate/navigate.css">
     <link rel="stylesheet" href="/components/signup/signup.css">
+    <link rel="stylesheet" href="/pages/preview/preview.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css' rel='stylesheet' />
 
@@ -30,9 +24,15 @@
     <script type="module" src="/components/signup/signup.js"></script>
 </head>
 <body>
-    <!-- Navigation -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <img src="/assets/Butterfly2.png" alt="Cipher" class="loading-icon">
+            <div class="loading-text">Loading Preview...</div>
+        </div>
+    </div>
+    
     <div id="nav-container"></div>
-
+    
     <!-- Main Content -->
     <main>
         <div class="page-container">
@@ -200,23 +200,13 @@
                                 <div class="header-text">QUICK LINKS</div>
                             </div>
                             <div class="quick-links-list">
-                                <button id="editTripButton" class="quick-link-btn" style="display: none;">
-                                    <i class="fas fa-edit"></i> Edit Trip
-                                </button>
-                                <button id="inviteUserButton" class="quick-link-btn" style="display: none;">
-                                    <i class="fas fa-user-plus"></i> Invite User to Trip
-                                </button>
-                                <button id="shareTripButton" class="quick-link-btn">
-                                    <i class="fas fa-share-alt"></i> Share Trip
-                                </button>
-                                <div id="quickLinksDivider" class="quick-links-divider"></div>
                                 <button id="showMyProfileButton" class="quick-link-btn">
                                     <i class="fas fa-user"></i>
                                     Show My Profile
                                 </button>
                                 <button id="searchCipherButton" class="quick-link-btn">
                                     <i class="fas fa-search"></i>
-                                    Search All Trips on Cipher
+                                    Search Trips
                                 </button>
                                 <button id="recentActivityButton" class="quick-link-btn">
                                     <i class="fas fa-clock"></i>
@@ -303,8 +293,8 @@
         </div>
     </main>
 
-    <script type="module" src="/pages/navigate/navigate.js"></script>
-    <script type="module" src="/components/nav/nav.js"></script>
+    <script type="module" src="/pages/preview/preview.js"></script>
+    <script type="module" src="/components/previewNav/previewNav.js"></script>
     <script src="/admin/clientConfig.js"></script>
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close">&times;</button>

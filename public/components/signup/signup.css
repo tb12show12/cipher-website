@@ -405,3 +405,18 @@
     color: #198754;
     border-left-color: #198754;
 }
+
+.signup-forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    color: #AD7800;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.signup-forgot-password:hover {
+    color: #966900;
+    text-decoration: underline;
+}

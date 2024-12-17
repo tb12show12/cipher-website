@@ -7,68 +7,10 @@ const userIndex = searchClient.initIndex('userIndex');
 // Load and inject the navigation HTML
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('/components/nav/nav.html');
+        const response = await fetch('/components/previewNav/previewNav.html');
         const html = await response.text();
         document.getElementById('nav-container').innerHTML = html;
-        
-        // Wait for Firebase auth to be ready
-        const user = await window.firebaseAuthReady;
-        
-        if (user) {
-            try {
-                const userDoc = await firebase.firestore()
-                    .collection('users')
-                    .doc(user.uid)
-                    .get();
-                
-                const userData = userDoc.data();
-                
-                // Update both profile picture and name if userData exists
-                if (userData) {
-                    const profileLink = document.querySelector('.nav-item.nav-profile');
-                    
-                    // Update profile picture if it exists
-                    if (userData.pPic) {
-                        const profilePic = profileLink.querySelector('.nav-profile-pic');
-                        if (profilePic) {
-                            profilePic.src = userData.pPic;
-                        }
-                    }
-                    
-                    // Update display name
-                    const nameSpan = profileLink.querySelector('span');
-                    if (nameSpan && userData.displayName) {
-                        nameSpan.textContent = userData.displayName;
-                    }
-                } else {
-                    console.log('User data not found');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        }
 
-        // Add active class based on current page
-        const currentPath = window.location.pathname;
-        const navItems = document.querySelectorAll('.nav-item');
-
-        navItems.forEach(item => {
-            if (item.getAttribute('href') === currentPath) {
-                item.classList.add('active');
-            }
-        });
-
-        const logoutButton = document.querySelector('i.fa-sign-out-alt').closest('.nav-item');
-
-        logoutButton.addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await firebase.auth().signOut();
-                window.location.href = '/';
-            } catch (error) {
-                console.error('Error signing out:', error);
-            }
-        });
 
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('navSearchResults');
@@ -182,42 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Add click handlers using event delegation
         searchResults.addEventListener('click', async (e) => {
-            const tripResult = e.target.closest('.search-result-item:not(.user-result)');
-            const userResult = e.target.closest('.user-result');
-            
-            // Close search results
-            searchInput.value = '';
-            searchResults.style.display = 'none';
-            
-            if (tripResult) {
-                const tripId = tripResult.dataset.tripId;
-                const creatorId = tripResult.dataset.creatorId;
-                
-                // Check if we're on the navigate page
-                if (window.location.pathname.includes('/pages/navigate')) {
-                    // Already on navigate, just dispatch event
-                    document.dispatchEvent(new CustomEvent('loadNavigatePage', {
-                        detail: { tripId, userId: creatorId }
-                    }));
-                } else {
-                    // Redirect to navigate page with parameters
-                    window.location.href = `/pages/navigate/navigate.html?tripId=${tripId}`;
-                }
-            }
-            
-            if (userResult) {
-                const userId = userResult.dataset.userId;
-                
-                if (window.location.pathname.includes('/pages/navigate')) {
-                    // Already on navigate, just dispatch event
-                    document.dispatchEvent(new CustomEvent('loadNavigatePage', {
-                        detail: { userId }
-                    }));
-                } else {
-                    // Redirect to navigate page with parameter
-                    window.location.href = `/pages/navigate/navigate.html?userId=${userId}`;
-                }
-            }
+            // need to show modal.
         });
 
         // Close search results when clicking outside
@@ -226,50 +133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 searchResults.style.display = 'none';
             }
         });
-
-         // Add click handler for My Profile nav item
-         const profileNavItem = document.querySelector('.nav-item.nav-profile');
-         if (profileNavItem) {
-             profileNavItem.addEventListener('click', async (e) => {
-                 e.preventDefault();
-                 console.log('profileNavItem clicked');
-
-                 // Check if we're on the navigate page
-                 if (window.location.pathname.includes('/pages/navigate')) {
-                     if (user) {
-                        console.log('on navigate page, loading user profile');
-                        document.dispatchEvent(new CustomEvent('loadNavigatePage', {
-                            detail: { userId: user.uid }
-                        }));
-                     }
-                 } else {
-                     // If not on navigate page, redirect to it first
-                     console.log('not on navigate page, redirecting to it first');
-                     window.location.href = '/pages/navigate/navigate.html';
-                 }
-             });
-         }
-
-         const discoverNavItem = document.querySelector('.nav-item.nav-discover');
-         if (discoverNavItem) {
-             discoverNavItem.addEventListener('click', async (e) => {
-                 e.preventDefault();
-                 console.log('discoverNavItem clicked');
-
-                 // Check if we're on the navigate page
-                 if (window.location.pathname.includes('/pages/navigate')) {
-                     if (user) {
-                        document.dispatchEvent(new CustomEvent('loadNavigatePage', {
-                            detail: { userId: null, tripId: null }
-                        }));
-                     }
-                 } else {
-                     // If not on navigate page, redirect to it first
-                     console.log('not on navigate page, redirecting to it first');
-                     window.location.href = '/pages/navigate/navigate.html';
-                 }
-             });
-         }
 
     } catch (error) {
         console.error('Error loading navigation:', error);

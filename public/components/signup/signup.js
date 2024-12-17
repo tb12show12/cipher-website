@@ -79,6 +79,8 @@ class SignupModal {
                 <button type="button" id="loginBtn" class="signup-auth-btn">
                     Login
                 </button>
+
+                <a href="#" id="forgotPasswordLink" class="signup-forgot-password">Forgot Password?</a>
             </div>
         `;
     }
@@ -376,6 +378,7 @@ class SignupModal {
         const emailInput = modalElement.querySelector('#loginEmail');
         const passwordInput = modalElement.querySelector('#loginPassword');
         const errorMessage = modalElement.querySelector('#loginError');
+        const forgotPasswordLink = modalElement.querySelector('#forgotPasswordLink');
 
         loginBtn.addEventListener('click', async () => {
             errorMessage.textContent = '';
@@ -417,6 +420,11 @@ class SignupModal {
         
         emailInput.addEventListener('keypress', handleEnterKey);
         passwordInput.addEventListener('keypress', handleEnterKey);
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            modalElement.remove();
+            this.showForgotPasswordModal();
+        });
     }
 
     async showUserInfoStep(user) {
@@ -567,6 +575,87 @@ class SignupModal {
                 errorMessage.className = 'error-message';
                 errorMessage.textContent = error.message;
                 completeBtn.parentNode.insertBefore(errorMessage, completeBtn);
+            }
+        });
+    }
+
+    showForgotPasswordModal() {
+        const modalHTML = `
+            <div class="signup-modal">
+                <div class="signup-modal-content" style="max-width: 400px;">
+                    <div class="signup-modal-nav">
+                        <button class="signup-close-btn">&times;</button>
+                    </div>
+                    
+                    <div class="signup-header-container">
+                        <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
+                        <div class="signup-modal-header">
+                            <h2>Reset Password</h2>
+                            <p>Enter your email to receive a password reset link</p>
+                        </div>
+                    </div>
+    
+                    <form class="signup-auth-form">
+                        <input type="email" id="resetEmail" class="signup-auth-input" placeholder="Email" required>
+                        <p id="resetError" class="signup-error-message"></p>
+                        <button type="button" id="sendResetBtn" class="signup-auth-btn">
+                            Send Reset Link
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+    
+        // Remove any existing modals
+        const existingModal = document.querySelector('.signup-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+    
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+        const modalElement = document.querySelector('.signup-modal');
+        const closeBtn = modalElement.querySelector('.signup-close-btn');
+        const resetBtn = modalElement.querySelector('#sendResetBtn');
+        const emailInput = modalElement.querySelector('#resetEmail');
+        const errorMessage = modalElement.querySelector('#resetError');
+    
+        closeBtn.addEventListener('click', () => modalElement.remove());
+        modalElement.addEventListener('click', (e) => {
+            if (e.target === modalElement) modalElement.remove();
+        });
+    
+        resetBtn.addEventListener('click', async () => {
+            errorMessage.textContent = '';
+            const email = emailInput.value;
+    
+            try {
+                resetBtn.disabled = true;
+                resetBtn.textContent = 'Sending...';
+    
+                await firebase.auth().sendPasswordResetEmail(email);
+                
+                // Show success message
+                errorMessage.textContent = 'Reset link sent! You will receive a password reset e-mail if you have an active Cipher account.';
+                errorMessage.style.color = '#2E7D32';
+                
+                // Remove modal after delay
+                setTimeout(() => {
+                    modalElement.remove();
+                }, 3000);
+    
+            } catch (error) {
+                let errorText = 'Failed to send reset link';
+                if (error.code === 'auth/user-not-found') {
+                    errorText = 'No account found with this email';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorText = 'Please enter a valid email address';
+                }
+                
+                errorMessage.textContent = errorText;
+                errorMessage.style.color = '#dc3545';
+                resetBtn.disabled = false;
+                resetBtn.textContent = 'Send Reset Link';
             }
         });
     }
