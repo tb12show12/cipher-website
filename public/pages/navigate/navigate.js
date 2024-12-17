@@ -2884,7 +2884,7 @@ function updateQuickLinks(tripData) {
     // Add click handler
     shareTripButton.addEventListener('click', async () => {
         const shareUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}`;
-        const shareUrlWithInfo = `${window.location.origin}/pages/share?tripId=${tripData.tripId}&title=${encodeURIComponent(tripData.title)}&image=${encodeURIComponent(tripData.tripCoverPic || '/assets/Butterfly2.png')}`;
+        const shareUrlWithInfo = `${window.location.origin}/pages/share?tripId=${tripData.tripId}`;
 
         try {
             await navigator.clipboard.writeText(shareUrlWithInfo);
