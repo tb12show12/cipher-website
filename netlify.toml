@@ -66,9 +66,8 @@ from = "/tripview"
 to = "/pages/tripview/tripview.html"
 status = 200
 
-[[redirects]]
-  from = "/share"
-  to = "/.netlify/functions/shareLink"
-  status = 200
+[[edge_functions]]
+  path = "/share"
+  function = "share"
 
 
