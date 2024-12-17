@@ -2884,7 +2884,7 @@ function updateQuickLinks(tripData) {
     // Add click handler
     shareTripButton.addEventListener('click', async () => {
         const shareUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}`;
-        const shareUrlWithInfo = `${window.location.origin}/pages/share?tripId=${tripData.tripId}`;
+        const shareUrlWithInfo = `${window.location.origin}/share?tripId=${tripData.tripId}`;
 
         try {
             await navigator.clipboard.writeText(shareUrlWithInfo);
@@ -2916,9 +2916,10 @@ function updateQuickLinks(tripData) {
 
     inviteButton.addEventListener('click', async () => {
         const inviteUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}&invite=true`;
-        
+        const inviteUrlWithInfo = `${window.location.origin}/share?tripId=${tripData.tripId}&invite=true`;
+
         try {
-            await navigator.clipboard.writeText(inviteUrl);
+            await navigator.clipboard.writeText(inviteUrlWithInfo);
             inviteSuccessSpan.style.display = 'inline-flex';
             setTimeout(() => {
                 inviteSuccessSpan.style.display = 'none';

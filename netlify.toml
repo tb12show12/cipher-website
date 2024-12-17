@@ -68,6 +68,6 @@ status = 200
 
 [[edge_functions]]
   path = "/share"
-  function = "share"
+  function = "edgeShareLink"
 
 
