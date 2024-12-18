@@ -1,5 +1,3 @@
-import { Context } from "https://edge.netlify.com";
-
 var admin = require("firebase-admin");
 var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 
