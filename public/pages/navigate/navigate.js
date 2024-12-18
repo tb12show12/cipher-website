@@ -196,6 +196,8 @@ function initializeEventListeners() {
 
     // Add clear all button listener
     document.querySelector('.clear-btn').addEventListener('click', handleClearAll);
+
+    setupQuickLinkListeners();
 }
 
 /**
@@ -2850,7 +2852,7 @@ async function writeNewAttendeeToFirebase(tripId, userId) {
     await batch.commit();
 }
 
-function updateQuickLinks(tripData) {
+function updateQuickLinksOLD(tripData) {
     // Check if user is an attendee
     const authedUserId = firebase.auth().currentUser?.uid;
     const isAttendee = tripData.attendees?.includes(authedUserId);
@@ -2869,11 +2871,8 @@ function updateQuickLinks(tripData) {
     const shareTripButton = document.getElementById('shareTripButton');
     
     // Remove any existing success message
-    const existingSuccessSpan = document.querySelector('.share-success-message');
-    if (existingSuccessSpan) {
-        existingSuccessSpan.remove();
-    }
-
+    document.querySelectorAll('.share-success-message').forEach(el => el.remove());
+    
     // Add new success message span
     const successSpan = document.createElement('span');
     successSpan.className = 'share-success-message';
@@ -2902,10 +2901,8 @@ function updateQuickLinks(tripData) {
     const inviteButton = document.getElementById('inviteUserButton');
     
     // Remove any existing success message
-    const existingInviteSuccess = document.querySelector('.invite-success-message');
-    if (existingInviteSuccess) {
-        existingInviteSuccess.remove();
-    }
+    document.querySelectorAll('.invite-success-message').forEach(el => el.remove());
+    
 
     // Add success message span
     const inviteSuccessSpan = document.createElement('span');
@@ -2928,6 +2925,17 @@ function updateQuickLinks(tripData) {
             console.error('Failed to copy invite URL:', err);
         }
     });
+}
+
+function updateQuickLinks(tripData) {
+    const authedUserId = firebase.auth().currentUser?.uid;
+    const isAttendee = tripData.attendees?.includes(authedUserId);
+
+    // Just update visibility
+    document.getElementById('editTripButton').style.display = isAttendee ? 'flex' : 'none';
+    document.getElementById('inviteUserButton').style.display = isAttendee ? 'flex' : 'none';
+    document.getElementById('shareTripButton').style.display = 'flex';
+    document.getElementById('quickLinksDivider').style.display = 'flex';
 }
 
 /**
@@ -2953,4 +2961,64 @@ function displaySuccessMessage(message) {
         messageElement.classList.remove('show');
         setTimeout(() => messageElement.remove(), 300);
     }, 3000);
+}
+
+// One-time setup of event listeners
+function setupQuickLinkListeners() {
+    const shareTripButton = document.getElementById('shareTripButton');
+    const inviteButton = document.getElementById('inviteUserButton');
+    const editTripButton = document.getElementById('editTripButton');
+    
+    // Create success message spans once
+    const successSpan = document.createElement('span');
+    successSpan.className = 'share-success-message';
+    successSpan.style.display = 'none';
+    successSpan.innerHTML = '<i class="fas fa-check"></i> Link Copied!';
+    shareTripButton.parentNode.insertBefore(successSpan, shareTripButton.nextSibling);
+
+    const inviteSuccessSpan = document.createElement('span');
+    inviteSuccessSpan.className = 'share-success-message';
+    inviteSuccessSpan.style.display = 'none';
+    inviteSuccessSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
+    inviteButton.parentNode.insertBefore(inviteSuccessSpan, inviteButton.nextSibling);
+
+    // Set up event listeners once
+    shareTripButton.addEventListener('click', async () => {
+        // Get current tripId at time of click
+        const params = new URLSearchParams(window.location.search);
+        const currentTripId = params.get('tripId');
+        const shareUrlWithInfo = `${window.location.origin}/share?tripId=${currentTripId}`;
+
+        try {
+            await navigator.clipboard.writeText(shareUrlWithInfo);
+            successSpan.style.display = 'inline-flex';
+            setTimeout(() => {
+                successSpan.style.display = 'none';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy URL:', err);
+        }
+    });
+
+    inviteButton.addEventListener('click', async () => {
+        const params = new URLSearchParams(window.location.search);
+        const currentTripId = params.get('tripId');
+        const inviteUrlWithInfo = `${window.location.origin}/share?tripId=${currentTripId}&invite=true`;
+
+        try {
+            await navigator.clipboard.writeText(inviteUrlWithInfo);
+            inviteSuccessSpan.style.display = 'inline-flex';
+            setTimeout(() => {
+                inviteSuccessSpan.style.display = 'none';
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy invite URL:', err);
+        }
+    });
+
+    editTripButton.addEventListener('click', () => {
+        const params = new URLSearchParams(window.location.search);
+        const currentTripId = params.get('tripId');
+        window.location.href = `/admin/console.html?tripId=${currentTripId}`;
+    });
 }

@@ -17,7 +17,7 @@ export default async function (request, context) {
     if (!response.ok) throw new Error('Failed to fetch trip data');
 
     const { tripData } = await response.json();
-    const description = invite === 'true' ? 'Join this trip!' : 'Check out this trip!';
+    const description = invite === 'true' ? 'You are invited to join this trip on Cipher: Travel Memories Shared!' : 'Check out this trip on Cipher: Travel Memories Shared!';
     const ogImage = tripData.thumbnailReady ? tripData.thumbnailURL : 
       (tripData.tripCoverPic || '/assets/Butterfly2.png');
     
