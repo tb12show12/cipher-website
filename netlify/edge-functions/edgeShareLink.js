@@ -40,7 +40,7 @@ export default async function (request, context) {
           <!-- Essential Meta Tags -->
           <meta property="og:title" content="${tripData.title}">
           <meta property="og:description" content="${description}">
-          <meta property="og:image" content="${tripData.tripCoverPic || '/assets/Butterfly2.png'}">
+          <meta property="og:image" content="${tripData.thumbnail || '/assets/Butterfly2.png'}">
           <meta property="og:url" content="https://${url.host}/pages/navigate/navigate.html?${queryString}">
           <meta property="og:type" content="website">
           
