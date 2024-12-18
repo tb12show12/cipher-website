@@ -42,6 +42,8 @@ export default async function (request, context) {
           <meta property="og:title" content="${tripData.title}">
           <meta property="og:description" content="${description}">
           <meta property="og:image" content="${ogImage}">
+          <meta property="og:image:width" content="400">
+          <meta property="og:image:height" content="307">
           <meta property="og:url" content="https://${url.host}/pages/navigate/navigate.html?${queryString}">
           <meta property="og:type" content="website">
           
