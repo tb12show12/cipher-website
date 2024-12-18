@@ -1,10 +1,3 @@
-var admin = require("firebase-admin");
-var serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
 export default async function (request, context) {
   const url = new URL(request.url);
   
@@ -17,19 +10,14 @@ export default async function (request, context) {
   
   try {
     // Fetch trip data from Firebase (you'll need to set up Firebase access)
-    const tripDoc = await admin.firestore()
-            .collection('trips')
-            .doc(tripId)
-            .get();
-            
-        if (!tripDoc.exists) {
-            return {
-                statusCode: 404,
-                body: 'Trip not found'
-            };
-        }
+    const response = await fetch(
+      `https://us-central1-cipher-4fa1c.cloudfunctions.net/getTripData?tripId=${tripId}`
+    );
+  
+    if (!response.ok) throw new Error('Failed to fetch trip data');
 
-    const tripData = tripDoc.data();
+    const { tripData } = await response.json();
+
     const description = invite === 'true' ? 'Join this trip!' : 'Check out this trip!';
     
     // Construct the navigation URL with parameters
@@ -43,42 +31,42 @@ export default async function (request, context) {
     // Create HTML with proper meta tags
     return new Response(
       `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>${tripData.title} - Cipher</title>
-    <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
-    
-    <!-- Essential Meta Tags -->
-    <meta property="og:title" content="${tripData.title}">
-    <meta property="og:description" content="${description}">
-    <meta property="og:image" content="${tripData.tripCoverPic || '/assets/Butterfly2.png'}">
-    <meta property="og:url" content="https://${url.host}/pages/navigate/navigate.html?${queryString}">
-    <meta property="og:type" content="website">
-    
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    
-    <!-- Redirect -->
-    <meta http-equiv="refresh" content="0;url=/pages/navigate/navigate.html?${queryString}">
-    
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #f3f2ef;
-            color: #333;
-        }
-    </style>
-</head>
-<body>
-    <div>Redirecting to ${tripData.title}...</div>
-</body>
-</html>`,
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <title>${tripData.title} - Cipher</title>
+          <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
+          
+          <!-- Essential Meta Tags -->
+          <meta property="og:title" content="${tripData.title}">
+          <meta property="og:description" content="${description}">
+          <meta property="og:image" content="${tripData.tripCoverPic || '/assets/Butterfly2.png'}">
+          <meta property="og:url" content="https://${url.host}/pages/navigate/navigate.html?${queryString}">
+          <meta property="og:type" content="website">
+          
+          <!-- Twitter Card Tags -->
+          <meta name="twitter:card" content="summary_large_image">
+          
+          <!-- Redirect -->
+          <meta http-equiv="refresh" content="0;url=/pages/navigate/navigate.html?${queryString}">
+          
+          <style>
+              body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                  margin: 0;
+                  background: #f3f2ef;
+                  color: #333;
+              }
+          </style>
+      </head>
+      <body>
+          <div>Redirecting to ${tripData.title}...</div>
+      </body>
+      </html>`,
       {
         headers: {
           'content-type': 'text/html;charset=UTF-8',
