@@ -17,8 +17,9 @@ export default async function (request, context) {
     if (!response.ok) throw new Error('Failed to fetch trip data');
 
     const { tripData } = await response.json();
-
     const description = invite === 'true' ? 'Join this trip!' : 'Check out this trip!';
+    const ogImage = tripData.thumbnailReady ? tripData.thumbnailURL : 
+      (tripData.tripCoverPic || '/assets/Butterfly2.png');
     
     // Construct the navigation URL with parameters
     const urlParams = new URLSearchParams();
@@ -40,7 +41,7 @@ export default async function (request, context) {
           <!-- Essential Meta Tags -->
           <meta property="og:title" content="${tripData.title}">
           <meta property="og:description" content="${description}">
-          <meta property="og:image" content="${tripData.thumbnail || '/assets/Butterfly2.png'}">
+          <meta property="og:image" content="${ogImage}">
           <meta property="og:url" content="https://${url.host}/pages/navigate/navigate.html?${queryString}">
           <meta property="og:type" content="website">
           
