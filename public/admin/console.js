@@ -3336,7 +3336,7 @@ function renderAttendeesList() {
 
     inviteButton.addEventListener('click', async () => {
         const tripId = currentTripId;
-        const inviteUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripId}&invite=true`;
+        const inviteUrl = `${window.location.origin}/share?tripId=${tripId}&invite=true`;
         
         // Remove any existing success messages
         document.querySelectorAll('.share-success-message').forEach(msg => msg.remove());
