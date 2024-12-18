@@ -154,6 +154,15 @@ function initializeEventListeners() {
     // Add the new custom event listener here
     document.addEventListener('loadNavigatePage', async (e) => {
         const { userId, tripId } = e.detail;
+
+         // Update URL first
+        if (tripId) {
+            const params = new URLSearchParams(window.location.search);
+            params.set('tripId', tripId);
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.pushState({}, '', newUrl);
+        }
+
         if (userId) await loadUserData(userId);
         if (tripId) {
             await loadTrip(tripId);
@@ -2968,6 +2977,9 @@ function setupQuickLinkListeners() {
     const shareTripButton = document.getElementById('shareTripButton');
     const inviteButton = document.getElementById('inviteUserButton');
     const editTripButton = document.getElementById('editTripButton');
+
+    // Remove any existing success message spans first
+    document.querySelectorAll('.share-success-message').forEach(el => el.remove());
     
     // Create success message spans once
     const successSpan = document.createElement('span');
