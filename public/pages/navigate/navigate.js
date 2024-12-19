@@ -3,6 +3,9 @@
  ******************************************************************************/
 import { TRIP_TYPES, DEFAULTS, PLACE_TYPES } from '/admin/config.js';
 import SignupModal from '/components/signup/signup.js'; 
+import { showInviteModal } from '/components/modals/inviteModal.js';
+import { displaySuccessMessage } from '/utils/notifications.js';
+import { ensureTripThumbnail } from '/utils/thumbnailGenerator.js';
 
 // Algolia Setup
 const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
@@ -2861,81 +2864,6 @@ async function writeNewAttendeeToFirebase(tripId, userId) {
     await batch.commit();
 }
 
-function updateQuickLinksOLD(tripData) {
-    // Check if user is an attendee
-    const authedUserId = firebase.auth().currentUser?.uid;
-    const isAttendee = tripData.attendees?.includes(authedUserId);
-
-    // Show/hide buttons based on attendance
-    document.getElementById('editTripButton').style.display = isAttendee ? 'flex' : 'none';
-    document.getElementById('inviteUserButton').style.display = isAttendee ? 'flex' : 'none';
-    document.getElementById('shareTripButton').style.display = 'flex';
-    document.getElementById('quickLinksDivider').style.display = 'flex';
-
-    document.getElementById('editTripButton').addEventListener('click', () => {
-        window.location.href = `/admin/console.html?tripId=${tripData.tripId}`;
-    });
-
-    // Add share button functionality
-    const shareTripButton = document.getElementById('shareTripButton');
-    
-    // Remove any existing success message
-    document.querySelectorAll('.share-success-message').forEach(el => el.remove());
-    
-    // Add new success message span
-    const successSpan = document.createElement('span');
-    successSpan.className = 'share-success-message';
-    successSpan.style.display = 'none';
-    successSpan.innerHTML = '<i class="fas fa-check"></i> Link Copied!';
-    shareTripButton.parentNode.insertBefore(successSpan, shareTripButton.nextSibling);
-
-    // Add click handler
-    shareTripButton.addEventListener('click', async () => {
-        const shareUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}`;
-        const shareUrlWithInfo = `${window.location.origin}/share?tripId=${tripData.tripId}`;
-
-        try {
-            await navigator.clipboard.writeText(shareUrlWithInfo);
-            successSpan.style.display = 'inline-flex';
-            setTimeout(() => {
-                successSpan.style.display = 'none';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy URL:', err);
-        }
-    });
-
-
-    // Invite button functionality
-    const inviteButton = document.getElementById('inviteUserButton');
-    
-    // Remove any existing success message
-    document.querySelectorAll('.invite-success-message').forEach(el => el.remove());
-    
-
-    // Add success message span
-    const inviteSuccessSpan = document.createElement('span');
-    inviteSuccessSpan.className = 'share-success-message';  // reuse same styling
-    inviteSuccessSpan.style.display = 'none';
-    inviteSuccessSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
-    inviteButton.parentNode.insertBefore(inviteSuccessSpan, inviteButton.nextSibling);
-
-    inviteButton.addEventListener('click', async () => {
-        const inviteUrl = `${window.location.origin}/pages/navigate/navigate.html?tripId=${tripData.tripId}&invite=true`;
-        const inviteUrlWithInfo = `${window.location.origin}/share?tripId=${tripData.tripId}&invite=true`;
-
-        try {
-            await navigator.clipboard.writeText(inviteUrlWithInfo);
-            inviteSuccessSpan.style.display = 'inline-flex';
-            setTimeout(() => {
-                inviteSuccessSpan.style.display = 'none';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy invite URL:', err);
-        }
-    });
-}
-
 function updateQuickLinks(tripData) {
     const authedUserId = firebase.auth().currentUser?.uid;
     const isAttendee = tripData.attendees?.includes(authedUserId);
@@ -2945,31 +2873,6 @@ function updateQuickLinks(tripData) {
     document.getElementById('inviteUserButton').style.display = isAttendee ? 'flex' : 'none';
     document.getElementById('shareTripButton').style.display = 'flex';
     document.getElementById('quickLinksDivider').style.display = 'flex';
-}
-
-/**
- * Displays a success message that automatically disappears
- * @param {string} message - The message to display
- */
-function displaySuccessMessage(message) {
-    const existingMessage = document.querySelector('.success-message');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
-
-    const messageElement = document.createElement('div');
-    messageElement.className = 'success-message';
-    messageElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    document.body.appendChild(messageElement);
-
-    // Trigger animation
-    setTimeout(() => messageElement.classList.add('show'), 100);
-
-    // Remove after delay
-    setTimeout(() => {
-        messageElement.classList.remove('show');
-        setTimeout(() => messageElement.remove(), 300);
-    }, 3000);
 }
 
 // One-time setup of event listeners
@@ -2994,38 +2897,18 @@ function setupQuickLinkListeners() {
     inviteSuccessSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
     inviteButton.parentNode.insertBefore(inviteSuccessSpan, inviteButton.nextSibling);
 
-    // Set up event listeners once
     shareTripButton.addEventListener('click', async () => {
-        // Get current tripId at time of click
-        const params = new URLSearchParams(window.location.search);
-        const currentTripId = params.get('tripId');
-        const shareUrlWithInfo = `${window.location.origin}/share?tripId=${currentTripId}`;
-
-        try {
-            await navigator.clipboard.writeText(shareUrlWithInfo);
-            successSpan.style.display = 'inline-flex';
-            setTimeout(() => {
-                successSpan.style.display = 'none';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy URL:', err);
-        }
+        // Ensure thumbnail exists and update state with latest trip data
+        state.currentTrip = await ensureTripThumbnail(state.currentTrip);
+        
+        showInviteModal(state.currentTrip, false); // false for share mode
     });
 
     inviteButton.addEventListener('click', async () => {
-        const params = new URLSearchParams(window.location.search);
-        const currentTripId = params.get('tripId');
-        const inviteUrlWithInfo = `${window.location.origin}/share?tripId=${currentTripId}&invite=true`;
+        // Ensure thumbnail exists and update state with latest trip data
+        state.currentTrip = await ensureTripThumbnail(state.currentTrip);
 
-        try {
-            await navigator.clipboard.writeText(inviteUrlWithInfo);
-            inviteSuccessSpan.style.display = 'inline-flex';
-            setTimeout(() => {
-                inviteSuccessSpan.style.display = 'none';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy invite URL:', err);
-        }
+        showInviteModal(state.currentTrip, true);
     });
 
     editTripButton.addEventListener('click', () => {
@@ -3034,3 +2917,4 @@ function setupQuickLinkListeners() {
         window.location.href = `/admin/console.html?tripId=${currentTripId}`;
     });
 }
+

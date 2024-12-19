@@ -1,6 +1,9 @@
 // Global state
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
 import { PLACE_TYPES, MONTHS } from '/admin/config.js';
+import { showInviteModal } from '/components/modals/inviteModal.js';
+import { displaySuccessMessage } from '/utils/notifications.js';
+
 
 // Initialize Algolia client
 const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
@@ -3304,40 +3307,16 @@ function renderAttendeesList() {
         </div>
     `;
 
-    /*inviteButton.addEventListener('click', () => {
-        const modalHtml = `
-            <div class="modal-overlay">
-                <div class="signup-modal-content" style="max-width: 400px;">
-                    <div class="signup-modal-nav">
-                        <button class="signup-close-btn">&times;</button>
-                    </div>
-                    
-                    <div class="signup-header-container">
-                        <img src="/assets/Butterfly2.png" alt="Cipher" class="signup-butterfly-icon">
-                        <div class="signup-modal-header">
-                            <h2>Coming Soon!</h2>
-                            <p>Invite friends to join your trip</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-        const modal = document.querySelector('.modal-overlay');
-        const closeBtn = modal.querySelector('.signup-close-btn');
-    
-        closeBtn.addEventListener('click', () => modal.remove());
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.remove();
-        });
-    });*/
+    inviteButton.addEventListener('click', () => {
+        let tripData = userTrips.find(trip => trip.id === currentTripId);
+        showInviteModal(tripData, true); // true for invite mode
+    });
 
+    /*
     inviteButton.addEventListener('click', async () => {
         const tripId = currentTripId;
         const inviteUrl = `${window.location.origin}/share?tripId=${tripId}&invite=true`;
-        
+
         // Remove any existing success messages
         document.querySelectorAll('.share-success-message').forEach(msg => msg.remove());
 
@@ -3361,6 +3340,7 @@ function renderAttendeesList() {
             console.error('Failed to copy invite URL:', err);
         }
     });
+    */
 
     attendeesGrid.appendChild(inviteButton);
 }

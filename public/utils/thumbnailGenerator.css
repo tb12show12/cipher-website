@@ -1,0 +1,94 @@
+/* Only add styles specific to thumbnail */
+.trip-item-header {
+    height: 180px; /* 209px - 29px footer height */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.trip-item-description {
+    font-size: 12px;
+}
+
+.thumbnail-template {
+    width: 400px;
+    height: 209px;
+    margin: 0 auto;
+}
+
+.thumbnail-footer {
+    height: 29px;
+    padding: 0 12px;
+    background: #f8f8f8;
+    color: #666;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.thumbnail-footer img {
+    height: 16px;
+    width: auto;
+}
+
+.thumbnail-footer span {
+    color: #666;
+}
+
+.thumbnail-footer .cipher-text {
+    color: #AD7800;
+    font-weight: 700;
+}
+
+/* Modal styles */
+.thumbnail-preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.thumbnail-preview-content {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+}
+
+.thumbnail-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.thumbnail-actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.thumbnail-generate-btn {
+    padding: 10px 20px;
+    background: #AD7800;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.thumbnail-generate-btn:hover {
+    background: #966900;
+}

@@ -2295,31 +2295,28 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.success-message {
+/* Invite Modal */
+/* Invite Modal styles moved to /components/modals/inviteModal.css */
+
+
+.modal-overlay {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: #4CAF50;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 500;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    z-index: 1000;
-    opacity: 0;
-    transition: all 0.3s ease;
+    justify-content: center;
+    z-index: 9999; /* Make sure this is higher than other elements */
 }
 
-.success-message.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-
-.success-message i {
-    font-size: 16px;
+.signup-modal-content {
+    background: white;
+    border-radius: 8px;
+    position: relative;
+    z-index: 10000; /* Even higher than the overlay */
+    max-height: 90vh;
+    overflow-y: auto;
 }
