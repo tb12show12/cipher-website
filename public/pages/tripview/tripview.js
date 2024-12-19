@@ -566,7 +566,7 @@ function displayTripData() {
                 return `
                     <button class="place-button" onclick="window.location.href='/place?placeId=${place.id}'">
                         <div class="place-card">
-                            <div class="place-image" style="background-image: url('${place.image || '/assets/default-place.jpg'}')">
+                            <div class="place-image" style="background-image: url('${place.image || '/assets/PatternBackgroundColor.svg'}')">
                                 <div class="place-overlay">
                                     ${feedbackBadge}
                                     <div class="place-content">

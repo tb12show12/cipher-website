@@ -164,11 +164,11 @@ async function loadUserTrips() {
                 userTrips.push(tripData);
                 
                 const tripElement = document.createElement('div');
-                tripElement.className = 'trip-item';
+                tripElement.className = 'trip-list-item';
                 tripElement.dataset.tripId = tripData.id;
                 tripElement.innerHTML = `
-                    <div class="trip-item-title">${tripData.title}</div>
-                    <div class="trip-item-date">${tripData.month} ${tripData.year}</div>
+                    <div class="trip-list-item-title">${tripData.title}</div>
+                    <div class="trip-list-item-date">${tripData.month} ${tripData.year}</div>
                 `;
                 
                 tripElement.addEventListener('click', () => loadTripData(tripData.id));
@@ -230,7 +230,7 @@ async function loadTripData(tripId) {
         document.querySelector('#submitButton .button-text').textContent = 'Loading...';
         
         // Update UI to show which trip is selected
-        document.querySelectorAll('.trip-item').forEach(item => {
+        document.querySelectorAll('.trip-list-item').forEach(item => {
             item.classList.remove('active');
             if (item.dataset.tripId === tripId) {
                 item.classList.add('active');
@@ -931,7 +931,7 @@ function setupEventListeners() {
         createNewTripBtn.classList.add('active');
         
         // When any trip item is clicked, remove active state from create new trip
-        document.querySelectorAll('.trip-item').forEach(item => {
+        document.querySelectorAll('.trip-list-item').forEach(item => {
             item.addEventListener('click', () => {
                 createNewTripBtn.classList.remove('active');
             });
@@ -939,7 +939,7 @@ function setupEventListeners() {
         
         // When create new trip is clicked, add active state back
         createNewTripBtn.addEventListener('click', () => {
-            document.querySelectorAll('.trip-item').forEach(item => {
+            document.querySelectorAll('.trip-list-item').forEach(item => {
                 item.classList.remove('active');
             });
             createNewTripBtn.classList.add('active');
@@ -1118,7 +1118,8 @@ async function saveBasicInfo() {
                 parseInt(document.getElementById('yearSelect').value),
                 MONTHS.indexOf(document.getElementById('monthSelect').value),
                 1
-            )
+            ),
+            thumbnailReady: false,
         };
 
         // Update main title display
@@ -1331,7 +1332,8 @@ function setupCoverImageHandlers() {
                     .collection('trips')
                     .doc(currentTripId)
                     .update({
-                        tripCoverPic: downloadURL
+                        tripCoverPic: downloadURL,
+                        thumbnailReady: false
                     });
 
                 // Update local cache
@@ -1374,7 +1376,8 @@ function setupCoverImageHandlers() {
                     .collection('trips')
                     .doc(currentTripId)
                     .update({
-                        tripCoverPic: DEFAULT_COVER_URL
+                        tripCoverPic: DEFAULT_COVER_URL,
+                        thumbnailReady: false
                     });
                 
                 // Update local cache
@@ -1559,7 +1562,7 @@ function resetForNewTrip() {
     }
     
     // Remove active state from any selected trip in the list
-    document.querySelectorAll('.trip-item').forEach(item => {
+    document.querySelectorAll('.trip-list-item').forEach(item => {
         item.classList.remove('active');
     });
 
@@ -1623,6 +1626,7 @@ async function saveNewTrip() {
             creatorName: creatorName,
             tripCoverPic: DEFAULT_COVER_URL,
             attendees: [userDoc.data().userId],
+            thumbnailReady: false,
             
             //static elements
             bookmarks:0,
@@ -2824,7 +2828,6 @@ function handleDrop(e) {
 }
 
 
-
 function loadCommentsList() {
     const commentsList = document.querySelector('.comments-list');
     if (!commentsList) return;
@@ -3182,13 +3185,13 @@ function initializeAttendeesSearch() {
                     }
 
                     const li = document.createElement('li');
-                    li.className = 'attendee-result';
+                    li.className = 'console-attendee-result';
                     li.innerHTML = `
-                        <div class="attendee-info">
+                        <div class="console-attendee-info">
                             <img src="${user.pPic || '/assets/Butterfly2.png'}" alt="${user.displayName}" class="attendee-avatar">
-                            <div class="attendee-details">
-                                <span class="attendee-name">${user.displayName}</span>
-                                <span class="attendee-badge">${user.location}</span>
+                            <div class="console-attendee-details">
+                                <span class="console-attendee-name">${user.displayName}</span>
+                                <span class="console-attendee-badge">${user.location}</span>
                             </div>
                         </div>
                     `;
@@ -3227,12 +3230,12 @@ function addAttendee(user) {
 }
 
 function renderAttendeesList() {
-    const attendeesGrid = document.querySelector('.attendees-grid');
+    const attendeesGrid = document.querySelector('.console-attendees-grid');
     attendeesGrid.innerHTML = '';
 
     currentAttendeesList.forEach(attendee => {
         const attendeeElement = document.createElement('div');
-        attendeeElement.className = `attendee-item ${attendee.isNew ? 'to-be-added' : ''} ${attendee.isMarkedForDeletion ? 'to-be-removed' : ''}`;
+        attendeeElement.className = `console-attendee-item ${attendee.isNew ? 'to-be-added' : ''} ${attendee.isMarkedForDeletion ? 'to-be-removed' : ''}`;
         
         // Only show remove/undo button if not the creator
         const buttonHtml = !attendee.isCreator ? (
@@ -3246,10 +3249,10 @@ function renderAttendeesList() {
         ) : '';
 
         attendeeElement.innerHTML = `
-        <div class="attendee-info">
+        <div class="console-attendee-info">
             <img src="${attendee.pPic || '/assets/Butterfly2.png'}" alt="${attendee.displayName}" class="attendee-avatar">
-            <div class="attendee-details">
-                <span class="attendee-name">${attendee.displayName}</span>
+            <div class="console-attendee-details">
+                <span class="console-attendee-name">${attendee.displayName}</span>
                 ${attendee.isCreator ? '<span class="creator-badge">Trip Creator</span>' : ''}
             </div>
         </div>
@@ -3294,53 +3297,29 @@ function renderAttendeesList() {
 
     // Add the "Invite New User" button at the end
     const inviteButton = document.createElement('div');
-    inviteButton.className = 'attendee-item invite-new-user';
+    inviteButton.className = 'console-attendee-item invite-new-user';
     inviteButton.innerHTML = `
-        <div class="attendee-info">
+        <div class="console-attendee-info">
             <div class="invite-icon">
                 <i class="fas fa-user-plus"></i>
             </div>
-            <div class="attendee-details">
-                <span class="attendee-name">Invite New User</span>
+            <div class="console-attendee-details">
+                <span class="console-attendee-name">Invite New User</span>
                 <span class="invite-description">Share link to join Cipher</span>
             </div>
         </div>
     `;
 
-    inviteButton.addEventListener('click', () => {
-        let tripData = userTrips.find(trip => trip.id === currentTripId);
-        showInviteModal(tripData, true); // true for invite mode
-    });
-
-    /*
     inviteButton.addEventListener('click', async () => {
-        const tripId = currentTripId;
-        const inviteUrl = `${window.location.origin}/share?tripId=${tripId}&invite=true`;
+        let tripData = userTrips.find(trip => trip.id === currentTripId);
+        const {updatedTrip} = await showInviteModal(tripData, true); // true for invite mode
 
-        // Remove any existing success messages
-        document.querySelectorAll('.share-success-message').forEach(msg => msg.remove());
-
-        // Create success message if it doesn't exist
-        let successSpan = document.querySelector('.invite-success-message');
-        if (!successSpan) {
-            successSpan = document.createElement('span');
-            successSpan.className = 'share-success-message';  // reuse same styling
-            successSpan.style.display = 'none';
-            successSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
-            inviteButton.parentNode.insertBefore(successSpan, inviteButton.nextSibling);
-        }
-        
-        try {
-            await navigator.clipboard.writeText(inviteUrl);
-            successSpan.style.display = 'inline-flex';
-            setTimeout(() => {
-                successSpan.style.display = 'none';
-            }, 2000);
-        } catch (err) {
-            console.error('Failed to copy invite URL:', err);
+        // Update the trip in userTrips cache
+        const tripIndex = userTrips.findIndex(t => t.id === currentTripId);
+        if (tripIndex !== -1) {
+            userTrips[tripIndex] = updatedTrip;
         }
     });
-    */
 
     attendeesGrid.appendChild(inviteButton);
 }

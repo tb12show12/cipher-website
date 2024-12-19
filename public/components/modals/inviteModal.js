@@ -1,4 +1,5 @@
 import { displaySuccessMessage } from '/utils/notifications.js';
+import { ensureTripThumbnail } from '/utils/thumbnailGenerator.js';
 
 export async function showInviteModal(tripData, isInvite = false) {
     const existingModal = document.querySelector('.invite-modal');
@@ -47,10 +48,16 @@ export async function showInviteModal(tripData, isInvite = false) {
                 </div>
 
                 <div class="invite-content">
-                    <img src="${tripData.thumbnailURL || tripData.tripCoverPic}" 
-                        alt="${tripData.title}" 
-                        class="trip-preview-image"
-                        style="width: 80%; align-self: center; border-radius: 8px;">
+                    <div class="thumbnail-container" style="width: 80%; align-self: center;">
+                        <div class="thumbnail-loading">
+                            <div class="thumbnail-loading-spinner"></div>
+                            <p>Generating preview...</p>
+                        </div>
+                        <img src="${tripData.thumbnailURL || tripData.tripCoverPic}" 
+                            alt="${tripData.title}" 
+                            class="trip-preview-image"
+                            style="width: 100%; border-radius: 8px; display: none;">
+                    </div>
                     
                     <button class="copy-link-btn signup-modal-btn">
                         <i class="fas fa-link"></i> Copy Link
@@ -70,7 +77,8 @@ export async function showInviteModal(tripData, isInvite = false) {
     const modal = document.querySelector('.modal-overlay');
     const closeBtn = modal.querySelector('.signup-close-btn');
     const copyBtn = modal.querySelector('.copy-link-btn');
-    const successSpan = modal.querySelector('.copy-success');
+    const previewImage = modal.querySelector('.trip-preview-image');
+    const loadingDiv = modal.querySelector('.thumbnail-loading');
 
     closeBtn.addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => {
@@ -85,4 +93,35 @@ export async function showInviteModal(tripData, isInvite = false) {
             console.error('Failed to copy URL:', err);
         }
     });
+
+    // Handle thumbnail in the background
+    try {
+        // Ensure thumbnail exists
+        const updatedTrip = await ensureTripThumbnail(tripData);
+        
+        // Update image if we have a thumbnail
+        if (updatedTrip.thumbnailURL) {
+            const previewImage = modal.querySelector('.trip-preview-image');
+            const loadingDiv = modal.querySelector('.thumbnail-loading');
+            
+            previewImage.src = updatedTrip.thumbnailURL;
+            previewImage.onload = () => {
+                loadingDiv.style.display = 'none';
+                previewImage.style.display = 'block';
+            };
+        }
+
+        return {
+            modal,
+            updatedTrip
+        };
+
+    } catch (error) {
+        console.error('Error loading thumbnail:', error);
+
+        return {
+            modal,
+            updatedTrip: tripData
+        };
+    }
 }

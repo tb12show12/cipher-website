@@ -1635,7 +1635,7 @@ function updatePlacesTab(tripData) {
                 return `
                     <button class="place-button">
                         <div class="place-card" data-category="${placeType.category}">
-                            <div class="place-image" style="background-image: url('${place.image || '/assets/default-place.jpg'}')">
+                            <div class="place-image" style="background-image: url('${place.image || '/assets/PatternBackgroundColor.svg'}')">
                                 <div class="place-overlay">
                                     ${feedbackBadge}
                                     <div class="place-content">
@@ -2256,16 +2256,21 @@ async function loadComments() {
     const commentCount = document.getElementById('commentCount');
     
     try {
+        // Remove any existing click listeners
+        const oldCommentsList = document.getElementById('commentsList');
+        const newCommentsList = oldCommentsList.cloneNode(false);
+        oldCommentsList.parentNode.replaceChild(newCommentsList, oldCommentsList);
+        
         const comments = state.currentTrip.commentsHistory || [];
         
         // Update comment count in header
         commentCount.textContent = comments.length;
         
         // Clear loading message
-        commentsList.innerHTML = '';
+        newCommentsList.innerHTML = '';
 
         if (comments.length === 0) {
-            commentsList.innerHTML = `
+            newCommentsList.innerHTML = `
                 <div class="no-comments">
                     No comments yet
                 </div>
@@ -2322,11 +2327,11 @@ async function loadComments() {
                 </div>
             `;
             
-            commentsList.insertAdjacentHTML('beforeend', commentHTML);
+            newCommentsList.insertAdjacentHTML('beforeend', commentHTML);
         });
 
         // Add event listener for author clicks using event delegation
-        commentsList.addEventListener('click', async (e) => {
+        newCommentsList.addEventListener('click', async (e) => {
             const authorBtn = e.target.closest('.comment-author-btn');
             if (authorBtn) {
                 const userId = authorBtn.dataset.userId;
@@ -2338,7 +2343,7 @@ async function loadComments() {
 
     } catch (error) {
         console.error('Error loading comments:', error);
-        commentsList.innerHTML = `
+        newCommentsList.innerHTML = `
             <div class="no-comments">
                 Error loading comments
             </div>
@@ -2897,18 +2902,14 @@ function setupQuickLinkListeners() {
     inviteSuccessSpan.innerHTML = '<i class="fas fa-check"></i> Invitation Link Copied!';
     inviteButton.parentNode.insertBefore(inviteSuccessSpan, inviteButton.nextSibling);
 
-    shareTripButton.addEventListener('click', async () => {
-        // Ensure thumbnail exists and update state with latest trip data
-        state.currentTrip = await ensureTripThumbnail(state.currentTrip);
-        
-        showInviteModal(state.currentTrip, false); // false for share mode
+    shareTripButton.addEventListener('click', async () => {        
+        const {updatedTrip} = await showInviteModal(state.currentTrip, false); // false for share mode
+        state.currentTrip = updatedTrip;
     });
 
     inviteButton.addEventListener('click', async () => {
-        // Ensure thumbnail exists and update state with latest trip data
-        state.currentTrip = await ensureTripThumbnail(state.currentTrip);
-
-        showInviteModal(state.currentTrip, true);
+        const {updatedTrip} = await showInviteModal(state.currentTrip, true);
+        state.currentTrip = updatedTrip;
     });
 
     editTripButton.addEventListener('click', () => {

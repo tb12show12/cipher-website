@@ -613,7 +613,7 @@ function updatePlacesTab(tripData) {
                 return `
                     <button class="place-button">
                         <div class="place-card" data-category="${placeType.category}">
-                            <div class="place-image" style="background-image: url('${place.image || '/assets/default-place.jpg'}')">
+                            <div class="place-image" style="background-image: url('${place.image || '/assets/PatternBackgroundColor.svg'}')">
                                 <div class="place-overlay">
                                     ${feedbackBadge}
                                     <div class="place-content">

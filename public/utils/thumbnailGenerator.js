@@ -1,93 +1,5 @@
 import { TRIP_TYPES, DEFAULTS } from '/admin/config.js';
 
-/**
- * Generates a thumbnail image for a trip and shows it in a preview modal
- * @param {Object} tripData - The trip data object
- * @returns {Promise<HTMLElement>} The thumbnail element
- */
-export async function OLDgenerateTripThumbnail(trip) {
-    // Create thumbnail element
-    const thumbnailElement = document.createElement('div');
-    thumbnailElement.className = 'trip-item thumbnail-template';  // Add both classes
-    thumbnailElement.innerHTML = `
-        
-        <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.coverImage}')">
-            <div class="trip-item-content">
-                <div class="trip-item-main">
-                    <div class="trip-item-title-block">
-                        <h3>${trip.title}</h3>
-                        <div class="trip-item-creator">
-                            <span>by ${trip.creatorName}</span>
-                            <span class="meta-separator">•</span>
-                            <span> ${trip.month} ${trip.year} </span>
-                        </div>
-                    </div>
-                    <div class="trip-item-description">${trip.shortDescription || ''}</div>
-                </div>
-                <div class="trip-item-meta">
-                    <div class="trip-item-meta-left">
-                        <span>${trip.days} ${parseInt(trip.days) === 1 ? 'day' : 'days'}</span>
-                        <span class="meta-separator">•</span>
-                        <span>${trip.numPeople} ${parseInt(trip.numPeople) === 1 ? 'person' : 'people'}</span>
-                    </div>
-                    <div class="trip-item-meta-right">
-                        <span class="trip-type">
-                            <i class="${TRIP_TYPES[trip.familyType]?.icon}"></i>
-                            ${TRIP_TYPES[trip.familyType]?.label}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="thumbnail-footer">
-            <img src="/assets/Butterfly2.png" alt="Cipher">
-            <span>Created with <span class="cipher-text">Cipher</span>: Your travel memories, shared.</span>
-        </div>
-    `;
-
-    // Create preview modal
-    const modalOverlay = document.createElement('div');
-    modalOverlay.className = 'thumbnail-preview-modal';
-    modalOverlay.innerHTML = `
-        <div class="thumbnail-preview-content">
-            <button class="thumbnail-close-btn">&times;</button>
-            <h2>Thumbnail Preview</h2>
-            ${thumbnailElement.outerHTML}
-            <div class="thumbnail-actions">
-                <button class="thumbnail-generate-btn">Generate Thumbnail</button>
-            </div>
-        </div>
-    `;
-
-    // Add to document
-    document.body.appendChild(modalOverlay);
-
-    // Add event listeners
-    const closeBtn = modalOverlay.querySelector('.thumbnail-close-btn');
-    const generateBtn = modalOverlay.querySelector('.thumbnail-generate-btn');
-
-    closeBtn.addEventListener('click', () => modalOverlay.remove());
-    modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) modalOverlay.remove();
-    });
-
-    generateBtn.addEventListener('click', async () => {
-        try {
-            generateBtn.disabled = true;
-
-            const thumbnailEl = modalOverlay.querySelector('.thumbnail-template');
-            await saveThumbnailToFirebase(thumbnailEl, trip.tripId, trip.tripCoverPic);
-            console.log('Thumbnail saved to Firebase');
-
-            setTimeout(() => modalOverlay.remove(), 1500);
-
-        } catch (error) {
-            console.error('Error in thumbnail generation:', error);
-            generateBtn.disabled = false;
-        }
-    });
-    return thumbnailElement;
-}
 
 /**
  * Generates and saves a trip thumbnail if needed
@@ -184,7 +96,7 @@ async function saveThumbnailToFirebase(thumbnailElement, tripId, coverPicURL) {
         document.body.appendChild(container);
         
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         const canvas = await html2canvas(thumbnailElement, {
             scale: 2,
             backgroundColor: null,

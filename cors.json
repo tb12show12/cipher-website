@@ -1,0 +1,8 @@
+[
+    {
+      "origin": ["https://cipher-app.com", "http://localhost:8888"],
+      "method": ["GET"],
+      "responseHeader": ["Content-Type", "Authorization"],
+      "maxAgeSeconds": 3600
+    }
+  ]
