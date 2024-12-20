@@ -2,7 +2,7 @@
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
 import { PLACE_TYPES, MONTHS } from '/admin/config.js';
 import { showInviteModal } from '/components/modals/inviteModal.js';
-import { displaySuccessMessage } from '/utils/notifications.js';
+import { displaySuccessMessage, displayErrorMessage } from '/utils/notifications.js';
 
 
 // Initialize Algolia client
@@ -428,7 +428,7 @@ function setupRefreshButton() {
     const refreshBtn = document.querySelector('.refresh-trip-btn');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', async () => {
-            console.log('=== Refresh Trip Button Clicked ===');
+            //console.log('=== Refresh Trip Button Clicked ===');
             const tripIndex = userTrips.findIndex(t => t.id === currentTripId);
             if (tripIndex !== -1) {
                 userTrips[tripIndex].isFullyLoaded = false;
@@ -439,7 +439,7 @@ function setupRefreshButton() {
 }
 
 function loadPhotosGrid(photos = []) {
-    console.log('Loading photos grid...');
+    //console.log('Loading photos grid...');
     //console.log('Loading photos grid with photos:', photos);
     //console.log('Current photosToAdd:', photosToAdd);
     const grid = document.querySelector('.image-grid');
@@ -483,7 +483,7 @@ function loadPhotosGrid(photos = []) {
     grid.appendChild(addButton);
 
     updatePhotosSaveButton();
-    console.log('Photos grid loaded with total children:', grid.children.length);
+    //console.log('Photos grid loaded with total children:', grid.children.length);
 }
 
 function createPhotoContainer(photo, isNew = false) {
@@ -598,13 +598,13 @@ function createPhotoContainer(photo, isNew = false) {
 
 async function savePhotosChanges(button, buttonText, successMessage) {
     try {
-        console.log('Starting photo save process...');
+        //console.log('Starting photo save process...');
         button.disabled = true;
         buttonText.textContent = 'Saving...';
 
         // Delete marked photos
         for (const photoUrl of photosToDelete) {
-            console.log('Deleting photo from storage:', photoUrl);
+            //console.log('Deleting photo from storage:', photoUrl);
             const photoRef = firebase.storage().refFromURL(photoUrl);
             await photoRef.delete();
         }
@@ -612,14 +612,14 @@ async function savePhotosChanges(button, buttonText, successMessage) {
         // Upload new photos
         const uploadedPhotos = [];
         for (const photo of photosToAdd) {
-            console.log('Processing photo for upload:', photo);
+            //console.log('Processing photo for upload:', photo);
             const fileName = `image-${Date.now()}-${Math.floor(Math.random() * 10000)}-${Math.floor(Math.random() * 1000)}.jpeg`;
             const photoRef = firebase.storage().ref(`trips/${currentTripId}/${fileName}`);
             
-            console.log('Uploading to:', `trips/${currentTripId}/${fileName}`);
+            //console.log('Uploading to:', `trips/${currentTripId}/${fileName}`);
             const snapshot = await photoRef.put(photo.file);
             const downloadUrl = await snapshot.ref.getDownloadURL();
-            console.log('Upload complete, download URL:', downloadUrl);
+            //console.log('Upload complete, download URL:', downloadUrl);
 
             uploadedPhotos.push({
                 uri: downloadUrl,
@@ -640,11 +640,11 @@ async function savePhotosChanges(button, buttonText, successMessage) {
             // Add new photos
             updatedPhotos.push(...uploadedPhotos);
 
-            console.log('Updating Firestore document...');
+            //console.log('Updating Firestore document...');
             await tripRef.update({
                 photos: updatedPhotos
             });
-            console.log('Firestore update complete');
+            //console.log('Firestore update complete');
 
             // Update local state
             const tripIndex = userTrips.findIndex(trip => trip.id === currentTripId);
@@ -668,6 +668,7 @@ async function savePhotosChanges(button, buttonText, successMessage) {
                 successMessage.style.display = 'none';
                 button.disabled = false;
                 buttonText.textContent = 'Save Changes to Photos';
+                displaySuccessMessage('Successfully saved changes!');
             }, 3000);
 
         } else {
@@ -745,7 +746,7 @@ function setupEventListeners() {
     const newTripBtn = document.getElementById('createNewTrip');
     if (newTripBtn) {
         newTripBtn.addEventListener('click', () => {
-            console.log('Create New Trip clicked');
+            //console.log('Create New Trip clicked');
             
             newTripBtn.classList.add('active');
             resetForNewTrip();
@@ -849,10 +850,10 @@ function setupEventListeners() {
         }
 
         // Get the current photos from the trip data
-    const tripIndex = userTrips.findIndex(trip => trip.id === currentTripId);
-    const currentPhotos = tripIndex !== -1 ? userTrips[tripIndex].photos || [] :
+        const tripIndex = userTrips.findIndex(trip => trip.id === currentTripId);
+        const currentPhotos = tripIndex !== -1 ? userTrips[tripIndex].photos || [] : [];
         
-        console.log('Calling loadPhotosGrid with currentPhotos:', currentPhotos);
+        //console.log('Calling loadPhotosGrid with currentPhotos:', currentPhotos);
         loadPhotosGrid(currentPhotos);
         this.value = ''; // Reset file input
     });
@@ -1140,19 +1141,18 @@ async function saveBasicInfo() {
             };
         }
 
-        // Show success message
-        buttonText.style.display = 'none';
-        successMessage.style.display = 'flex';
         
         // Reset button after 3 seconds
         setTimeout(() => {
+            displaySuccessMessage('Successfully saved changes!');
             buttonText.style.display = 'inline';
             successMessage.style.display = 'none';
             button.disabled = false;
             buttonText.textContent = 'Save Basic Info';
-        }, 3000);
+        }, 2000);
 
     } catch (error) {
+        displayErrorMessage('Could not save changes');
         console.error('Error saving basic info:', error);
         button.disabled = false;
         buttonText.textContent = 'Error Saving';
@@ -1269,7 +1269,7 @@ function setupCoverImageHandlers() {
     // Save button handler
     saveBtn.addEventListener('click', async () => {
         if (!currentTripId) return;
-        console.log('Starting cover image save process...');
+        //console.log('Starting cover image save process...');
 
         const button = saveBtn;
         const buttonText = button.querySelector('.button-text');
@@ -1281,10 +1281,10 @@ function setupCoverImageHandlers() {
 
             // Check if we're using the cropper (meaning we have a new image to save)
             if (cropper) {
-                console.log('Processing new image upload...');
+                //console.log('Processing new image upload...');
                 
                 // Get cropped canvas and resize
-                console.log('Creating cropped and resized canvas...');
+                //console.log('Creating cropped and resized canvas...');
                 const canvas = cropper.getCroppedCanvas({
                     width: 500,
                     height: Math.floor(500 / (16/9)),
@@ -1293,7 +1293,7 @@ function setupCoverImageHandlers() {
                 });
 
                 // Convert to blob with compression
-                console.log('Converting to compressed blob...');
+                //console.log('Converting to compressed blob...');
                 const blob = await new Promise(resolve => {
                     canvas.toBlob(resolve, 'image/jpeg', 0.85);
                 });
@@ -1301,18 +1301,18 @@ function setupCoverImageHandlers() {
                 // Generate random 3-digit number for filename
                 const randomNum = Math.floor(Math.random() * 900) + 100;
                 const filename = `tripCoverPic-${randomNum}`;
-                console.log('Generated filename:', filename);
+                //console.log('Generated filename:', filename);
 
                 // Delete existing cover photo if exists
                 const storageRef = firebase.storage().ref(`trips/${currentTripId}`);
                 try {
-                    console.log('Checking for existing cover pics...');
+                    //console.log('Checking for existing cover pics...');
                     const files = await storageRef.listAll();
                     const coverPics = files.items.filter(item => item.name.startsWith('tripCoverPic-'));
-                    console.log('Found existing cover pics:', coverPics.map(pic => pic.name));
+                    //console.log('Found existing cover pics:', coverPics.map(pic => pic.name));
                     
                     if (coverPics.length > 0) {
-                        console.log('Deleting existing cover pics...');
+                        //console.log('Deleting existing cover pics...');
                         await Promise.all(coverPics.map(pic => pic.delete()));
                     }
                 } catch (error) {
@@ -1320,14 +1320,14 @@ function setupCoverImageHandlers() {
                 }
 
                 // Upload new image
-                console.log('Uploading new image...');
+                //console.log('Uploading new image...');
                 const imageRef = storageRef.child(`${filename}.jpg`);
                 const snapshot = await imageRef.put(blob);
                 const downloadURL = await snapshot.ref.getDownloadURL();
-                console.log('New image uploaded successfully:', downloadURL);
+                //console.log('New image uploaded successfully:', downloadURL);
 
                 // Update Firestore
-                console.log('Updating Firestore with new image URL...');
+                //console.log('Updating Firestore with new image URL...');
                 await firebase.firestore()
                     .collection('trips')
                     .doc(currentTripId)
@@ -1354,24 +1354,24 @@ function setupCoverImageHandlers() {
                 imagePreview.src = downloadURL;
 
             } else if (currentCoverUrl === DEFAULT_COVER_URL) {
-                console.log('Setting to default image...');
+                //console.log('Setting to default image...');
                 
                 // Delete existing cover photo if it exists
                 const storageRef = firebase.storage().ref(`trips/${currentTripId}`);
                 try {
                     const files = await storageRef.listAll();
                     const coverPics = files.items.filter(item => item.name.startsWith('tripCoverPic-'));
-                    console.log('Found existing cover pics:', coverPics.map(pic => pic.name));
+                    //console.log('Found existing cover pics:', coverPics.map(pic => pic.name));
                     
                     if (coverPics.length > 0) {
-                        console.log('Deleting existing cover pics...');
+                        //console.log('Deleting existing cover pics...');
                         await Promise.all(coverPics.map(pic => pic.delete()));
                     }
                 } catch (error) {
                     console.error('Error deleting existing cover:', error);
                 }
 
-                console.log('Updating Firestore with default URL...');
+                //console.log('Updating Firestore with default URL...');
                 await firebase.firestore()
                     .collection('trips')
                     .doc(currentTripId)
@@ -1392,7 +1392,7 @@ function setupCoverImageHandlers() {
             }
 
             // Update UI state
-            console.log('Updating UI state...');
+            //console.log('Updating UI state...');
             buttonText.style.display = 'none';
             successMessage.style.display = 'flex';
             document.getElementById('revertCoverBtn').style.display = 'none';
@@ -1404,7 +1404,7 @@ function setupCoverImageHandlers() {
             // Hide cropper instructions
             document.querySelector('.cropper-instructions').style.display = 'none';
 
-            console.log('Save process completed successfully!');
+            //console.log('Save process completed successfully!');
 
             setTimeout(() => {
                 buttonText.style.display = 'inline';
@@ -1459,7 +1459,7 @@ function updatePhotosSaveButton() {
 }
 
 function resetForNewTrip() {
-    console.log('Resetting form for new trip');
+    //console.log('Resetting form for new trip');
     
     // Clear current trip ID
     currentTripId = null;
@@ -1487,13 +1487,13 @@ function resetForNewTrip() {
     submitButtonText.textContent = 'Save New Trip';
 
 
-     // Show option headers and hide regular trip info
-     document.getElementById('optionBSection').style.display = 'block';
-     //document.getElementById('additionalTripInfo').style.display = 'none';
-     
-     // Clear form fields
-     document.getElementById('tripForm').reset();
-     document.getElementById('redditUrl').value = '';
+    // Show option headers and hide regular trip info
+    document.getElementById('optionBSection').style.display = 'block';
+    //document.getElementById('additionalTripInfo').style.display = 'none';
+    
+    // Clear form fields
+    document.getElementById('tripForm').reset();
+    document.getElementById('redditUrl').value = '';
     
     // Reset photo states
     photosToDelete.clear();
@@ -1581,7 +1581,7 @@ function resetForNewTrip() {
     // Clear Reddit URL input
     document.getElementById('redditUrl').value = '';
     
-    console.log('Form reset complete');
+    //console.log('Form reset complete');
 }
 
 async function saveNewTrip() {
@@ -2111,9 +2111,9 @@ async function loadPlacesList() {
 }
 
 async function saveUpdatedPlacesListToFirebase() {
-    console.log('=== Places Save Preview ===');
+    //console.log('=== Places Save Preview ===');
 
-    console.log('=== Part 0: Capture all current commentary ===');
+    //console.log('=== Part 0: Capture all current commentary ===');
 
     const tripData = userTrips.find(t => t.id === currentTripId);
     if (!tripData) {
@@ -2125,10 +2125,10 @@ async function saveUpdatedPlacesListToFirebase() {
 
     // Update placesToAdd with current commentary values
     placeItems.forEach(placeItem => {
-        console.log('Processing place item:', placeItem);
+        //console.log('Processing place item:', placeItem);
         
         const commentaryInput = placeItem.querySelector('.commentary-input');
-        console.log('Found commentary input:', commentaryInput);
+        //console.log('Found commentary input:', commentaryInput);
         
         if (commentaryInput) {
             const placeId = placeItem.getAttribute('data-place-id');
@@ -2141,18 +2141,18 @@ async function saveUpdatedPlacesListToFirebase() {
                 const isNewPlace = placeId.startsWith('new-');
                 const actualPlaceId = isNewPlace ? placeId.replace('new-', '') : placeId;
                
-                console.log('Comparing:', {
+                /*console.log('Comparing:', {
                     isNewPlace,
                     actualPlaceId,
                     placeId: p.placeId,
                     match: p.placeId === actualPlaceId
-                });
+                });*/
                 
                 return p.placeId === actualPlaceId;
             });
 
-            console.log('Found place at index:', placeToAddIndex);
-            console.log('Current placesToAdd:', [...placesToAdd]);
+            //console.log('Found place at index:', placeToAddIndex);
+            //console.log('Current placesToAdd:', [...placesToAdd]);
 
             if (placeToAddIndex !== -1) {
                 placesToAdd[placeToAddIndex] = {
@@ -2166,11 +2166,11 @@ async function saveUpdatedPlacesListToFirebase() {
 
     
     try {
-        console.log('=== Part 1: Processing New Places ===');
+        //console.log('=== Part 1: Processing New Places ===');
         
         // Get all Google Place IDs we need to check
         const placeIdsToCheck = placesToAdd.map(p => p.placeId);
-        console.log('Total new places to check:', placeIdsToCheck.length);
+        //console.log('Total new places to check:', placeIdsToCheck.length);
 
         // Create chunks of 10 IDs (Firestore's IN limit)
         const chunks = [];
@@ -2181,7 +2181,7 @@ async function saveUpdatedPlacesListToFirebase() {
         // Query Firestore for each chunk
         const existingPlacesMap = {};
         for (const chunk of chunks) {
-            console.log('Checking chunk:', chunk);
+            //console.log('Checking chunk:', chunk);
             const querySnapshot = await firebase.firestore()
                 .collection('places')
                 .where('gpid', 'in', chunk)
@@ -2209,10 +2209,10 @@ async function saveUpdatedPlacesListToFirebase() {
         // Check each place
         placesToAdd.forEach(place => {
             if (existingPlacesMap[place.placeId]) {
-                console.log(`Place exists: ${place.name} (${place.placeId})`);
-                console.log('Existing document ID:', existingPlacesMap[place.placeId].id);
+                //console.log(`Place exists: ${place.name} (${place.placeId})`);
+                //console.log('Existing document ID:', existingPlacesMap[place.placeId].id);
             } else {
-                console.log(`Need to create new place: ${place.name} (${place.placeId})`);
+                //console.log(`Need to create new place: ${place.name} (${place.placeId})`);
             }
         });
 
@@ -2222,7 +2222,8 @@ async function saveUpdatedPlacesListToFirebase() {
             .map(async place => {
                 const existingPlace = existingPlacesMap[place.placeId];
 
-                console.log(`ABOUT TO ADD EXISTING PLACE: ${JSON.stringify(place,null,2)}`);
+                //console.log(`ABOUT TO ADD EXISTING PLACE: ${JSON.stringify(place,null,2)}`);
+                
                 // add commentary if it exists
                 let commentData = null;
                 if (place.commentary?.trim()){
@@ -2261,7 +2262,7 @@ async function saveUpdatedPlacesListToFirebase() {
         let placeDetails = [];
 
         if (placesNeedingDetails.length > 0) {
-            console.log(`Fetching Google details for ${placesNeedingDetails.length} new places`);
+            //console.log(`Fetching Google details for ${placesNeedingDetails.length} new places`);
             
             // Create the request body format the API expects
             const requestBody = {
@@ -2343,13 +2344,13 @@ async function saveUpdatedPlacesListToFirebase() {
             ...newPlaceCreations
         ]);
 
-        console.log('All places processed:', processedPlaces);
+        //console.log('All places processed:', processedPlaces);
         
-        console.log('=== Part 2: Processing Deletions ===');
+        //console.log('=== Part 2: Processing Deletions ===');
 
         // Handle removing places from the trip
         const deletionPromises = Array.from(placesToDelete).map(async placeId => {
-            console.log(`Removing trip reference and comments from place: ${placeId}`);
+            //console.log(`Removing trip reference and comments from place: ${placeId}`);
 
             const placeDoc = await firebase.firestore()
                 .collection('places')
@@ -2377,9 +2378,9 @@ async function saveUpdatedPlacesListToFirebase() {
         });
 
         await Promise.all(deletionPromises);
-        console.log('Deletions completed');
+        //console.log('Deletions completed');
 
-        console.log('=== Part 3: Updating Trip Places Order ===');
+        //console.log('=== Part 3: Updating Trip Places Order ===');
         
         // Get final order from currentPlaceDisplayList
         const finalOrder = currentPlaceDisplayList
@@ -2393,7 +2394,7 @@ async function saveUpdatedPlacesListToFirebase() {
         })
         .filter(id => id !== null);
 
-        console.log('Saving final order:', finalOrder);
+        //console.log('Saving final order:', finalOrder);
 
         // Update trip document with new order
         await firebase.firestore()
@@ -2492,7 +2493,8 @@ async function saveUpdatedPlacesListToFirebase() {
             };
         });
 
-        console.log('Save completed successfully');
+        displaySuccessMessage('Save completed successfully');
+        //console.log('Save completed successfully');
 
         // Refresh the UI
         loadPlacesList();  // This will rebuild the display list without the tags
@@ -2601,7 +2603,8 @@ async function saveUpdatedAttendeesListToFirebase() {
         renderAttendeesList();
         document.getElementById('saveAttendeesBtn').disabled = true;
 
-        console.log('Attendees updated successfully');
+        displaySuccessMessage('Attendees updated successfully!');
+        //console.log('Attendees updated successfully');
 
     } catch (error) {
         console.error('Error updating attendees:', error);

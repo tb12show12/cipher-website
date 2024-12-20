@@ -228,48 +228,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
          // Add click handler for My Profile nav item
-         const profileNavItem = document.querySelector('.nav-item.nav-profile');
-         if (profileNavItem) {
-             profileNavItem.addEventListener('click', async (e) => {
-                 e.preventDefault();
-                 console.log('profileNavItem clicked');
+        const profileNavItem = document.querySelector('.nav-item.nav-profile');
+        if (profileNavItem) {
+            profileNavItem.addEventListener('click', async (e) => {
+            e.preventDefault();
+            //console.log('profileNavItem clicked');
 
-                 // Check if we're on the navigate page
-                 if (window.location.pathname.includes('/pages/navigate')) {
-                     if (user) {
-                        console.log('on navigate page, loading user profile');
-                        document.dispatchEvent(new CustomEvent('loadNavigatePage', {
-                            detail: { userId: user.uid }
-                        }));
-                     }
-                 } else {
-                     // If not on navigate page, redirect to it first
-                     console.log('not on navigate page, redirecting to it first');
-                     window.location.href = '/pages/navigate/navigate.html';
-                 }
-             });
-         }
+            // Check if we're on the navigate page
+            if (window.location.pathname.includes('/pages/navigate')) {
+                if (user) {
+                //console.log('on navigate page, loading user profile');
+                document.dispatchEvent(new CustomEvent('loadNavigatePage', {
+                    detail: { userId: user.uid }
+                }));
+                }
+            } else {
+                // If not on navigate page, redirect to it first
+                //console.log('not on navigate page, redirecting to it first');
+                window.location.href = '/pages/navigate/navigate.html';
+            }
+            });
+        }
 
-         const discoverNavItem = document.querySelector('.nav-item.nav-discover');
-         if (discoverNavItem) {
-             discoverNavItem.addEventListener('click', async (e) => {
-                 e.preventDefault();
-                 console.log('discoverNavItem clicked');
+        const discoverNavItem = document.querySelector('.nav-item.nav-discover');
+        if (discoverNavItem) {
+            discoverNavItem.addEventListener('click', async (e) => {
+                e.preventDefault();
+                //console.log('discoverNavItem clicked');
 
-                 // Check if we're on the navigate page
-                 if (window.location.pathname.includes('/pages/navigate')) {
-                     if (user) {
-                        document.dispatchEvent(new CustomEvent('loadNavigatePage', {
-                            detail: { userId: null, tripId: null }
-                        }));
-                     }
-                 } else {
-                     // If not on navigate page, redirect to it first
-                     console.log('not on navigate page, redirecting to it first');
-                     window.location.href = '/pages/navigate/navigate.html';
-                 }
-             });
-         }
+                // Check if we're on the navigate page
+                if (window.location.pathname.includes('/pages/navigate')) {
+                    if (user) {
+                    document.dispatchEvent(new CustomEvent('loadNavigatePage', {
+                        detail: { userId: null, tripId: null }
+                    }));
+                    }
+                } else {
+                    // If not on navigate page, redirect to it first
+                    //console.log('not on navigate page, redirecting to it first');
+                    window.location.href = '/pages/navigate/navigate.html';
+                }
+            });
+        }
 
     } catch (error) {
         console.error('Error loading navigation:', error);

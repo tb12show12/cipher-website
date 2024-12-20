@@ -3,15 +3,38 @@
  * @param {string} message - The message to display
  */
 export function displaySuccessMessage(message) {
-    const existingMessage = document.querySelector('.success-message');
+    showNotification(message, 'success');
+}
+
+/**
+ * Displays an error message that automatically disappears
+ * @param {string} message - The message to display
+ */
+export function displayErrorMessage(message) {
+    showNotification(message, 'error');
+}
+
+
+/**
+ * Helper function to show notifications
+ * @param {string} message - The message to display
+ * @param {string} type - The type of notification ('success' or 'error')
+ */
+function showNotification(message, type) {
+    // Remove any existing messages
+    const existingMessage = document.querySelector('.success-message, .error-message');
     if (existingMessage) {
         existingMessage.remove();
     }
 
     const messageElement = document.createElement('div');
-    messageElement.className = 'success-message';
+    messageElement.className = type === 'success' ? 'success-message' : 'error-message';
     messageElement.style.zIndex = '10001';
-    messageElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+    
+    // Use different icons for success and error
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    messageElement.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+    
     document.body.appendChild(messageElement);
 
     // Trigger animation

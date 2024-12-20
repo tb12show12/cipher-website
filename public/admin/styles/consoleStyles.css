@@ -159,10 +159,11 @@ body {
 /* Tabs */
 .tabs {
     display: flex;
-    gap: 40px;
+    gap: 15px;
     margin-bottom: 12px;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
+    justify-content: space-around;
 }
 
 .tab {

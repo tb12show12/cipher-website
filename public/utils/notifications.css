@@ -1,10 +1,9 @@
-.success-message {
+.success-message, .error-message {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #4CAF50;
-    color: white;
+    color: white !important;
     padding: 12px 24px;
     border-radius: 30px;
     font-size: 14px;
@@ -18,11 +17,20 @@
     transition: all 0.3s ease;
 }
 
-.success-message.show {
+.success-message {
+    background: #4CAF50;
+}
+
+.error-message {
+    background: #DC3545;
+}
+
+.success-message.show, .error-message.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
 
-.success-message i {
+.success-message i, .error-message i {
     font-size: 16px;
+    color: white !important; /* Force white icon color */
 }

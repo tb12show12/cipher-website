@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             .get();
 
         if (!userDoc.exists) {
-            console.log('🚀 New user detected, showing signup modal...');
+            //console.log('🚀 New user detected, showing signup modal...');
             const modal = new SignupModal();
             modal.showUserInfoStep(user);
             return;
@@ -216,7 +216,7 @@ function initializeEventListeners() {
  * Handles search Cipher button click
  */
 async function handleSearchCipher() {
-    console.log('🎯 Search Cipher button clicked');
+    //console.log('🎯 Search Cipher button clicked');
 
     document.querySelectorAll('.quick-link-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -269,7 +269,7 @@ async function handleSearchCipher() {
 function updateKeywordState(event) {
     // Just store the value, don't trigger search
     const keyword = event.target.value;
-    console.log('🔍 Keyword updated:', keyword);
+    //console.log('🔍 Keyword updated:', keyword);
 }
 
 /**
@@ -315,6 +315,7 @@ function switchToTripView() {
     document.querySelector('.trip-details-view').style.display = 'block';
     document.querySelector('.search-context').style.display = 'none';
     document.querySelector('.trip-context').style.display = 'block';
+    document.querySelector('.selected-trip-container').style.display = 'none';
 
     document.querySelectorAll('.quick-link-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -477,7 +478,7 @@ async function performSearch(keyword = '') {
         state.recentActivity.isViewing = false;
         
         const filters = buildSearchFilters();
-        console.log('🔍 Final filter string:', filters); // Debug log
+        //console.log('🔍 Final filter string:', filters); // Debug log
         
         const { hits } = await tripIndex.search(keyword, {
             filters: filters,
@@ -538,7 +539,7 @@ function handleTripTypeSelect(event) {
  * Handles show my profile button click
  */
 async function handleShowMyProfile() {
-    console.log('🎯 Show My Profile button clicked');
+    //console.log('🎯 Show My Profile button clicked');
     try {
         const authUserId = firebase.auth().currentUser.uid;
         await loadUserData(authUserId);
@@ -552,7 +553,7 @@ async function handleShowMyProfile() {
  * Handles recent activity button click
  */
 async function handleRecentActivity() {
-    console.log('🎯 Recent Activity button clicked');
+    //console.log('🎯 Recent Activity button clicked');
 
     document.querySelectorAll('.quick-link-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -689,7 +690,7 @@ function initializeTripTypes() {
  * Displays search results in both list and map views
  */
 function displaySearchResults(results) {
-    console.log('📊 Displaying search results:', results.length);
+    //console.log('📊 Displaying search results:', results.length);
     
     // Get view containers
     const listView = document.querySelector('.results-content .list-view');
@@ -870,7 +871,7 @@ function formatDate(timestamp) {
  * Toggles between map and list views
  */
 function handleViewToggle(event) {
-    console.log('🎯 View toggle clicked:', event.target);
+    //console.log('🎯 View toggle clicked:', event.target);
     
     // Only handle clicks on buttons or their icons
     const button = event.target.closest('.view-toggle-btn');
@@ -885,7 +886,7 @@ function handleViewToggle(event) {
     
     // Toggle views based on which button was clicked
     const showMap = button.classList.contains('right');
-    console.log('🗺️ Show map:', showMap);
+   // console.log('🗺️ Show map:', showMap);
     
     toggleMapView(showMap);
 }
@@ -963,7 +964,7 @@ function handleNavigationChange(event) {
 
     if (tripId) {
         //displayTripDetails(tripId);
-        console.log('🚗 Should be loading trip from handleNavigationChange:', tripId);
+        //console.log('🚗 Should be loading trip from handleNavigationChange:', tripId);
     } else {
         // Return to search/recent activity view
         document.querySelector('.search-results-view').style.display = 'block';
@@ -983,12 +984,12 @@ function handleNavigationChange(event) {
  * Loads featured trips from Algolia
  */
 async function loadFeaturedTrips() {
-    console.log('🌟 Loading featured trips...');
+    //console.log('🌟 Loading featured trips...');
     const { hits } = await tripIndexDateCreatedDesc.search('', {
         filters: 'featured = 1',
         hitsPerPage: 30
     });
-    console.log(`📊 Found ${hits.length} featured trips`);
+    //console.log(`📊 Found ${hits.length} featured trips`);
     return hits;
 }
 
@@ -996,11 +997,11 @@ async function loadFeaturedTrips() {
  * Loads trips from user's network
  */
 async function loadNetworkTrips() {
-    console.log('🤝 Loading network trips...');
-    console.log('Network connections:', state.userConnections.size);
+    //console.log('🤝 Loading network trips...');
+    //console.log('Network connections:', state.userConnections.size);
     
     if (!state.userConnections.size) {
-        console.log('⚠️ No network connections found');
+        //console.log('⚠️ No network connections found');
         return [];
     }
 
@@ -1008,13 +1009,13 @@ async function loadNetworkTrips() {
     const networkFilter = Array.from(state.userConnections)
         .map(id => `attendees:${id}`)
         .join(' OR ');
-    console.log('🔍 Network filter:', networkFilter);
+    //console.log('🔍 Network filter:', networkFilter);
 
     const { hits } = await tripIndexDateCreatedDesc.search('', {
         filters: networkFilter,
         hitsPerPage: 30
     });
-    console.log(`📊 Found ${hits.length} network trips`);
+    //console.log(`📊 Found ${hits.length} network trips`);
     return hits;
 }
 
@@ -1022,23 +1023,23 @@ async function loadNetworkTrips() {
  * Combines and sorts featured and network results
  */
 function combineAndSortResults(featuredResults, networkResults) {
-    console.log('🔄 Combining results:', {
+    /*console.log('🔄 Combining results:', {
         featured: featuredResults.length,
         network: networkResults.length
-    });
+    });*/
     
     // Combine results, removing duplicates
     const seen = new Set();
     const combined = [...featuredResults, ...networkResults].filter(trip => {
         if (seen.has(trip.objectID)) {
-            console.log(`👥 Duplicate found: ${trip.objectID}`);
+            //console.log(`👥 Duplicate found: ${trip.objectID}`);
             return false;
         }
         seen.add(trip.objectID);
         return true;
     });
 
-    console.log(`📊 Final combined results: ${combined.length} trips`);
+    //console.log(`📊 Final combined results: ${combined.length} trips`);
     
     // Sort by date created, newest first
     return combined.sort((a, b) => {
@@ -1061,7 +1062,7 @@ function updateRecentActivityCache(results) {
  * Toggles between map and list views
  */
 function toggleMapView(showMap) {
-    console.log('🔄 Toggling map view:', showMap);
+    //console.log('🔄 Toggling map view:', showMap);
     
     const resultsContent = document.querySelector('.search-results-column .results-content');
     if (!resultsContent) {
@@ -1072,7 +1073,7 @@ function toggleMapView(showMap) {
     const listView = resultsContent.querySelector('.list-view');
     const mapView = resultsContent.querySelector('.map-view');
     
-    console.log('Found elements:', { listView, mapView });
+    //console.log('Found elements:', { listView, mapView });
     
     if (!listView || !mapView) {
         console.error('❌ Could not find view elements');
@@ -1092,7 +1093,7 @@ function toggleMapView(showMap) {
 }
 
 function initializeDiscoverMap(hits) {
-    console.log('🗺️ Initializing Discovery map');
+    //console.log('🗺️ Initializing Discovery map');
 
     // Clear existing map if it exists
     if (state.currentDiscoverMap) {
@@ -1150,8 +1151,8 @@ function initializeDiscoverMap(hits) {
         .setLngLat([hit.coordinates.longitude, hit.coordinates.latitude])
         .addTo(state.currentDiscoverMap)
         .getElement().addEventListener('click', () => {
-            console.log('🎯 Marker clicked for trip:', hit.title);
-            console.log('Selected trip container at click:', selectedTripContainer);
+            //console.log('🎯 Marker clicked for trip:', hit.title);
+            //console.log('Selected trip container at click:', selectedTripContainer);
 
             // Load trip data into the selected trip container
             selectedTripContainer.innerHTML = `
@@ -1260,7 +1261,7 @@ function initializeDefaultState() {
  */
 function handleClearAll() {
     initializeDefaultState();
-    console.log('Filters cleared:', state.filters); // Debug log
+    //console.log('Filters cleared:', state.filters); // Debug log
 }
 
 /******************************************************************************
@@ -1722,7 +1723,7 @@ function initializePlaceViewToggle() {
     toggleButtons.forEach(button => {
         button.addEventListener('click', () => {
             const view = button.dataset.view;
-            console.log('View toggle clicked', view);
+            //console.log('View toggle clicked', view);
 
             // Update active button
             toggleButtons.forEach(btn => btn.classList.remove('active'));
@@ -1730,11 +1731,11 @@ function initializePlaceViewToggle() {
 
             // Toggle views
             if (view === 'cards') {
-                console.log('Showing cards');
+                //console.log('Showing cards');
                 placesGrid.style.display = 'flex';
                 placesTable.style.display = 'none';
             } else {
-                console.log('Showing table');
+                //console.log('Showing table');
                 placesGrid.style.display = 'none';
                 placesTable.style.display = 'block';
             }
@@ -1743,7 +1744,6 @@ function initializePlaceViewToggle() {
 }
 
 function initializeFilterMenu() {
-    console.log('Initializing trip places filter menu');
     const filterButton = document.querySelector('.places-filter-button');
     const filterMenu = document.querySelector('.places-filter-menu');
     const filterOptions = document.querySelectorAll('.places-filter-option');
@@ -1759,7 +1759,7 @@ function initializeFilterMenu() {
 
     // Toggle menu
     filterButton.addEventListener('click', (e) => {
-        console.log('Filter button clicked');
+        //console.log('Filter button clicked');
         e.stopPropagation();
         filterMenu.classList.toggle('active');
     });
@@ -1901,7 +1901,7 @@ function updatePhotosTab(tripData) {
  */
 function updateMapTab(tripData) {
     if (tripData.placesDetail && tripData.placesDetail.length > 0) {
-        console.log('🗺️ Initializing Trip map');
+        //console.log('🗺️ Initializing Trip map');
         
         // Clear any existing map
         if (state.currentTripMap) {
@@ -2509,13 +2509,13 @@ function initializeFilters() {
 
     if (!filterBtn || !filterMenu) return;
 
-    console.log('Initialize filters called');
+    //console.log('Initialize filters called');
 
     // Toggle filter menu
     filterBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         filterMenu.classList.toggle('show');
-        console.log('Showing filter menu');
+        //console.log('Showing filter menu');
     });
 
     // Close menu when clicking outside
@@ -2807,7 +2807,7 @@ function showInvitePrompt(tripId) {
                 acceptBtn.disabled = true;
                 acceptBtn.textContent = 'Adding...';
 
-                console.log('currentUser to add:', state.authedUserData);
+                //console.log('currentUser to add:', state.authedUserData);
                 
                 await writeNewAttendeeToFirebase(tripId, state.authedUserData.userId);
 

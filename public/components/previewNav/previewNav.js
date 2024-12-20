@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Add click handlers using event delegation
         searchResults.addEventListener('click', async (e) => {
-            // need to show modal.
+            
         });
 
         // Close search results when clicking outside

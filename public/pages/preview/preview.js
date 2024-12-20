@@ -377,7 +377,7 @@ function initializeDefaultState() {
  */
 function handleClearAll() {
     initializeDefaultState();
-    console.log('Filters cleared:', state.filters); // Debug log
+    //console.log('Filters cleared:', state.filters); // Debug log
 }
 
 /******************************************************************************
@@ -721,7 +721,6 @@ function initializePlaceViewToggle() {
 }
 
 function initializeFilterMenu() {
-    console.log('Initializing trip places filter menu');
     const filterButton = document.querySelector('.places-filter-button');
     const filterMenu = document.querySelector('.places-filter-menu');
     const filterOptions = document.querySelectorAll('.places-filter-option');
@@ -879,7 +878,7 @@ function updatePhotosTab(tripData) {
  */
 function updateMapTab(tripData) {
     if (tripData.placesDetail && tripData.placesDetail.length > 0) {
-        console.log('🗺️ Initializing Trip map');
+        //console.log('🗺️ Initializing Trip map');
         
         // Clear any existing map
         if (state.currentTripMap) {
@@ -1040,7 +1039,7 @@ function initializeFilters() {
 
     if (!filterBtn || !filterMenu) return;
 
-    console.log('Initialize filters called');
+    //console.log('Initialize filters called');
 
     // Toggle filter menu
     filterBtn.addEventListener('click', (e) => {
