@@ -26,7 +26,7 @@
     max-width: 300px;
     position: relative;
     text-align: center;
-    background-image: url('/assets/PatternBackground.png');
+    background-image: url('/assets/PatternBackgroundColor.svg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

@@ -1,4 +1,4 @@
-import { TRIP_TYPES } from '/admin/config.js';
+import { TRIP_TYPES } from '/utils/config.js';
 
 const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
 const tripIndex = searchClient.initIndex('tripIndex');
@@ -664,9 +664,9 @@ function displayUserData() {
     // Create the creator profile HTML
     const creatorProfile = `
     <div class="creator-card">
-        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.coverImage}')">
+        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.defaultTripCoverPic}')">
             <div class="creator-profile-pic">
-                <img src="${userData.pPic || DEFAULTS.profileImage}" alt="">
+                <img src="${userData.pPic || DEFAULTS.defaultPPic}" alt="">
             </div>
         </div>
         <div class="creator-info">
@@ -714,7 +714,7 @@ function generateTripItemHTML(trip) {
     
     return `
         <button class="trip-item" data-trip-id="${trip.id}">
-            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.coverImage}')">
+            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.defaultTripCoverPic}')">
                 <div class="trip-item-content">
                     <div class="trip-item-main">
                         <div class="trip-item-title-block">

@@ -58,27 +58,7 @@ async function initializeBackground() {
     // Add grid to page
     document.body.insertBefore(grid, document.body.firstChild);
      
-    // Add grid styles
-    const style = document.createElement('style');
-    style.textContent = `
-        .background-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: grid;
-            grid-template-columns: repeat(6, 300px);  /* Fixed 6 columns */
-            justify-content: center;
-            gap: 2px;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-            padding: 0px;
-        }
-    `;
     
-    document.head.appendChild(style);
 }
 
 // Only initialize once when page loads

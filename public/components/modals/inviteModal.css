@@ -88,7 +88,7 @@
     z-index: 10000; /* Even higher than the overlay */
     max-height: 90vh;
     overflow-y: auto;
-    background-image: url('/assets/PatternBackground.png');
+    background-image: url('/assets/PatternBackgroundColor.svg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

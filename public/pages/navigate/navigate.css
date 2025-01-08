@@ -2131,7 +2131,6 @@ body {
 .loading-icon {
     width: 64px;
     height: 64px;
-    margin-bottom: 16px;
     animation: pulse 2s infinite;
 }
 

@@ -42,13 +42,6 @@ to = "/.netlify/functions/createOGPage"
 status = 200
 force = true
 
-# New redirect for admin page
-[[redirects]]
-from = "/admin"
-to = "/admin/index.html"
-status = 200
-force = true
-
 # New redirect for admin API endpoints
 [[redirects]]
 from = "/api/*"

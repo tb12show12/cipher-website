@@ -1,4 +1,4 @@
-import { TRIP_TYPES, DEFAULTS } from '/admin/config.js';
+import { TRIP_TYPES, DEFAULTS } from '/utils/config.js';
 
 
 /**
@@ -43,7 +43,7 @@ function createThumbnailElement(trip) {
     const thumbnailElement = document.createElement('div');
     thumbnailElement.className = 'trip-item thumbnail-template';
     thumbnailElement.innerHTML = `
-        <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.coverImage}')">
+        <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.defaultTripCoverPic}')">
             <div class="trip-item-content">
                 <div class="trip-item-main">
                     <div class="trip-item-title-block">

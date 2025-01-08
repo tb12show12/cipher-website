@@ -1,4 +1,4 @@
-import { TRIP_TYPES, PLACE_TYPES, DEFAULTS } from '/admin/config.js';
+import { TRIP_TYPES, PLACE_TYPES, DEFAULTS } from '/utils/config.js';
 
 const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
 const tripIndex = searchClient.initIndex('tripIndex');

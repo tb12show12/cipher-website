@@ -2,29 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cipher Console</title>
-    <link rel="stylesheet" href="/admin/styles/consoleStyles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="/components/nav/nav.css">
     <link rel="stylesheet" href="/components/signup/signup.css">
-    <link rel="stylesheet" href="/utils/notifications.css">
-    <link rel="stylesheet" href="/pages/navigate/navigate.css">
     <link rel="stylesheet" href="/components/modals/inviteModal.css">
+    <link rel="stylesheet" href="/utils/notifications.css">
     <link rel="stylesheet" href="/utils/thumbnailGenerator.css">
-
+    <link rel="stylesheet" href="/pages/navigate/navigate.css">
+    <link rel="stylesheet" href="/pages/console/console.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Add Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="/admin/firebaseConfig.js"></script>
+    <script src="/utils/firebaseConfig.js"></script>
     
     <!-- Then other scripts -->
+    <script type="module" src="/utils/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.22.1/dist/algoliasearch.umd.js"></script>
-    <script type="module" src="/admin/config.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
@@ -260,7 +261,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <script type="module" src="/components/nav/nav.js"></script>
-    <script type="module" src="/admin/console.js"></script>
+    <script type="module" src="/pages/console/console.js"></script>
     <script type="module" src="/components/signup/signup.js"></script>
 
     <div id="lightbox" class="lightbox" onclick="this.style.display='none'">

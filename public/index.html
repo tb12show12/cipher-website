@@ -26,36 +26,51 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="/admin/firebaseConfig.js"></script>
+    <script src="/utils/firebaseConfig.js"></script>
 
     <script src="/scripts/backgroundLoader.js"></script>
 </head>
 <body>
-    <main class="hero-section">
-        <div class="left-content">
-            <img src="assets/Butterfly2.png" alt="Cipher Logo" class="hero-logo">
-        </div>
-        <div class="right-content">
-            <h1>Cipher</h1>
-            <p class="subtitle">Travel Memories Shared</p>
-            
-            <div class="auth-buttons">
-                <button onclick="showAuthModal('login')" class="auth-btn login">
-                    Login
-                </button>
-                <button onclick="showAuthModal('signup')" class="auth-btn signup">
-                    Sign Up
-                </button>
-                <div class="divider">
-                    <span>or</span>
-                </div>
-                <button onclick="handleAppleSignIn()" class="auth-btn apple">
-                    <i class="fab fa-apple"></i>
-                    Continue with Apple
-                </button>
+    <div class="hero-wrapper">
+        <section class="hero-section">
+            <div class="left-content">
+                <img src="assets/Butterfly2.png" alt="Cipher Logo" class="hero-logo desktop-logo">
             </div>
-        </div>
-    </main>
+            <div class="right-content">
+                <div class="title-wrapper">
+                    <!-- Mobile logo - hidden by default -->
+                    <img src="assets/Butterfly2.png" alt="Cipher Logo" class="hero-logo mobile-logo">
+                    <div class="title-text">
+                        <h1>Cipher</h1>
+                        <p class="subtitle">Travel Memories Shared</p>
+                    </div>
+                </div>
+                
+                <div class="auth-buttons desktop-auth">
+                    <button onclick="showAuthModal('login')" class="auth-btn login">
+                        Login
+                    </button>
+                    <button onclick="showAuthModal('signup')" class="auth-btn signup">
+                        Sign Up
+                    </button>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <button onclick="handleAppleSignIn()" class="auth-btn apple">
+                        <i class="fab fa-apple"></i>
+                        Continue with Apple
+                    </button>
+                </div>
+
+                <div class="mobile-download-section">
+                    <p class="download-text">DOWNLOAD NOW ON THE APP STORE</p>
+                    <a href="https://apps.apple.com/your-app-link" class="app-store-link">
+                        <img src="assets/AppStoreBadge.svg" alt="Download on the App Store" class="app-store-badge">
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <footer class="bottom-bar">
         <div class="footer-content">

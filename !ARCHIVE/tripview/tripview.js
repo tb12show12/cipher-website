@@ -1,4 +1,4 @@
-import { TRIP_TYPES, PLACE_TYPES, DEFAULTS } from '/admin/config.js';
+import { TRIP_TYPES, PLACE_TYPES, DEFAULTS } from '/utils/config.js';
 
 
 const state = {
@@ -258,9 +258,9 @@ function displayUserData() {
     // Create the creator profile HTML
     const creatorProfile = `
     <div class="creator-card">
-        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.coverImage}')">
+        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.defaultBPic}')">
             <div class="creator-profile-pic">
-                <img src="${userData.pPic || DEFAULTS.profileImage}" alt="">
+                <img src="${userData.pPic || DEFAULTS.defaultPPic}" alt="">
             </div>
         </div>
         <div class="creator-info">
@@ -422,7 +422,7 @@ function displayTripData() {
 
     // Update header background
     document.querySelector('.trip-header').style.backgroundImage = 
-        `url(${tripData.tripCoverPic || DEFAULTS.coverImage})`;
+        `url(${tripData.tripCoverPic || DEFAULTS.defaultTripCoverPic})`;
 
     // Update title
     document.getElementById('tripTitle').textContent = tripData.title;
@@ -739,7 +739,7 @@ function displayTripData() {
                     .setPopup(
                         new maplibregl.Popup({ offset: 25 })
                             .setHTML(`
-                                <div class="map-popup" style="background-image: url('${place.image || DEFAULTS.coverImage}')">
+                                <div class="map-popup" style="background-image: url('${place.image || '/assets/PatternBackgroundColor.svg'}')">
                                     <div class="map-popup-overlay">
                                         <h2>${place.title}</h2>
                                         <div class="map-popup-type">
@@ -1016,7 +1016,7 @@ function generateTripItemHTML(trip) {
     
     return `
         <button class="trip-item" data-trip-id="${trip.id}">
-            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.coverImage}')">
+            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.defaultTripCoverPic}')">
                 <div class="trip-item-content">
                     <div class="trip-item-main">
                         <div class="trip-item-title-block">

@@ -1,4 +1,4 @@
-import { DEFAULTS } from '/admin/config.js';
+import { DEFAULTS } from '/utils/config.js';
 
 export function showAuthModal(mode = 'login') {
     const modal = new SignupModal();

@@ -1,11 +1,11 @@
 /******************************************************************************
  * IMPORTS AND CONSTANTS
  ******************************************************************************/
-import { TRIP_TYPES, DEFAULTS, PLACE_TYPES } from '/admin/config.js';
+import { TRIP_TYPES, DEFAULTS, PLACE_TYPES } from '/utils/config.js';
 import SignupModal from '/components/signup/signup.js'; 
 import { showInviteModal } from '/components/modals/inviteModal.js';
 import { displaySuccessMessage } from '/utils/notifications.js';
-import { ensureTripThumbnail } from '/utils/thumbnailGenerator.js';
+import { showMobileWarning } from '/components/mobileWarning/mobileWarning.js';
 
 // Algolia Setup
 const searchClient = algoliasearch('WADPYQO9WN', '37148f9e28cd367ebb6c1cfdb4852db6');
@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeDefaultState();
         initializeEventListeners();
         await handleInitialView();
+        showMobileWarning(state.currentTrip);
 
         // Show invite prompt if needed
         if (isInvite && tripId) {
@@ -735,7 +736,7 @@ function generateTripHTML(trip) {
 
     return `
         <div class="trip-item" data-trip-id="${trip.tripId}">
-            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.coverImage}')">
+            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.defaultTripCoverPic}')">
                 <div class="trip-item-content">
                     <div class="trip-item-main">
                         <div class="trip-item-title-block">
@@ -1561,7 +1562,7 @@ function filterPlaces(category) {
  * Updates the trip header section with basic trip information
  */
 function updateTripHeader(tripData) {
-    document.querySelector('.trip-header').style.backgroundImage = `url(${tripData.tripCoverPic || DEFAULTS.coverImage})`;
+    document.querySelector('.trip-header').style.backgroundImage = `url(${tripData.tripCoverPic || DEFAULTS.defaultTripCoverPic})`;
     document.getElementById('tripTitle').textContent = tripData.title;
     document.getElementById('tripCreator').textContent = tripData.creatorName;
     document.getElementById('tripMonth').textContent = tripData.month;
@@ -1978,7 +1979,7 @@ function updateMapTab(tripData) {
                     .setPopup(
                         new maplibregl.Popup({ offset: 25 })
                             .setHTML(`
-                                <div class="map-popup" style="background-image: url('${place.image || DEFAULTS.coverImage}')">
+                                <div class="map-popup" style="background-image: url('${place.image || '/assets/PatternBackgroundColor.svg'}')">
                                     <div class="map-popup-overlay">
                                         <h2>${place.title}</h2>
                                         <div class="map-popup-type">
@@ -2118,9 +2119,9 @@ function displayUserData() {
     // Create the creator profile HTML
     const creatorProfile = `
     <div class="creator-card">
-        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.coverImage}')">
+        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.defaultBPic}')">
             <div class="creator-profile-pic">
-                <img src="${userData.pPic || DEFAULTS.profileImage}" alt="">
+                <img src="${userData.pPic || DEFAULTS.defaultPPic}" alt="">
             </div>
         </div>
         <div class="creator-info">
@@ -2915,7 +2916,7 @@ function setupQuickLinkListeners() {
     editTripButton.addEventListener('click', () => {
         const params = new URLSearchParams(window.location.search);
         const currentTripId = params.get('tripId');
-        window.location.href = `/admin/console.html?tripId=${currentTripId}`;
+        window.location.href = `/pages/console/console.html?tripId=${currentTripId}`;
     });
 }
 

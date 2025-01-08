@@ -1,6 +1,6 @@
 // Global state
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
-import { PLACE_TYPES, MONTHS } from '/admin/config.js';
+import { PLACE_TYPES, MONTHS } from '/utils/config.js';
 import { showInviteModal } from '/components/modals/inviteModal.js';
 import { displaySuccessMessage, displayErrorMessage } from '/utils/notifications.js';
 
@@ -692,7 +692,7 @@ function initializeForm() {
     
     document.getElementById('submitButton').style.display = 'block';
 
-    import('./config.js').then(({ TRIP_TYPES }) => {
+    import('../../utils/config.js').then(({ TRIP_TYPES }) => {
         TRIP_TYPES.forEach(type => {
             const option = document.createElement('option');
             option.value = type.value;

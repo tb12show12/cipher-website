@@ -5,6 +5,8 @@
     <title>Navigate - Cipher</title>
     <link rel="icon" type="image/png" href="/assets/Butterfly2.png">
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta property="og:title" content="Cipher: Travel Memories Shared" />
     <meta property="og:description" content="Share your travel memories and experiences with friends and family using the Cipher app." />
     <meta property="og:image" content="https://cipher-app.com/assets/Butterfly2.png" />
@@ -19,6 +21,7 @@
     <link rel="stylesheet" href="/utils/notifications.css">
     <link rel="stylesheet" href="/components/modals/inviteModal.css">
     <link rel="stylesheet" href="/utils/thumbnailGenerator.css">
+    <link rel="stylesheet" href="/components/mobileWarning/mobileWarning.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css' rel='stylesheet' />
 
@@ -27,7 +30,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <script src="/admin/firebaseConfig.js"></script>
+    <script src="/utils/firebaseConfig.js"></script>
     <script src='https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.17.0/dist/algoliasearch.umd.js"></script>
     <script type="module" src="/components/signup/signup.js"></script>
@@ -310,7 +313,7 @@
 
     <script type="module" src="/pages/navigate/navigate.js"></script>
     <script type="module" src="/components/nav/nav.js"></script>
-    <script src="/admin/clientConfig.js"></script>
+    <script src="/utils/clientConfig.js"></script>
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close">&times;</button>
         <button class="lightbox-nav prev">&lt;</button>

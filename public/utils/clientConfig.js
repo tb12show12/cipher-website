@@ -1,5 +1,5 @@
-// Trip Types Configuration
-export const TRIP_TYPES = [
+// Trip Types Configuration (non-module version)
+const TRIP_TYPES = [
     { value: 0, label: '👥 Adults Only' },
     { value: 1, label: '👨‍👩‍👧‍👦 Family Trip' },
     { value: 2, label: '👶 Baby Friendly' },
@@ -9,7 +9,11 @@ export const TRIP_TYPES = [
     { value: 6, label: '🎒 Solo Travels' }
 ];
 
-export const PLACE_TYPES = [
+const DEFAULTS = {
+    defaultTripCoverPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a"
+};
+
+const PLACE_TYPES = [
     {value: 'airbnb', label: 'Airbnb', category:'toStay', icon: 'fa-brands fa-airbnb'},
     {value: 'b&b', label: 'B&B/Inn', category:'toStay', icon: 'fa-solid fa-mug-hot'},
     {value: 'bar', label: 'Bar', category:'toEat', icon: 'fa-solid fa-beer-mug-empty'},
@@ -48,56 +52,3 @@ export const PLACE_TYPES = [
     {value: 'vacasa', label: 'Vacasa', category:'toStay', icon: 'fa-solid fa-house'},
     {value: 'winery', label: 'Winery/Distillery', category:'toEat', icon: 'fa-solid fa-wine-bottle'},
 ];
-
-// Month names for date pickers
-export const MONTHS = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-];
-
-// Common validation rules
-export const VALIDATION = {
-    title: {
-        maxLength: 40,
-        required: true
-    },
-    shortDescription: {
-        maxLength: 190,
-        required: true
-    },
-    numDays: {
-        min: 1,
-        required: true
-    },
-    numPeople: {
-        min: 1,
-        required: true
-    }
-};
-
-// Firebase collection names
-export const COLLECTIONS = {
-    trips: 'trips',
-    users: 'users',
-    places: 'places'
-};
-
-// Image configurations
-export const IMAGE_CONFIG = {
-    thumbnail: {
-        width: 150,
-        height: 150
-    },
-    coverImage: {
-        aspectRatio: 16/9,
-        quality: 0.9,
-        format: 'image/jpeg'
-    }
-};
-
-// Default values
-export const DEFAULTS = {
-    coverImage: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a",
-    defaultPPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/users%2Fdefault%2FdefaultProfilePic.png?alt=media&token=44444444-4444-4444-4444-444444444444",
-    defaultBPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/users%2Fdefault%2FdefaultBackgroundPic2.png?alt=media&token=b6cf24e2-ab4f-4a4e-96e9-5dc01ab22bbc"
-};

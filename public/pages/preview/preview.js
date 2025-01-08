@@ -1,8 +1,9 @@
 /******************************************************************************
  * IMPORTS AND CONSTANTS
  ******************************************************************************/
-import { TRIP_TYPES, DEFAULTS, PLACE_TYPES } from '/admin/config.js';
+import { TRIP_TYPES, DEFAULTS, PLACE_TYPES } from '/utils/config.js';
 import { showAuthModal } from '/components/signup/signup.js';
+import { showMobileWarning } from '/components/mobileWarning/mobileWarning.js';
 
 
 // Algolia Setup
@@ -86,7 +87,7 @@ async function loadAndDisplayTripPreview() {
 
     try {
         // add log saying running fetch with cool icon
-        console.log('🚀 Fetching data for trip preview...');
+        //console.log('🚀 Fetching data for trip preview...');
 
         const response = await fetch(
             `https://us-central1-cipher-4fa1c.cloudfunctions.net/getPublicTripPreview?tripId=${tripId}`
@@ -97,12 +98,14 @@ async function loadAndDisplayTripPreview() {
         const { tripData, creatorData } = await response.json();
         
         console.log('✅ Received preview data successfully');
-        console.log('📦 Trip Data:', JSON.stringify(tripData, null, 2));
-        console.log('👤 Creator Data:', JSON.stringify(creatorData, null, 2));
+        //console.log('📦 Trip Data:', JSON.stringify(tripData, null, 2));
+        //console.log('👤 Creator Data:', JSON.stringify(creatorData, null, 2));
 
         state.currentUser = creatorData;
+        state.currentTrip = tripData;
         state.currentUserTrips = creatorData.tripsDetail.filter(trip => trip !== null);
 
+        showMobileWarning(tripData);
         switchToPreviewView();
         initializeTripTypes();
         initializeEventListeners();
@@ -264,7 +267,7 @@ function generateTripHTML(trip) {
 
     return `
         <div class="trip-item" data-trip-id="${trip.tripId}">
-            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.coverImage}')">
+            <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.defaultTripCoverPic}')">
                 <div class="trip-item-content">
                     <div class="trip-item-main">
                         <div class="trip-item-title-block">
@@ -538,7 +541,7 @@ function filterPlaces(category) {
  * Updates the trip header section with basic trip information
  */
 function updateTripHeader(tripData) {
-    document.querySelector('.trip-header').style.backgroundImage = `url(${tripData.tripCoverPic || DEFAULTS.coverImage})`;
+    document.querySelector('.trip-header').style.backgroundImage = `url(${tripData.tripCoverPic || DEFAULTS.defaultTripCoverPic})`;
     document.getElementById('tripTitle').textContent = tripData.title;
     document.getElementById('tripCreator').textContent = tripData.creatorName;
     document.getElementById('tripMonth').textContent = tripData.month;
@@ -955,7 +958,7 @@ function updateMapTab(tripData) {
                     .setPopup(
                         new maplibregl.Popup({ offset: 25 })
                             .setHTML(`
-                                <div class="map-popup" style="background-image: url('${place.image || DEFAULTS.coverImage}')">
+                                <div class="map-popup" style="background-image: url('${place.image || '/assets/PatternBackgroundColor.svg'}')">
                                     <div class="map-popup-overlay">
                                         <h2>${place.title}</h2>
                                         <div class="map-popup-type">
@@ -1317,9 +1320,9 @@ function displayUserPreview(userData) {
     // Create the creator profile HTML
     const creatorProfile = `
     <div class="creator-card">
-        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.coverImage}')">
+        <div class="creator-header" style="background-image: url('${userData.bPic || DEFAULTS.defaultBPic}')">
             <div class="creator-profile-pic">
-                <img src="${userData.pPic || DEFAULTS.profileImage}" alt="">
+                <img src="${userData.pPic || DEFAULTS.defaultPPic}" alt="">
             </div>
         </div>
         <div class="creator-info">

@@ -38,10 +38,8 @@ window.firebaseAuthReady = new Promise((resolve) => {
                 // Resolve the promise when we first get the auth state
                 resolve(user);
 
-                if (!user && !isLoginPage && 
-                    (currentPath.includes('/admin/console.html') || 
-                     currentPath.includes('/pages/tripview'))) {
-                    window.location.href = '/admin/index.html';
+                if (!user && !isLoginPage && (currentPath.includes('/pages/console/') || currentPath.includes('/pages/tripview'))) {
+                    window.location.href = '/index.html';
                 }
             });
 
