@@ -13,17 +13,18 @@ body, html {
 body {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    height: 100vh;      /* Force body to be exactly viewport height */
+    min-height: 100%;  /* Changed from 100vh */
+    height: auto;      /* Changed from 100vh */
     width: 100%;
     min-width: 100%;
     display: flex;
     flex-direction: column;
     position: relative;
     z-index: 2;
-    overflow: hidden;   /* Prevent any scrolling */
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;  /* Added for smooth iOS scrolling */
 }
-
 
 
 /* Remove the body::after since we're using the background-grid class */
@@ -44,7 +45,7 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    opacity: 0.2;
+    opacity: 0.05;
 }
 
 
@@ -58,7 +59,7 @@ body {
 /* White overlay */
 body::before {
     content: '';
-    position: absolute;
+    position: fixed;  /* Change from absolute to fixed */
     top: 0;
     left: 0;
     right: 0;
@@ -66,57 +67,48 @@ body::before {
     background-image: url('/assets/PatternBackgroundBW.svg');
     opacity: 0.5;
     background-size: cover;
-    z-index: 3;
+    z-index: 2;  /* Lower z-index to ensure content appears above */
 }
 
 /* Main content */
-.hero-section, .bottom-bar {
+.main-content,
+.hero-wrapper,
+.content-section,
+.bottom-bar {
     position: relative;
-    z-index: 4;
+    z-index: 2;
 }
 
 .hero-wrapper {
-    flex: 1;
+    flex: 0 0 auto;      /* Don't grow or shrink */
     display: flex;
-    align-items: center; /* This centers the hero section vertically */
-    overflow: hidden;  /* Prevent internal scrolling */
+    align-items: center;
+    padding-top: 30px;
 }
 
 .hero-section {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 40px;
-    max-width: 1200px;
+    max-width: 1080px;
     margin: 0 auto;
     gap: 50px;
 }
 
-.bottom-bar {
-    flex-shrink: 0; /* Prevents bottom bar from shrinking */
-    width: 100%;
-    padding: 20px 40px;
-}
-
-
 .left-content {
-    flex: 1;
     display: flex;
     align-items: center;
-    min-width: 400px;
-    max-width: 400px;
     height: 100%;
 }
 
 .hero-logo {
-    width: 400px;
+    width: 600px;
     height: auto;
 }
 
 .right-content {
-    flex: 1;
-    min-width: 300px;
-    max-width: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -132,6 +124,7 @@ h1 {
     font-weight: 700;
     text-align: left;
     line-height: 1;
+    font-family: 'Outfit', sans-serif;
 }
 
 .subtitle {
@@ -212,15 +205,24 @@ h1 {
 }
 
 
+.bottom-bar {
+    width: 100%;
+    z-index: 10;
+    padding: 30px 0px;
+}
+
 .footer-content {
-    max-width: 1200px;
+    max-width: 1080px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #333;
-    font-size: 12px;
+    padding: 0 20px;
+}
 
+.footer-content span {
+    font-size: 12px;     /* Smaller text size */
+    color: #666;         /* Lighter color */
 }
 
 .footer-links {
@@ -311,7 +313,10 @@ h1 {
 }
 
 .mobile-logo {
-    display: none;
+    display: block;
+    height: min(85px, 20vw);  /* Scale with viewport width */
+    width: auto;
+    padding-top: 10px;
 }
 
 .title-wrapper {
@@ -323,6 +328,73 @@ h1 {
 
 .mobile-download-section {
     display: none;
+}
+
+
+.content-section {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    text-align: center;
+    padding-bottom: 40px;
+}
+
+.screenshot-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 80px;
+}
+
+.screenshot-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 100px;
+}
+
+.screenshot-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+}
+
+.screenshot-item img {
+    width: auto;
+    height: 500px;
+}
+
+.screenshot-item:first-child img {
+    display: none;      /* Hide image by default */
+}
+
+.screenshot-item h2 {
+    margin: 20px 0 10px 0;
+    color: #333;
+    font-size: 32px;
+    font-weight: 600;
+    font-family: 'Fredoka', sans-serif;
+}
+
+.screenshot-item p {
+    color: #666;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0;
+}
+
+body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 60px;  /* Space for fixed bottom bar */
 }
 
 /* Mobile styles */
@@ -345,24 +417,12 @@ h1 {
         align-items: center;
     }
 
-    .bottom-bar {
-        padding: 20px 0;     /* Only vertical padding */
-    }
-
     .background-grid {
         display: none;
     }
     
     /* Right content container */
-    .right-content {
-        width: 90%;          
-        min-width: unset;
-        max-width: unset;
-        padding: 1rem;
-        margin: 0 auto;       /* Center in viewport */
-        align-items: center;
-        height: auto;
-    }
+
 
     /* Title section */
     .title-wrapper {
@@ -378,7 +438,7 @@ h1 {
         display: block;
         height: min(85px, 20vw);  /* Scale with viewport width */
         width: auto;
-        padding-top: 10px;
+        padding-top: 5px;
     }
 
     .title-text {
@@ -421,7 +481,7 @@ h1 {
     }
 
     .app-store-badge {
-        width: clamp(120px, 30vw, 140px);
+        width: clamp(200px, 30vw, 400px);
         height: auto;
     }
 
@@ -434,5 +494,39 @@ h1 {
 
     .footer-links {
         justify-content: center;
+    }
+
+    .screenshot-container {
+        padding-top: 30px;
+        gap: 40px;
+    }
+
+    .screenshot-item {
+        flex-direction: column;
+        gap: 20px;  /* Reduced gap for mobile */
+        text-align: center;
+        width: 80%;
+        order: 2;
+    }
+
+    .screenshot-item:first-child img {
+        display: flex;
+    }
+
+    .screenshot-item img {
+        width: auto;  /* Make image responsive */
+        height: 310px;  /* Maintain aspect ratio */
+        max-width: 350px;  /* Limit maximum width */
+        order: 1;
+    }
+
+    .screenshot-item h2 {
+        font-size: clamp(24px, 5vw, 24px);  /* Responsive font size */
+        margin: 10px 0;  /* Reduced margins */
+    }
+
+    .screenshot-item p {
+        font-size: clamp(14px, 4vw, 16px);  /* Responsive font size */
+        padding: 0 20px;  /* Add some padding on the sides */
     }
 }
