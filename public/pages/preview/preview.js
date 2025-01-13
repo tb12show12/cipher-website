@@ -936,7 +936,7 @@ function updateMapTab(tripData) {
             
             // Add markers for each place
             tripData.placesDetail.forEach(place => {
-                if (place.coordinates) {
+                if (place.coordinates && place.coordinates.longitude && place.coordinates.latitude) {
                     const el = document.createElement('div');
                     el.className = 'marker';
                     
@@ -965,9 +965,11 @@ function updateMapTab(tripData) {
                                             <i class="${placeType.icon}"></i>
                                             ${placeType.label}
                                         </div>
-                                        <div class="map-popup-address">
-                                            ${place.address}
-                                        </div>
+                                        ${place.address ? `
+                                            <div class="map-popup-address">
+                                                ${place.address}
+                                            </div>
+                                        ` : ''}
                                     </div>
                                 </div>
                             `)
