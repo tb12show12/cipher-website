@@ -2094,7 +2094,19 @@ async function loadUserData(userId) {
         Promise.all(userTripPromises)
     ]);
 
-    const validUserTrips = userTripsDetail.filter(trip => trip !== null);
+    const validUserTrips = userTripsDetail
+        .filter(trip => trip !== null)
+        .sort((a, b) => {
+            const dateA = a.dateTaken?.toDate?.() || new Date(0);
+            const dateB = b.dateTaken?.toDate?.() || new Date(0);
+            return dateB - dateA; // Sort descending (most recent first)
+        });
+
+    
+    console.log('Sorted trips:', validUserTrips.map(trip => ({
+        title: trip.title,
+        dateCreated: trip.dateTaken,
+    })));
 
     state.currentUser = userData;
     state.currentUserTrips = validUserTrips;

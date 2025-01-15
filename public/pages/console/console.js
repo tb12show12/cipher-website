@@ -1145,10 +1145,18 @@ async function saveBasicInfo() {
         // Reset button after 3 seconds
         setTimeout(() => {
             displaySuccessMessage('Successfully saved changes!');
-            buttonText.style.display = 'inline';
-            successMessage.style.display = 'none';
-            button.disabled = false;
-            buttonText.textContent = 'Save Basic Info';
+            if (buttonText) {
+                buttonText.style.display = 'inline';
+                buttonText.textContent = 'Save Basic Info';
+            }
+            
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+            
+            if (button) {
+                button.disabled = false;
+            }
         }, 2000);
 
     } catch (error) {

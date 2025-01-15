@@ -108,6 +108,7 @@
     text-decoration: none;
     color: #666;
     font-size: 11px;
+    cursor: pointer;
 }
 
 .nav-item span {

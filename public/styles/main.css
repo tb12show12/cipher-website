@@ -64,7 +64,7 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('/assets/PatternBackgroundBW.svg');
+    background-image: url('/assets/PatternBackgroundColor.svg');
     opacity: 0.5;
     background-size: cover;
     z-index: 2;  /* Lower z-index to ensure content appears above */
@@ -323,11 +323,30 @@ h1 {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .mobile-download-section {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.download-text {
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: clamp(0.5rem, 2vh, 1rem);
+    color: #333;
+    font-weight: 700;
+}
+
+.app-store-badge {
+    width: 200px;
+    height: auto;
 }
 
 

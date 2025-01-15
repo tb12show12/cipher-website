@@ -1,6 +1,6 @@
 /* Only add styles specific to thumbnail */
 .trip-item-header {
-    height: 180px; /* 209px - 29px footer height */
+    height: 191px; /* 209px - 29px footer height */
     background-size: cover;
     background-position: center;
     position: relative;
@@ -12,7 +12,7 @@
 
 .thumbnail-template {
     width: 400px;
-    height: 209px;
+    height: 225px;
     margin: 0 auto;
 }
 
