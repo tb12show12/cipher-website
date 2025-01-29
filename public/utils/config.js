@@ -1,12 +1,16 @@
 // Trip Types Configuration
 export const TRIP_TYPES = [
     { value: 0, label: '👥 Adults Only' },
+    { value: 8, label: '🚗 Day Trip' },
     { value: 1, label: '👨‍👩‍👧‍👦 Family Trip' },
     { value: 2, label: '👶 Baby Friendly' },
     { value: 3, label: '🎉 Bachelor/Bachelorette' },
     { value: 4, label: '🏌️ Golf Trip' },
     { value: 5, label: '💍 Honeymoon' },
+    { value: 7, label: '🚐 RV Trip' },
+    { value: 9, label: '⛷️ Skiing Trip' },
     { value: 6, label: '🎒 Solo Travels' }
+    
 ];
 
 export const PLACE_TYPES = [
@@ -20,6 +24,8 @@ export const PLACE_TYPES = [
     {value: 'campground', label: 'Campground', category:'toStay', icon: 'fa-solid fa-campground'},
     {value: 'casino', label: 'Casino', category:'toDo', icon: 'fa-solid fa-dice'},
     {value: 'club', label: 'Club', category:'toDo', icon: 'fa-solid fa-music'},
+    {value: 'coffee', label: 'Coffee Shop', category:'toEat', icon: 'fa-solid fa-mug-hot'},
+    {value: 'comedy', label: 'Comedy Club', category:'toDo', icon: 'fa-solid fa-microphone-lines'},
     {value: 'concert venue', label: 'Concert Venue', category:'toDo', icon: 'fa-solid fa-music'},
     {value: 'farm', label: 'Farm', category:'toDo', icon: 'fa-solid fa-wheat-awn'},
     {value: 'gallery', label: 'Gallery', category:'toDo', icon: 'fa-solid fa-palette'},
@@ -37,7 +43,7 @@ export const PLACE_TYPES = [
     {value: 'rentalProperty', label: 'Rental House', category:'toStay', icon: 'fa-solid fa-house'},
     {value: 'resort', label: 'Resort', category:'toStay', icon: 'fa-solid fa-umbrella-beach'},
     {value: 'restaurant', label: 'Restaurant', category:'toEat', icon: 'fa-solid fa-utensils'},
-    {value: 'rv', label: 'RV', category:'toStay', icon: 'fa-solid fa-rv'},
+    {value: 'rv', label: 'RV', category:'toStay', icon: 'fa-solid fa-caravan'},
     {value: 'school', label: 'School/University', category:'toDo', icon: 'fa-solid fa-school'},
     {value: 'shopping', label: 'Shopping', category:'toDo', icon: 'fa-solid fa-shopping-bag'},
     {value: 'ski', label: 'Skiing/Snowboarding', category:'toDo', icon: 'fa-solid fa-person-skiing'},

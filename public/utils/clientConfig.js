@@ -1,4 +1,12 @@
 // Trip Types Configuration (non-module version)
+
+import { TRIP_TYPES, PLACE_TYPES } from "./config";
+
+const DEFAULTS = {
+    defaultTripCoverPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a"
+};
+
+/*
 const TRIP_TYPES = [
     { value: 0, label: '👥 Adults Only' },
     { value: 1, label: '👨‍👩‍👧‍👦 Family Trip' },
@@ -6,12 +14,9 @@ const TRIP_TYPES = [
     { value: 3, label: '🎉 Bachelor/Bachelorette' },
     { value: 4, label: '🏌️ Golf Trip' },
     { value: 5, label: '💍 Honeymoon' },
-    { value: 6, label: '🎒 Solo Travels' }
+    { value: 6, label: '🎒 Solo Travels' },
+    { value: 7, label: '🚐 RV Trip' }
 ];
-
-const DEFAULTS = {
-    defaultTripCoverPic: "https://firebasestorage.googleapis.com/v0/b/cipher-4fa1c.appspot.com/o/trips%2Fdefault%2FdefaultTripCoverPic.jpg?alt=media&token=dd4f49c0-08ea-4788-b0d1-d10abdbc7b8a"
-};
 
 const PLACE_TYPES = [
     {value: 'airbnb', label: 'Airbnb', category:'toStay', icon: 'fa-brands fa-airbnb'},
@@ -52,3 +57,4 @@ const PLACE_TYPES = [
     {value: 'vacasa', label: 'Vacasa', category:'toStay', icon: 'fa-solid fa-house'},
     {value: 'winery', label: 'Winery/Distillery', category:'toEat', icon: 'fa-solid fa-wine-bottle'},
 ];
+*/

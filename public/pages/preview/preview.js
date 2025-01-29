@@ -235,7 +235,7 @@ function handleTripTypeSelect(event) {
     const chip = event.target.closest('.trip-type-chip');
     if (!chip) return;
     
-    const tripType = chip.dataset.type;
+    const tripType = parseInt(chip.dataset.type);
     chip.classList.toggle('selected');
     
     if (chip.classList.contains('selected')) {
@@ -250,11 +250,20 @@ function handleTripTypeSelect(event) {
 /**
  * Initializes trip type grid
  */
-function initializeTripTypes() {
+function initializeTripTypesOLD() {
     const grid = document.getElementById('tripTypesGrid');
     grid.innerHTML = Object.entries(TRIP_TYPES).map(([key, value]) => `
         <div class="trip-type-chip" data-type="${key}">
             <i class="${value.icon}"></i> ${value.label}
+        </div>
+    `).join('');
+}
+
+function initializeTripTypes() {
+    const grid = document.getElementById('tripTypesGrid');
+    grid.innerHTML = TRIP_TYPES.map(type => `
+        <div class="trip-type-chip" data-type="${type.value}">
+            <i class="${type.icon}"></i> ${type.label}
         </div>
     `).join('');
 }
@@ -264,6 +273,8 @@ function initializeTripTypes() {
  * Generates HTML for a trip card
  */
 function generateTripHTML(trip) {
+
+    const tripType = TRIP_TYPES.find(type => type.value === parseInt(trip.familyType)) || TRIP_TYPES[0];
 
     return `
         <div class="trip-item" data-trip-id="${trip.tripId}">
@@ -288,8 +299,8 @@ function generateTripHTML(trip) {
                         </div>
                         <div class="trip-item-meta-right">
                             <span class="trip-type">
-                                <i class="${TRIP_TYPES[trip.familyType]?.icon}"></i>
-                                ${TRIP_TYPES[trip.familyType]?.label}
+                                <i class="${tripType.icon}"></i>
+                                ${tripType.label}
                             </span>
                         </div>
                     </div>

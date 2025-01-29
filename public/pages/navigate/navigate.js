@@ -420,7 +420,7 @@ function displaySearchFiltersSummary(keyword) {
     // Add trip types if selected
     if (state.filters.tripTypes.length > 0) {
         const tripTypeLabels = state.filters.tripTypes.map(type => {
-            const tripType = TRIP_TYPES.find(t => t.value === parseInt(type));
+            const tripType = TRIP_TYPES.find(t => t.value === type);
             return tripType ? tripType.label : type;
         });
         summaryParts.push(`${tripTypeLabels.join(', ')}`);
@@ -526,7 +526,7 @@ function handleTripTypeSelect(event) {
     const chip = event.target.closest('.trip-type-chip');
     if (!chip) return;
     
-    const tripType = chip.dataset.type;
+    const tripType = parseInt(chip.dataset.type);
     chip.classList.toggle('selected');
     
     if (chip.classList.contains('selected')) {
@@ -678,7 +678,7 @@ function filterByDays(hits) {
 /**
  * Initializes trip type grid
  */
-function initializeTripTypes() {
+function initializeTripTypesOLD() {
     const grid = document.getElementById('tripTypesGrid');
     grid.innerHTML = Object.entries(TRIP_TYPES).map(([key, value]) => `
         <div class="trip-type-chip" data-type="${key}">
@@ -686,6 +686,16 @@ function initializeTripTypes() {
         </div>
     `).join('');
 }
+
+function initializeTripTypes() {
+    const grid = document.getElementById('tripTypesGrid');
+    grid.innerHTML = TRIP_TYPES.map(type => `
+        <div class="trip-type-chip" data-type="${type.value}">
+            <i class="${type.icon}"></i> ${type.label}
+        </div>
+    `).join('');
+}
+
 
 /**
  * Displays search results in both list and map views
@@ -734,6 +744,8 @@ function displaySearchResults(results) {
  */
 function generateTripHTML(trip) {
 
+    const tripType = TRIP_TYPES.find(type => type.value === parseInt(trip.familyType)) || TRIP_TYPES[0];
+
     return `
         <div class="trip-item" data-trip-id="${trip.tripId}">
             <div class="trip-item-header" style="background-image: url('${trip.tripCoverPic || DEFAULTS.defaultTripCoverPic}')">
@@ -757,8 +769,8 @@ function generateTripHTML(trip) {
                         </div>
                         <div class="trip-item-meta-right">
                             <span class="trip-type">
-                                <i class="${TRIP_TYPES[trip.familyType]?.icon}"></i>
-                                ${TRIP_TYPES[trip.familyType]?.label}
+                                <i class="${tripType.icon}"></i>
+                                ${tripType.label}
                             </span>
                         </div>
                     </div>
