@@ -864,15 +864,22 @@ function updateAttendeesTab(tripData) {
  */
 function updatePhotosTab(tripData) {
     if (tripData.photos && tripData.photos.length > 0) {
+        const isUserAttendee = tripData.attendeesDetail?.some(attendee => attendee.id === state.currentUser?.uid);
+        const accessiblePhotos = isUserAttendee ? 
+            tripData.photos : // Show all photos if user is an attendee
+            tripData.photos.filter(photo => !photo.isPrivate || photo.isPrivate === undefined); // Show if not private or if field is missing
+
         const photosGrid = document.querySelector('.photos-grid');
                 // Initialize lightbox
-        const { showPhoto } = initializeLightbox(tripData.photos);
+
+        const { showPhoto } = initializeLightbox(accessiblePhotos);
         
         // Create photo grid with click handlers
-        photosGrid.innerHTML = tripData.photos
+        photosGrid.innerHTML = accessiblePhotos
             .map((photo, index) => `
                 <div class="photo-item">
                     <img src="${photo.uri}" 
+
                          alt="Trip photo" 
                          loading="lazy"
                          onclick="document.getElementById('lightbox').classList.add('active'); 
